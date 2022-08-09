@@ -16,6 +16,7 @@ export default function (nuxt, strategy) {
     responseType: 'code',
     scope: ['openid', 'profile', 'email']
   };
+    console.log("In google custom")
   if (typeof strategy !== 'undefined') {
     assignDefaults(strategy, DEFAULTS);
     addAuthorize(nuxt, strategy);

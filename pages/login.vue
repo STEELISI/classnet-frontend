@@ -56,7 +56,9 @@ export default {
       let response = await this.$auth.loginWith('github')
     },
     async googleLogin() {
+    console.log("Trying to log in with Google")
       let response = await this.$auth.loginWith('google')
+      console.log("Got response ", response)
     },
     async cilogonLogin() {
       let response = await this.$auth.loginWith('cilogon')
