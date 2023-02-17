@@ -33,7 +33,7 @@
      <!-- <div style="margin-top: 20px; font-weight: bold;">Please download and fill out data use agreement from<a @click="fetchDUA"> this link</a></div>
       <div style="margin-top: 20px; margin-bottom: 20px; font-weight: normal;">Upload filled data use agreement here (in PDF format) <input type="file" @change="uploadFile" ref="file" required accept="application/pdf"></div> -->
       <div v-if="record.artifact.provider == 'USC'">
-        <div style="font-weight: bold;">Specify project name</div>
+        <div style="font-weight: bold;">Specify project name<span class="red--text"><strong>*</strong></span></div>
         <v-text-field
           name="project"
           v-model="project"
@@ -43,7 +43,7 @@
           clearable
           required
         ></v-text-field>
-        <div style="margin-top: 20px; font-weight: bold;">Briefly describe the research to be done with the dataset</div>
+        <div style="margin-top: 20px; font-weight: bold;">Briefly describe the research to be done with the dataset<span class="red--text"><strong>*</strong></span></div>
         <v-textarea
           name="research"
           v-model="research"
@@ -60,20 +60,24 @@
               <v-col md="5">
                 <v-text-field
                   v-model="researcher.name"
-                  label="Name"
                   type="text"
                   hint="Enter researcher name"
-                  required
-                ></v-text-field>
+                  required>
+                <template #label>
+                  <span>Name<span style='color: red;'> *</span></span> 
+                </template>
+                </v-text-field>
               </v-col>
               <v-col md="3">
                 <v-text-field
                   v-model="researcher.email"
-                  label="Email"
                   type="email"
                   hint="Enter researcher email"
-                  required
-                ></v-text-field>
+                  required>
+                <template #label>
+                  <span>Email<span style='color: red;'> *</span></span> 
+                </template>
+                </v-text-field>
               </v-col>
               <v-col md="3">
                 <v-text-field
@@ -81,7 +85,6 @@
                   label="Phone number (only digits)"
                   type="text"
                   hint="Enter researcher phone number"
-                  required
                   pattern="^[0-9]+$"
                 ></v-text-field>
               </v-col>
@@ -109,7 +112,7 @@
             <v-icon>mdi-plus</v-icon>
           </v-btn>
         </div>
-        <div style="margin-top: 20px; font-weight: bold;">Please select the researcher representative</div>
+        <div style="margin-top: 20px; font-weight: bold;">Please select the researcher representative<span class="red--text"><strong>*</strong></span></div>
         <v-select
           v-model="researcher_representative"
           :items="researchers"
@@ -118,7 +121,7 @@
           label="Researcher Representative"
           required
         ></v-select>
-        <div style="margin-top: 20px; font-weight: bold;">Please enter the title of the researcher representative</div>
+        <div style="margin-top: 20px; font-weight: bold;">Please enter the title of the researcher representative<span class="red--text"><strong>*</strong></span></div>
         <v-text-field
           name="researcher_representative_title"
           v-model="researcher_representative_title"
@@ -128,18 +131,9 @@
           clearable
           required
         ></v-text-field>
-        <div style="margin-top: 20px; font-weight: bold;">Please select the research point of contact</div>
-        <v-select
-          v-model="research_point_of_contact"
-          :items="researchers"
-          item-text="email"
-          item-value="email"
-          label="Research Point of Contact"
-          required
-        ></v-select>
       </div>
       <div v-if="record.artifact.provider == 'Merit'">
-        <div style="font-weight: bold;">Mention the organization name</div>
+        <div style="font-weight: bold;">Mention the organization name<span class="red--text"><strong>*</strong></span></div>
         <v-text-field
           name="organization"
           v-model="organization"
@@ -149,7 +143,7 @@
           clearable
           required
         ></v-text-field>
-        <div style="margin-top: 20px; font-weight: bold;">Mention the researcher's name</div>
+        <div style="margin-top: 20px; font-weight: bold;">Mention the researcher's name<span class="red--text"><strong>*</strong></span></div>
         <v-text-field
           name="merit_researcher"
           v-model="merit_researcher"
@@ -159,7 +153,7 @@
           clearable
           required
         ></v-text-field>
-        <div style="margin-top: 20px; font-weight: bold;">Mention the researcher's title</div>
+        <div style="margin-top: 20px; font-weight: bold;">Mention the researcher's title<span class="red--text"><strong>*</strong></span></div>
         <v-text-field
           name="merit_researcher_title"
           v-model="merit_researcher_title"
@@ -475,7 +469,7 @@ export default {
       let isEntryEmpty = false;
       if(this.record.artifact.provider == 'USC') {
         this.researchers.forEach((researcher) => {
-          if ((researcher.name == "" || researcher.email == "" || researcher.number == "")) {
+          if ((researcher.name == "" || researcher.email == "")) {
             isEntryEmpty = true;
           }
         });
