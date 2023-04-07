@@ -2,177 +2,191 @@
   <div>
     <v-form ref="search" @submit.prevent="onSubmit">
       <v-text-field
-        append-icon="mdi-magnify"
-        label="Search"
-        placeholder="Type search term..."
-        v-model="search"
-        loading="true"
-        clearable
-        class="rounded-0"
-        hide-details
-        @keydown="onChange"
-        @change="onSubmit"
-        solo
-        dense
+      append-icon="mdi-magnify"
+      label="Search"
+      placeholder="Type search term..."
+      v-model="search"
+      loading="true"
+      clearable
+      class="rounded-0"
+      hide-details
+      @keydown="onChange"
+      @change="onSubmit"
+      solo
+      dense
       >
-      </v-text-field>
-      <v-expansion-panels v-model="adopen" multiple>
-        <v-expansion-panel class="rounded-0">
-          <v-expansion-panel-header>
-            <template v-slot:default="{ open }">
-              <v-row no-gutters>
-                <v-col cols="4">
-                  Advanced
-                </v-col>
-                <v-col cols="8" class="text--secondary">
-                  <v-fade-transition leave-absolute>
-                    <span v-if="open" key="0">
-                      Select advanced filters for your query
-                    </span>
-                  </v-fade-transition>
-                </v-col>
-              </v-row>
-            </template>
-          </v-expansion-panel-header>
-          <v-expansion-panel-content>
-            <v-row align="center">
-              <v-col cols="12">
-                <v-text-field
-                  label="Author"
-                  placeholder="Search for artifacts by author name..."
-                  v-model="author"
-                >
-                </v-text-field>
+    </v-text-field>
+    <v-expansion-panels v-model="adopen" multiple>
+      <v-expansion-panel class="rounded-0">
+        <v-expansion-panel-header>
+          <template v-slot:default="{ open }">
+            <v-row no-gutters>
+              <v-col cols="4">
+                Advanced
               </v-col>
-              <v-col cols="12">
-                <v-text-field
-                  label="Organization"
-                  placeholder="Search for artifacts by organization name..."
-                  v-model="organization"
-                >
-                </v-text-field>
-              </v-col>
-              <v-col cols="12">
-                <v-select
-                  v-model="advanced.types"
-                  :items="types"
-                  label="Artifact types"
-                  multiple
-                  class="rounded-0"
-                  hide-details
-                >
-                  <template v-slot:prepend-item>
-                    <v-list-item ripple @click="toggle">
-                      <v-list-item-action>
-                        <v-icon
-                          :color="
-                            advanced.types.length > 0 ? 'indigo darken-4' : ''
-                          "
-                        >
-                          {{ artifactTypeIcon }}
-                        </v-icon>
-                      </v-list-item-action>
-                      <v-list-item-content>
-                        <v-list-item-title>
-                          Select All
-                        </v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                    <v-divider class="mt-2"></v-divider>
-                  </template>
-                  <template v-slot:selection="{ item, index }">
-                    <span v-if="index === 0">{{ item }}</span>
-                    <span></span>
-                    <span v-if="index === 1" class="grey--text caption">
-                      (+{{ advanced.types.length - 1 }} others)
-                    </span>
-                  </template>
-                </v-select>
-              </v-col>
-              <v-col cols="12">
-                <v-select
-                  v-model="advanced.badge_ids"
-                  :items="badges"
-                  :item-value="item => item.id"
-                  label="Artifact badges"
-                  multiple
-                  class="rounded-0"
-                  hide-details
-                >
-                  <template v-slot:prepend-item>
-                    <v-list-item ripple @click="toggleBadges">
-                      <v-list-item-action>
-                        <v-icon
-                          :color="
-                            advanced.badge_ids.length > 0 ? 'indigo darken-4' : ''
-                          "
-                        >
-                          {{ badgeIcon }}
-                        </v-icon>
-                      </v-list-item-action>
-                      <v-list-item-content>
-                        <v-list-item-title>
-                          Select All
-                        </v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                    <v-divider class="mt-2"></v-divider>
-                  </template>
-                  <template v-slot:selection="{ item, index }">
-                    <span v-if="index === 0">{{ `${item.organization} ${item.title}` }}</span>
-                    <span></span>
-                    <span v-if="index === 1" class="grey--text caption">
-                      (+{{ advanced.badge_ids.length - 1 }} others)
-                    </span>
-                  </template>
-                  <template v-slot:item="{ item, index }">
-                    {{ `${item.organization} ${item.title}` }}
-                  </template>
-                </v-select>
-              </v-col>
-              <v-col cols="12">
-                <v-text-field
-                  v-if="$auth.loggedIn && this.user_can_admin && this.user_is_admin"
-                  label="Owner"
-                  placeholder="Search for artifacts by owner name..."
-                  v-model="owner"
-                >
-                </v-text-field>
+              <v-col cols="8" class="text--secondary">
+                <v-fade-transition leave-absolute>
+                  <span v-if="open" key="0">
+                    Select advanced filters for your query
+                  </span>
+                </v-fade-transition>
               </v-col>
             </v-row>
-            <v-btn @click="onSubmit" class="primary mt-3">Search</v-btn>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
-      </v-expansion-panels>
-    </v-form>
-    <br />
-    <v-divider></v-divider>
-    <v-pagination
-      v-if="artifacts"
-      v-model="page"
-      :length="pages"
-      circle
-    ></v-pagination>
-    <ArtifactList
-      :artifacts="artifacts"
-      :limit="limit"
-      v-bind:related="related"
-    ></ArtifactList>
-    <span v-if="artifacts.total == 0 && search !== ''">{{
-      searchMessage
-    }}</span>
-    <span v-if="!searchLoading && artifacts.total == 0 && search === ''"
-      ><h3>Type a search term into the input above and press Enter</h3></span
-    >
-    <v-btn
-      v-if="showScrollToTop != 0"
-      class="secondary"
-      id="scrollbtn"
-      @click="scrollToTop()"
-      elevation="10"
-      ><v-icon large color="lightblue">mdi-chevron-up</v-icon></v-btn
-    >
-  </div>
+          </template>
+        </v-expansion-panel-header>
+        <v-expansion-panel-content>
+          <v-row align="center">
+            <v-col cols="12">
+              <v-text-field
+              label="Author"
+              placeholder="Search for artifacts by author name..."
+              v-model="author"
+              >
+            </v-text-field>
+          </v-col>
+          <v-col cols="12">
+            <v-text-field
+            label="Organization"
+            placeholder="Search for artifacts by organization name..."
+            v-model="organization"
+            >
+          </v-text-field>
+        </v-col>
+        <v-col cols="12">
+          <v-autocomplete
+          label="Category"
+          placeholder="Search for artifacts by Artifact Categories"
+          :items = "artifactCategories"
+          v-model = "category"
+          chips
+          clearable
+          ></v-autocomplete>
+        </v-col>
+        <v-col cols="12">
+          <v-select
+          v-model="advanced.types"
+          :items="types"
+          label="Artifact types"
+          multiple
+          class="rounded-0"
+          hide-details
+          >
+          <template v-slot:prepend-item>
+            <v-list-item ripple @click="toggle">
+              <v-list-item-action>
+                <v-icon
+                :color="
+                advanced.types.length > 0 ? 'indigo darken-4' : ''
+                "
+                >
+                {{ artifactTypeIcon }}
+              </v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>
+                Select All
+              </v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-divider class="mt-2"></v-divider>
+        </template>
+        <template v-slot:selection="{ item, index }">
+          <span v-if="index === 0">{{ item }}</span>
+          <span></span>
+          <span v-if="index === 1" class="grey--text caption">
+            (+{{ advanced.types.length - 1 }} others)
+          </span>
+        </template>
+      </v-select>
+    </v-col>
+    <v-col cols="12">
+      <v-select
+      v-model="advanced.badge_ids"
+      :items="badges"
+      :item-value="item => item.id"
+      label="Artifact badges"
+      multiple
+      class="rounded-0"
+      hide-details
+      >
+      <template v-slot:prepend-item>
+        <v-list-item ripple @click="toggleBadges">
+          <v-list-item-action>
+            <v-icon
+            :color="
+            advanced.badge_ids.length > 0 ? 'indigo darken-4' : ''
+            "
+            >
+            {{ badgeIcon }}
+          </v-icon>
+        </v-list-item-action>
+        <v-list-item-content>
+          <v-list-item-title>
+            Select All
+          </v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+      <v-divider class="mt-2"></v-divider>
+    </template>
+    <template v-slot:selection="{ item, index }">
+      <span v-if="index === 0">{{ `${item.organization} ${item.title}` }}</span>
+      <span></span>
+      <span v-if="index === 1" class="grey--text caption">
+        (+{{ advanced.badge_ids.length - 1 }} others)
+      </span>
+    </template>
+    <template v-slot:item="{ item, index }">
+      {{ `${item.organization} ${item.title}` }}
+    </template>
+  </v-select>
+</v-col>
+<v-col cols="12">
+  <v-text-field
+  v-if="$auth.loggedIn && this.user_can_admin && this.user_is_admin"
+  label="Owner"
+  placeholder="Search for artifacts by owner name..."
+  v-model="owner"
+  >
+</v-text-field>
+</v-col>
+</v-row>
+<v-btn @click="onSubmit" class="primary mt-3">Search</v-btn>
+</v-expansion-panel-content>
+</v-expansion-panel>
+</v-expansion-panels>
+</v-form>
+<br />
+<v-divider></v-divider>
+<v-pagination
+v-if="artifacts"
+v-model="page"
+:length="pages"
+circle
+></v-pagination>
+<ArtifactList
+:artifacts="artifacts"
+:limit="limit"
+v-bind:related="related"
+></ArtifactList>
+<!-- <ArtifactCategories
+  :artifacts="artifacts">
+
+</ArtifactCategories> -->
+<span v-if="artifacts.total == 0 && search !== ''">{{
+  searchMessage
+}}</span>
+<span v-if="!searchLoading && artifacts.total == 0 && search === ''"
+><h3>Type a search term into the input above and press Enter</h3></span
+>
+<v-btn
+v-if="showScrollToTop != 0"
+class="secondary"
+id="scrollbtn"
+@click="scrollToTop()"
+elevation="10"
+><v-icon large color="lightblue">mdi-chevron-up</v-icon></v-btn
+>
+</div>
 </template>
 
 <script>
@@ -183,7 +197,7 @@ import { getCookie } from '~/helpers'
 export default {
   components: {
     Logo: () => import('@/components/Logo'),
-    ArtifactList: () => import('@/components/ArtifactList')
+    ArtifactList: () => import('@/components/ArtifactList'),
   },
   props: {
     related: {
@@ -199,11 +213,11 @@ export default {
     return {
       title: 'SEARCH Artifact Search',
       meta: [
-        {
-          hid: 'description',
-          name: 'description',
-          content: 'SEARCCH Hub Artifact Search Results'
-        }
+      {
+        hid: 'description',
+        name: 'description',
+        content: 'SEARCCH Hub Artifact Search Results'
+      }
       ]
     }
   },
@@ -215,9 +229,11 @@ export default {
       author: '',
       owner: '',
       organization: '',
+      category: '',
       searchMessage: '',
       searchInterval: null,
       submitted: false,
+      artifactCategories: [],
       adopen: [1],
       advanced: {
         types: ['presentation', 'publication', 'dag', 'argus', 'pcap',  'netflow', 'flowtools', 'flowride', 'fsdb', 'csv', 'custom'],
@@ -225,7 +241,7 @@ export default {
         org: '',
         badge_ids: []
       },
-      types: ['presentation', 'publication', 'dag', 'argus', 'pcap',  'netflow', 'flowtools', 'flowride', 'fsdb', 'csv', 'custom'],	
+      types: ['presentation', 'publication', 'dag', 'argus', 'pcap',  'netflow', 'flowtools', 'flowride', 'fsdb', 'csv', 'custom'],
       filters: ['Name', 'Organization'],
       showScrollToTop: 0
     }
@@ -236,7 +252,7 @@ export default {
   beforeDestroy() {
     window.removeEventListener('scroll', this.handleScroll)
   },
-  mounted() {
+  async mounted() {
     console.log(this.$route)
     if (this.related) {
       this.$store.dispatch('artifacts/fetchRelatedArtifacts', this.artifact)
@@ -257,11 +273,19 @@ export default {
       this.advanced.types = this.types
     }
     this.$store.dispatch('user/fetchBadges')
+    let response = await this.$categoriesEndpoint.index()
+    for (let category of response["categories"]){
+      if (category != "None"){
+        this.artifactCategories.push(category)
+      }
+
+    }
   },
   computed: {
     ...mapState({
       badges: state => state.user.badges,
       artifacts: state => state.artifacts.artifacts.artifacts,
+      art: state => state.artifacts,
       artifact: state => state.artifacts.artifact.artifact,
       pages: state => state.artifacts.artifacts.pages,
       total: state => state.artifacts.artifacts.total,
@@ -317,10 +341,12 @@ export default {
         this.author ? (payload['author'] = this.author) : false
         this.owner ? (payload['owner'] = this.owner) : false
         this.organization ? (payload['organization'] = this.organization) : false
+        this.category ? (payload['category'] = this.category) : false
         this.advanced.badge_ids ? (payload['badge_id'] = this.advanced.badge_ids) : false
 
-        this.$store.dispatch('artifacts/fetchArtifacts', payload)
-      } 
+        await this.$store.dispatch('artifacts/fetchArtifacts', payload)
+        console.log(this.artifacts)
+      }
       this.searchInterval = setTimeout(() => {
         if (!this.searchLoading) {
           this.searchMessage = 'No results found'

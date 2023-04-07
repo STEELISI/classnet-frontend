@@ -7,7 +7,17 @@
             <v-card-title class="align-start">
               <span class="headline">{{ artifact.title | titlecase }}</span>
             </v-card-title>
+            <v-chip
+            v-if ="artifact.category"
+      class="ma-2"
+      color="cyan"
+      outlined
+      size="x-small"
+    >
+      {{ artifact.category }}
+    </v-chip>
           </v-col>
+
           <v-col cols="3">
             <ArtifactChips
               class="card-chip"
@@ -15,12 +25,16 @@
               :type="artifact.type"
             ></ArtifactChips>
           </v-col>
+
         </v-row>
+
       </v-container>
+
       <span class="ml-4 grey--text text--darken-2 font-weight-light caption">
         {{ artifact.num_reviews }}
         {{ artifact.num_reviews == 1 ? 'review' : 'reviews' }}
       </span>
+
       <v-rating
         v-model="artifact.avg_rating"
         color="amber"
@@ -190,7 +204,7 @@ export default {
         else this.$store.commit('artifacts/REMOVE_FAVORITE', this.artifact.artifact_group_id)
       }
     }
-  },      
+  },
   methods: {
     async favoriteThis() {
       if (!this.$auth.loggedIn) {
