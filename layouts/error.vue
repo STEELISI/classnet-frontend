@@ -9,14 +9,13 @@
     </h2>
 
     <pretty-print
-      v-if="error.request"
-      :value="error.request.data"
+        v-if="error.request.data"
+        :value="error.request.data"
     ></pretty-print>
 
-    <pretty-print
-      v-if="error.request"
-      :value="error.request.response"
-    ></pretty-print>
+    <div v-if="error.request.response"
+         value="error.request.response">
+    </div>
 
     <a @click="navigate">Start over</a>
   </v-app>
