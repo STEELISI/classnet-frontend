@@ -276,6 +276,7 @@
 
       </LazyHydrate>
   <br />
+      <v-card>
         <v-card-title class="primary white--text">
               Supporters
         </v-card-title>
@@ -309,39 +310,49 @@
           Enter Affiliation and Designation
         </v-card-title>
         <v-col cols="12" >
-                <v-text-field
-                  label="Position*"
-                  required
-                  v-model ="userPosition"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12">
-                    <v-combobox
-                      label="Affiliation*"
-                      multiple
-                      small-chips
-                      deletable-chips
-                      v-model="userAffiliation"
-                      hint="Select applicable organization from the list or type in your own"
-                      item-text="org.name"
-                      item-value="org.name"
-                      return-object
-                      required
-                    >
-                      <template v-slot:no-data>
-                        <v-list-item>
-                          <v-list-item-content>
-                            <v-list-item-title>
-                              No results matching "<strong>{{
-                                orgSearch
-                              }}</strong
-                              >". Press <kbd>tab</kbd> to create a new one
-                            </v-list-item-title>
-                          </v-list-item-content>
-                        </v-list-item>
-                      </template>
-                    </v-combobox>
-                  </v-col>
+          <v-text-field
+            label="Institutional Email*"
+            required
+            v-model ="userEmail"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="12" >
+          <v-text-field
+            label="Position*"
+            required
+            v-model ="userPosition"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="12">
+          <v-combobox
+            label="Affiliation*"
+            multiple
+            small-chips
+            deletable-chips
+            v-model="userAffiliation"
+            hint="Select applicable organization from the list or type in your own"
+            item-text="org.name"
+            item-value="org.name"
+            return-object
+            required
+          >
+            <template v-slot:no-data>
+              <v-list-item>
+                <v-list-item-content>
+                  <v-list-item-title>
+                    No results matching "<strong>{{
+                      orgSearch
+                    }}</strong
+                    >". Press <kbd>tab</kbd> to create a new one
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </template>
+          </v-combobox>
+        </v-col>
+        <v-col cols="12" v-if="dialogError">
+          <span style="color:red">{{dialogError}}</span>
+        </v-col>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
@@ -367,8 +378,10 @@ export default {
         dialog: false,
         localuser:'',
         userAffiliation:[],
-        userPosition:false,
+        userPosition:'',
+        userEmail:'',
         model: 0,
+        dialogError: '',
         colors: [
           'indigo',
           'warning',
@@ -417,48 +430,57 @@ export default {
     document.cookie = `session_id=${hash};expires=${expireTime.toUTCString()}`;
     console.log(this.user)
     if (this.$auth.loggedIn){
-    this.$store.dispatch('user/fetchUser')
-    this.$store.dispatch('user/fetchOrgs')
+      await this.$store.dispatch('user/fetchOrgs')
 
-      let payload = {
-      verified: 1,
-      all: 1
-    }
-    let response = await this.$organizationEndpoint.index(payload)
-    console.log(this.organization)
-      if(this.organization.length == 0 || !this.localuser.position){
-        this.dialog = true
-      }
-      this.localuser = JSON.parse(JSON.stringify(this.person))
-      this.userAffiliation = this.organization ? this.organization : []
+      await this.$store.dispatch('user/fetchUser').then(response => {
 
-      this.localuser.position = this.localuser.position ? this.localuser.position : false
-      this.userPosition = this.localuser.position
-      console.log(this.localuser)
-      //this.userPosition = this.position
-    }
+        if(this.organization.length == 0 || !this.localuser.position || !this.localuser.email){
+          this.dialog = true
+        }
+        this.localuser = JSON.parse(JSON.stringify(this.person))
+        this.userAffiliation = this.organization ? this.organization : []
+
+        this.localuser.position = this.localuser.position ? this.localuser.position : ''
+        this.userPosition = this.localuser.position
+
+        this.localuser.email = this.localuser.email ? this.localuser.email : ''
+        this.userEmail = this.localuser.email
+        console.log(this.localuser)
+    })
+    
+  }
   },
   methods:{
     async addFields(){
       if (!this.$auth.loggedIn) {
         this.$router.push('/login')
       } else {
-        await this.$userEndpoint.update(this.userid, this.localuser)
+        this.dialogError = ''
 
+        
+        this.localuser.position = this.userPosition
+        this.localuser.email = this.userEmail
+        let response = await this.$userEndpoint.update(this.userid, this.localuser)
+
+        if(response.error == "true"){ 
+          this.dialogError = response.message
+          return
+        }
+
+        if(this.localuser.position && this.userAffiliation && this.localuser.email){
+          this.dialog=false
+        }
+
+        this.$store.dispatch('user/fetchUser') // adds latest user data to store
+        
         // create any affiliations that were added
         this.userAffiliation.forEach((affil, index, object) => {
           if (typeof affil === 'string') {
             this.$store.dispatch('user/createAffiliation', affil)
-            object.splice(index, 1)
+            object.splice(index, 0)
           }
         })
-        this.$store.dispatch('user/fetchUser')
-        this.localuser.position = this.userPosition
       }
-      if(this.localuser.position && this.userAffiliation){
-        this.dialog=false
-      }
-
     }
   }
   // async computed(){

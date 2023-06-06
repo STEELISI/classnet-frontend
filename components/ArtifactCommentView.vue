@@ -89,7 +89,7 @@
               color="green"
               v-on="on"
             >
-             {{ticket_status}}
+             Access
             </v-btn>
           </template>
           <span>Your dataset request has been approved and released (check your mailbox)</span>

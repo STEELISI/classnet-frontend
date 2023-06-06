@@ -54,8 +54,6 @@
                       label="Email Address"
                       class="primary-input"
                       v-model="localuser.email"
-                      readonly
-                      disabled
                     />
                   </v-col>
 
@@ -136,6 +134,9 @@
                       Update Profile
                     </v-btn>
                   </v-col>
+                  <v-col cols="12" v-if="dialogError">
+                    <span style="color:red">{{dialogError}}</span>
+                  </v-col>
                 </v-row>
               </v-container>
             </v-form>
@@ -184,7 +185,7 @@
                     <v-icon class="mr-2">
                       mdi-database
                     </v-icon>
-                    Artifacts
+                    Owned Datasets
                   </v-tab>
                 </v-tabs>
               </template>
@@ -445,7 +446,8 @@ export default {
       localuser: null,
       userPosition:null,
       requested_artifacts: [],
-      released_artifacts: []
+      released_artifacts: [],
+      dialogError: '',
     }
   },
   computed: {
@@ -558,14 +560,19 @@ export default {
       if (!this.$auth.loggedIn) {
         this.$router.push('/login')
       } else {
-        console.log(this.localuser)
-        await this.$userEndpoint.update(this.userid, this.localuser)
+        this.dialogError = ''
+        await this.$userEndpoint.update(this.userid, this.localuser).then(response => {
+          if(response.error == "true"){ 
+            this.dialogError = response.message
+            return
+          }
+        })
 
         // create any affiliations that were added
         this.userAffiliation.forEach((affil, index, object) => {
           if (typeof affil === 'string') {
             this.$store.dispatch('user/createAffiliation', affil)
-            object.splice(index, 1)
+            object.splice(index, 0)
           }
         })
 
