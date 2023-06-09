@@ -24,9 +24,9 @@
                 <v-btn class="primary" nuxt @click="googleLogin()">
                   Google&nbsp;<v-icon small>mdi-google</v-icon>
                 </v-btn>
-                <!-- <v-btn class="primary" nuxt @click="cilogonLogin()">
+                <v-btn class="primary" nuxt @click="cilogonLogin()">
                   CILogon&nbsp;<v-icon small>mdi-login</v-icon>
-                </v-btn> -->
+                </v-btn>
               </v-card-actions>
             </v-card>
           </v-col>
