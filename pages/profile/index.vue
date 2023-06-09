@@ -163,7 +163,7 @@
                     </v-icon>
                     Requested
                   </v-tab>
-                  <v-tab>
+                  <v-tab v-if="released_artifacts.length > 0">
                     <v-icon class="mr-2">
                       mdi-download
                     </v-icon>
@@ -181,7 +181,7 @@
                     </v-icon>
                     Ratings
                   </v-tab>
-                  <v-tab class="mr-3">
+                  <v-tab class="mr-3" v-if="owned_artifacts.length > 0">
                     <v-icon class="mr-2">
                       mdi-database
                     </v-icon>
@@ -197,6 +197,7 @@
                     single-line
                     class="py-0"
                     v-for="(item, i) in requested_artifacts"
+                    v-if="requested_artifacts.length > 0"
                     :key="i"
                   >
                     <v-list-item>
@@ -230,8 +231,9 @@
                     </v-list-item>
                     <v-divider />
                   </v-list>
+                  <h3 v-if="requested_artifacts.length == 0">Search for individual artifacts under the Search Datasets tab and request access.</h3>
                 </v-tab-item>
-                <v-tab-item>
+                <v-tab-item v-if="released_artifacts.length > 0">
                   <!-- available -->
                   <v-list
                     single-line
@@ -350,7 +352,7 @@
                     <v-divider />
                   </v-list>
                 </v-tab-item>
-                <v-tab-item>
+                <v-tab-item v-if="owned_artifacts.length > 0">
                   <!-- artifacts -->
                   <v-timeline align-top dense v-if="dashboard.owned_artifacts">
                     <v-timeline-item
@@ -447,6 +449,7 @@ export default {
       userPosition:null,
       requested_artifacts: [],
       released_artifacts: [],
+      owned_artifacts:[],
       dialogError: '',
     }
   },
@@ -526,7 +529,7 @@ export default {
     this.$store.dispatch('user/fetchInterests')
     let response = await this.$dashboardEndpoint.index()
     this.dashboard = response
-
+    this.owned_artifacts = this.dashboard.owned_artifacts
     for (let index in this.dashboard.requested_artifacts) {
       let requested_artifact = this.dashboard.requested_artifacts[index]
 
