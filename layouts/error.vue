@@ -4,16 +4,16 @@
     <h2 v-if="error.message">
       {{ error.message }}
     </h2>
-    <h2 v-if="error.isAxiosError">
+    <h2 v-if="error.isAxiosError && error.request">
       {{ error.request.statusText }}
     </h2>
 
     <pretty-print
-        v-if="error.request.data"
+        v-if="error.request && error.request.data"
         :value="error.request.data"
     ></pretty-print>
 
-    <div v-if="error.request.response"
+    <div v-if="error.request && error.request.response"
          value="error.request.response">
     </div>
 
