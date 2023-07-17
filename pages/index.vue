@@ -467,7 +467,7 @@ export default {
         this.dialogMessage = ''
         this.localuser.position = this.userPosition
         this.localuser.email = this.userEmail
-        this.localuser.userOTP = this.userOTP
+        this.localuser.userOTP = this.userOTP.length == 0 && this.otpSent ? 'undefined' : this.userOTP
         let response = await this.$userEndpoint.update(this.userid, this.localuser)
         if(response.action){ 
           this.dialogMessage = response.message

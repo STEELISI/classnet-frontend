@@ -595,6 +595,12 @@ export default {
       } else {
         this.dialogMessage = ''
         this.localuser.email = this.userEmail
+        if (this.otpSent) {
+          console.log(this.localuser.userOTP)
+          if ((this.localuser.userOTP && this.localuser.userOTP.length == 0) || (this.localuser.userOTP == undefined)) { // This is to handle the case where a user sends an empty OTP
+            this.localuser.userOTP = 'undefined'
+          } 
+        }
         await this.$userEndpoint.update(this.userid, this.localuser).then(response => {
           if(response.action){ 
             this.dialogMessage = response.message
