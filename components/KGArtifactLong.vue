@@ -3,6 +3,17 @@
     <v-card class="mx-auto my-2">
       <v-card-title>{{ record.artifact.title }}</v-card-title>
       <v-card-subtitle>
+        <div v-if="labels && labels.length">
+        <!-- <v-card-title class="py-0">Labels</v-card-title> -->
+        <ArtifactChips
+          :field="labels"
+          type='label'
+          display
+          link
+        ></ArtifactChips>
+
+        <!-- <v-divider class="mx-4"></v-divider> -->
+      </div>
         <div
           v-if="record.artifact.artifact_group.publication != null &&
                 record.artifact.artifact_group.publication.artifact_id != record.artifact.id"
@@ -176,17 +187,7 @@
         <v-divider class="mx-4"></v-divider>
       </div>
 
-      <div v-if="labels && labels.length">
-        <v-card-title class="py-0">Labels</v-card-title>
-        <ArtifactChips
-          :field="labels"
-          type="label"
-          display
-          link
-        ></ArtifactChips>
 
-        <v-divider class="mx-4"></v-divider>
-      </div>
 
       <div v-if="languages.length > 0">
         <v-card-title class="py-0">Programming Languages</v-card-title>
@@ -436,7 +437,7 @@
         >
           <template v-slot:activator="{ on }">
             <v-btn
-             
+
               color="green"
               v-on="on"
             >
@@ -582,7 +583,7 @@ export default {
       console.log(this.record.artifact)
       let tags = []
       if (this.record.artifact.tags.length > 0) {
-        
+
         return this.record.artifact.tags.map(e => e.tag)
       }
       let top = this.record.artifact.meta.find(o => o.name == 'top_keywords')

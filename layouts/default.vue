@@ -4,7 +4,8 @@
       v-model="drawer"
       :mini-variant="miniVariant"
       :clipped="clipped"
-      permanent
+      :temporary="temporary"
+      :permanent="permanent"
       fixed
       app>
 
@@ -180,7 +181,9 @@ export default {
       drawer: true,
       miniVariant: false,
       right: true,
-      title: 'COMUNDA Portal'
+      title: 'COMUNDA Portal',
+      permanent: true,
+      temporary: false
     }
   },
   computed: {
@@ -268,6 +271,11 @@ export default {
       return footerItems
     }
   },
+
+  mounted(){
+    this.onResize()
+    window.addEventListener('resize', this.onResize, { passive: true })
+  },
   methods: {
     async gitHubLogin() {
       let response = await this.$auth.loginWith('github')
@@ -303,7 +311,18 @@ export default {
         .catch(error => {
           console.log('Failed to set admin mode', mode, error)
         })
-    }
+    },
+    onResize () {
+        if(window.innerWidth < 600){
+          this.temporary = true
+          this.permanent = false
+        }
+        else{
+          this.temporary = false
+          this.permanent = true
+        }
+
+      }
   }
 }
 </script>

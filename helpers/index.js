@@ -16,6 +16,8 @@ export const artifactIcon = type => {
     case 'flowride':
     case 'fsdb':
     case 'csv':
+    case 'label':
+      return 'mdi-label'
     case 'custom':
       return 'mdi-data-matrix'
     case 'keyword':
@@ -39,7 +41,7 @@ export const artifactColor = type => {
       return 'orange white--text'
     case 'publication':
       return 'red white--text'
-    case 'code': 
+    case 'code':
      return 'purple white--text'
     case 'pcap':
       return 'purple white--text'
