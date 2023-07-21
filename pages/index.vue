@@ -318,9 +318,15 @@
         </v-card-title>
         <v-col cols="12" >
           <v-text-field
-            label="Institutional Email*"
+            label="Institutional Email* | Verify with a One-time password (OTP)"
             required
             v-model ="userEmail"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="12" v-if="otpSent">
+          <v-text-field
+            label="OTP"
+            v-model ="userOTP"
           ></v-text-field>
         </v-col>
         <v-col cols="12" >
@@ -357,8 +363,8 @@
             </template>
           </v-combobox>
         </v-col>
-        <v-col cols="12" v-if="dialogError">
-          <span style="color:red">{{dialogError}}</span>
+        <v-col cols="12" v-if="dialogMessage">
+          <span style="color:red">{{dialogMessage}}</span>
         </v-col>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -367,7 +373,7 @@
             text
             @click="addFields"
           >
-            Done
+          {{submitMessage}}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -387,8 +393,11 @@ export default {
         userAffiliation:[],
         userPosition:'',
         userEmail:'',
+        userOTP:'',
+        otpSent: false,
         model: 0,
-        dialogError: '',
+        dialogMessage: '',
+        submitMessage:'Verify Email',
         colors: [
           'indigo',
           'warning',
@@ -462,19 +471,26 @@ export default {
       if (!this.$auth.loggedIn) {
         this.$router.push('/login')
       } else {
-        this.dialogError = ''
-
-
+        this.dialogMessage = ''
         this.localuser.position = this.userPosition
         this.localuser.email = this.userEmail
+        this.localuser.userOTP = this.userOTP.length == 0 && this.otpSent ? 'undefined' : this.userOTP
         let response = await this.$userEndpoint.update(this.userid, this.localuser)
-
-        if(response.error == "true"){
-          this.dialogError = response.message
+        if(response.action){ 
+          this.dialogMessage = response.message
+          if (response.action == "OTP_SENT") {
+            this.otpSent = true
+            this.submitMessage = 'Submit'
+          }
+          if (response.action == "OTP_INVALID") {
+            this.userOTP = ''
+            this.submitMessage = 'Verify Email'
+            this.otpSent = false
+          }
           return
         }
 
-        if(this.localuser.position && this.userAffiliation && this.localuser.email){
+        if(this.localuser.position && this.userAffiliation.length && this.localuser.email){
           this.dialog=false
         }
 
