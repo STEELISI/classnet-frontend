@@ -7,7 +7,7 @@
       </div>
       <v-carousel
     cycle
-
+    height="auto"
     hide-delimiter-background
     show-arrows-on-hover
   >
@@ -44,11 +44,14 @@
           </v-row>
 
         </v-card-text>
+        <v-card-actions>
+
+        </v-card-actions>
 
         </v-card>
       </v-carousel-item>
       <v-carousel-item>
-        <v-card color="#eef2bf" height = "500">
+        <v-card color="#eef2bf">
           <v-card-title class="primary white--text">
             Distributed Denial-of-Service (DDoS) attacks Datasets
           </v-card-title>
@@ -65,6 +68,7 @@
                 and must guarantee high quality of service.
                 We show that this layered defense approach provides exceptional protection against all attack types using traces of ten real attacks from a DNS root nameserver.
                 Our automated system can select the best defense within seconds and quickly reduces traffic to the server within a manageable range, while keeping collateral damage lower than 2%.
+
 
             </b></p>
             <v-btn
@@ -84,6 +88,9 @@
           </v-row>
 
         </v-card-text>
+        <v-card-actions>
+
+        </v-card-actions>
 
         </v-card>
       </v-carousel-item>
@@ -276,7 +283,7 @@
 
       </LazyHydrate>
   <br />
-      <v-card>
+  <v-card>
         <v-card-title class="primary white--text">
               Supporters
         </v-card-title>
@@ -456,7 +463,7 @@ export default {
         this.userEmail = this.localuser.email
         console.log(this.localuser)
     })
-    
+
   }
   },
   methods:{
@@ -488,7 +495,7 @@ export default {
         }
 
         this.$store.dispatch('user/fetchUser') // adds latest user data to store
-        
+
         // create any affiliations that were added
         this.userAffiliation.forEach((affil, index, object) => {
           if (typeof affil === 'string') {

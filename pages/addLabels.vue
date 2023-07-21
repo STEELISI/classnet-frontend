@@ -144,7 +144,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn  text color="green darken-1" @click="closeDialog">Home page</v-btn>
+          <v-btn  text color="green darken-1" @click="closeDialog">Go to Dataset</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -203,7 +203,7 @@ import axios from 'axios'
         }
 
     let response = await this.$artifactRequestListEndpoint.show([])
-    
+
     let requestToTicketIDObj = response.requestToTicketIDObj
     for (const [key, value] of Object.entries(requestToTicketIDObj)) {
       let status = await this.$artifactRequestStatusEndpoint.show(key)
@@ -280,7 +280,12 @@ import axios from 'axios'
     closeDialog(){
       console.log("iN close")
       this.dialog = false
-      this.$router.push('/')
+
+      let artifact_id = this.nameToID[this.selectedName]
+      this.$router.push('/artifact/view/' + artifact_id)
+      // this.$router.push('/arctifact/view/'+ this.nameToID[this.selectedName])
+      // http://localhost:3000/artifact/view/1469
+      // this.$router.push('/')
 
     }
   },

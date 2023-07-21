@@ -167,7 +167,7 @@
                 >
                   <v-tab>
                     <v-icon class="mr-2">
-                      mdi-help
+                      mdi-database-plus
                     </v-icon>
                     Requested
                   </v-tab>
@@ -195,7 +195,9 @@
                     </v-icon>
                     Owned Datasets
                   </v-tab>
+                  
                 </v-tabs>
+
               </template>
 
               <v-tabs-items v-model="tabs">
@@ -563,7 +565,7 @@ export default {
       let status = await this.$artifactRequestStatusEndpoint.show(requested_artifact.artifact_group_id)
       if (status.ticket_status == "released") {
         this.released_artifacts.push(requested_artifact)
-      } 
+      }
       if (status.ticket_status != "unrequested" && status.ticket_status != "released") {
         this.requested_artifacts.push(requested_artifact)
       }
@@ -602,6 +604,7 @@ export default {
           } 
         }
         await this.$userEndpoint.update(this.userid, this.localuser).then(response => {
+
           if(response.action){ 
             this.dialogMessage = response.message
             if (response.action == "OTP_SENT") {
