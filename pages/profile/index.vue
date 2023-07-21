@@ -25,7 +25,7 @@
                 </h6>
 
                 <p class="font-weight-light">
-                  {{ localuser.email }}
+                  {{ userEmail }}
                 </p>
               </v-card-text>
             </material-card>
@@ -53,7 +53,15 @@
                     <v-text-field
                       label="Email Address"
                       class="primary-input"
-                      v-model="localuser.email"
+                      v-model="userEmail"
+                    />
+                  </v-col>
+
+                  <v-col cols="12" md="4" v-if="otpSent">
+                    <v-text-field
+                      label="OTP"
+                      class="primary-input"
+                      v-model="localuser.userOTP"
                     />
                   </v-col>
 
@@ -131,11 +139,11 @@
                   </v-col>
                   <v-col cols="12" class="text-right">
                     <v-btn color="success" @click="updateProfile">
-                      Update Profile
+                      {{submitMessage}}
                     </v-btn>
                   </v-col>
-                  <v-col cols="12" v-if="dialogError">
-                    <span style="color:red">{{dialogError}}</span>
+                  <v-col cols="12" v-if="dialogMessage">
+                    <span style="color:red">{{dialogMessage}}</span>
                   </v-col>
                 </v-row>
               </v-container>
@@ -390,6 +398,21 @@
         </v-col>
       </v-row>
     </v-container>
+    <v-dialog
+    v-model="otpSentDialog"
+    width="300"
+    >
+      <v-card>
+        <v-card-text>
+          <div style="padding-top: 20px; font-weight: bold;">
+            <p>A One-time password will be sent to your new email for verification.</p>
+          </div>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn color="primary" block  @click="closeDialog">Okay</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-layout>
 </template>
 
@@ -447,10 +470,14 @@ export default {
       interestSearch: null,
       localuser: null,
       userPosition:null,
+      userEmail:'',
       requested_artifacts: [],
       released_artifacts: [],
       owned_artifacts:[],
-      dialogError: '',
+      dialogMessage: '',
+      submitMessage:'Update Profile',
+      otpSent: false,
+      otpSentDialog: false
     }
   },
   computed: {
@@ -544,6 +571,9 @@ export default {
 
     this.userAffiliation = this.organization ? this.organization : []
     this.localuser = JSON.parse(JSON.stringify(this.user))
+    if(!this.otpSent) { // If the OTP is sent we are trying to register a new email, in which case we must not overwrite userEmail with the old email registered in the DB
+      this.userEmail = this.localuser.email
+    }
     this.userPosition = this.position
   },
   created() {
@@ -563,11 +593,31 @@ export default {
       if (!this.$auth.loggedIn) {
         this.$router.push('/login')
       } else {
-        this.dialogError = ''
+        this.dialogMessage = ''
+        this.localuser.email = this.userEmail
+        if (this.otpSent) {
+          console.log(this.localuser.userOTP)
+          if ((this.localuser.userOTP && this.localuser.userOTP.length == 0) || (this.localuser.userOTP == undefined)) { // This is to handle the case where a user sends an empty OTP
+            this.localuser.userOTP = 'undefined'
+          } 
+        }
         await this.$userEndpoint.update(this.userid, this.localuser).then(response => {
-          if(response.error == "true"){ 
-            this.dialogError = response.message
+          if(response.action){ 
+            this.dialogMessage = response.message
+            if (response.action == "OTP_SENT") {
+              this.otpSent = true
+              this.otpSentDialog = true
+              this.submitMessage = 'Submit'
+            }
+            if (response.action == "OTP_INVALID") {
+              this.localuser.userOTP = ''
+              this.submitMessage = 'Verify Email'
+              this.otpSent = false
+            }
             return
+          } else {
+            this.submitMessage = 'Update Profile'
+            this.otpSent = false
           }
         })
 
@@ -607,6 +657,9 @@ export default {
         '/avatar/' + this.gravatarImage(this.user.email).split('/')[4]
       )
       return Buffer.from(encodeURI(image.data), 'base64')
+    },
+    closeDialog() {
+      this.otpSentDialog = false
     }
   }
 }
