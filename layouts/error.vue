@@ -4,7 +4,7 @@
     <h2 v-if="error.message">
       {{ error.message }}
     </h2>
-    <h2 v-if="error.isAxiosError && error.request">
+    <h2 v-if="error.isAxiosError && error.request && error.request.statusText">
       {{ error.request.statusText }}
     </h2>
 

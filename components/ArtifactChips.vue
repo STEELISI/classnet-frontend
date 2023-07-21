@@ -153,6 +153,7 @@ export default {
       return artifactColor(type)
     },
     iconImage(type) {
+      
       return artifactIcon(type)
     },
     isObject(item) {
@@ -178,6 +179,7 @@ export default {
       return null
     },
     labelUrl(item){
+
       if (this.type === 'label'){
         return item.label_url
       }

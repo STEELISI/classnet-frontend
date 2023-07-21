@@ -7,7 +7,7 @@
       </div>
       <v-carousel
     cycle
-
+    height="auto"
     hide-delimiter-background
     show-arrows-on-hover
   >
@@ -44,11 +44,14 @@
           </v-row>
 
         </v-card-text>
+        <v-card-actions>
+
+        </v-card-actions>
 
         </v-card>
       </v-carousel-item>
       <v-carousel-item>
-        <v-card color="#eef2bf" height = "500">
+        <v-card color="#eef2bf">
           <v-card-title class="primary white--text">
             Distributed Denial-of-Service (DDoS) attacks Datasets
           </v-card-title>
@@ -65,6 +68,7 @@
                 and must guarantee high quality of service.
                 We show that this layered defense approach provides exceptional protection against all attack types using traces of ten real attacks from a DNS root nameserver.
                 Our automated system can select the best defense within seconds and quickly reduces traffic to the server within a manageable range, while keeping collateral damage lower than 2%.
+
 
             </b></p>
             <v-btn
@@ -84,6 +88,9 @@
           </v-row>
 
         </v-card-text>
+        <v-card-actions>
+
+        </v-card-actions>
 
         </v-card>
       </v-carousel-item>
@@ -276,7 +283,7 @@
 
       </LazyHydrate>
   <br />
-      <v-card>
+  <v-card>
         <v-card-title class="primary white--text">
               Supporters
         </v-card-title>
@@ -311,9 +318,15 @@
         </v-card-title>
         <v-col cols="12" >
           <v-text-field
-            label="Institutional Email*"
+            label="Institutional Email* | Verify with a One-time password (OTP)"
             required
             v-model ="userEmail"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="12" v-if="otpSent">
+          <v-text-field
+            label="OTP"
+            v-model ="userOTP"
           ></v-text-field>
         </v-col>
         <v-col cols="12" >
@@ -350,8 +363,8 @@
             </template>
           </v-combobox>
         </v-col>
-        <v-col cols="12" v-if="dialogError">
-          <span style="color:red">{{dialogError}}</span>
+        <v-col cols="12" v-if="dialogMessage">
+          <span style="color:red">{{dialogMessage}}</span>
         </v-col>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -360,7 +373,7 @@
             text
             @click="addFields"
           >
-            Done
+          {{submitMessage}}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -380,8 +393,11 @@ export default {
         userAffiliation:[],
         userPosition:'',
         userEmail:'',
+        userOTP:'',
+        otpSent: false,
         model: 0,
-        dialogError: '',
+        dialogMessage: '',
+        submitMessage:'Verify Email',
         colors: [
           'indigo',
           'warning',
@@ -447,7 +463,7 @@ export default {
         this.userEmail = this.localuser.email
         console.log(this.localuser)
     })
-    
+
   }
   },
   methods:{
@@ -455,24 +471,31 @@ export default {
       if (!this.$auth.loggedIn) {
         this.$router.push('/login')
       } else {
-        this.dialogError = ''
-
-        
+        this.dialogMessage = ''
         this.localuser.position = this.userPosition
         this.localuser.email = this.userEmail
+        this.localuser.userOTP = this.userOTP.length == 0 && this.otpSent ? 'undefined' : this.userOTP
         let response = await this.$userEndpoint.update(this.userid, this.localuser)
-
-        if(response.error == "true"){ 
-          this.dialogError = response.message
+        if(response.action){ 
+          this.dialogMessage = response.message
+          if (response.action == "OTP_SENT") {
+            this.otpSent = true
+            this.submitMessage = 'Submit'
+          }
+          if (response.action == "OTP_INVALID") {
+            this.userOTP = ''
+            this.submitMessage = 'Verify Email'
+            this.otpSent = false
+          }
           return
         }
 
-        if(this.localuser.position && this.userAffiliation && this.localuser.email){
+        if(this.localuser.position && this.userAffiliation.length && this.localuser.email){
           this.dialog=false
         }
 
         this.$store.dispatch('user/fetchUser') // adds latest user data to store
-        
+
         // create any affiliations that were added
         this.userAffiliation.forEach((affil, index, object) => {
           if (typeof affil === 'string') {
