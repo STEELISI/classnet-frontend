@@ -26,7 +26,11 @@
 
                 <p class="font-weight-light">
                   {{ userEmail }}
+                  <v-icon v-if="userEmail==localuser.email && !userUpdateIncomplete" class="font-weight-light" style="color: green;">
+                  mdi-checkbox-marked-circle
+                </v-icon>
                 </p>
+                
               </v-card-text>
             </material-card>
           </LazyHydrate>
@@ -479,7 +483,8 @@ export default {
       dialogMessage: '',
       submitMessage:'Update Profile',
       otpSent: false,
-      otpSentDialog: false
+      otpSentDialog: false,
+      userUpdateIncomplete: false
     }
   },
   computed: {
@@ -573,7 +578,7 @@ export default {
 
     this.userAffiliation = this.organization ? this.organization : []
     this.localuser = JSON.parse(JSON.stringify(this.user))
-    if(!this.otpSent) { // If the OTP is sent we are trying to register a new email, in which case we must not overwrite userEmail with the old email registered in the DB
+    if(!this.otpSent) { // If the OTP is not sent we are not trying to register a new email, in which case we must overwrite userEmail with the old email registered in the DB
       this.userEmail = this.localuser.email
     }
     this.userPosition = this.position
@@ -596,15 +601,15 @@ export default {
         this.$router.push('/login')
       } else {
         this.dialogMessage = ''
+        this.userUpdateIncomplete = true
         this.localuser.email = this.userEmail
         if (this.otpSent) {
-          console.log(this.localuser.userOTP)
           if ((this.localuser.userOTP && this.localuser.userOTP.length == 0) || (this.localuser.userOTP == undefined)) { // This is to handle the case where a user sends an empty OTP
             this.localuser.userOTP = 'undefined'
           } 
         }
         await this.$userEndpoint.update(this.userid, this.localuser).then(response => {
-
+          this.userUpdateIncomplete = false
           if(response.action){ 
             this.dialogMessage = response.message
             if (response.action == "OTP_SENT") {

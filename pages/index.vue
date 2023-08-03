@@ -318,6 +318,13 @@
         </v-card-title>
         <v-col cols="12" >
           <v-text-field
+            label="Name"
+            required
+            v-model ="userName"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="12" >
+          <v-text-field
             label="Institutional Email* | Verify with a One-time password (OTP)"
             required
             v-model ="userEmail"
@@ -392,6 +399,7 @@ export default {
         localuser:'',
         userAffiliation:[],
         userPosition:'',
+        userName:'',
         userEmail:'',
         userOTP:'',
         otpSent: false,
@@ -458,6 +466,10 @@ export default {
 
         this.localuser.position = this.localuser.position ? this.localuser.position : ''
         this.userPosition = this.localuser.position
+        if(this.localuser.email) { // If a user's email is already stored in the backend we do not need to verify it, thus we change the submitMessage from 'Verify email' to 'Submit'
+          this.submitMessage = 'Submit'
+        }
+        this.userName = this.localuser.name
 
         this.localuser.email = this.localuser.email ? this.localuser.email : ''
         this.userEmail = this.localuser.email
@@ -473,6 +485,7 @@ export default {
       } else {
         this.dialogMessage = ''
         this.localuser.position = this.userPosition
+        this.localuser.name = this.userName
         this.localuser.email = this.userEmail
         this.localuser.userOTP = this.userOTP.length == 0 && this.otpSent ? 'undefined' : this.userOTP
         let response = await this.$userEndpoint.update(this.userid, this.localuser)
