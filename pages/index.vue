@@ -439,6 +439,14 @@ export default {
     person(val) {
       this.localuser = JSON.parse(JSON.stringify(val))
     },
+    userEmail(val) {
+      console.log(val)
+      if(this.localuser.email && this.localuser.email == val) { // If a user's email is already stored in the backend we do not need to verify it, thus we change the submitMessage from 'Verify email' to 'Submit'
+          this.submitMessage = 'Submit'
+      } else {
+          this.submitMessage = 'Verify Email'
+      }
+    }
   },
   async mounted() {
     // let emails = await this.$axios.$get("https://api.github.com/user/emails")
