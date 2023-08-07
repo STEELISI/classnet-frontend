@@ -318,7 +318,7 @@
         </v-card-title>
         <v-col cols="12" >
           <v-text-field
-            label="Name"
+            label="Name*"
             required
             v-model ="userName"
           ></v-text-field>
@@ -466,7 +466,7 @@ export default {
 
       await this.$store.dispatch('user/fetchUser').then(response => {
 
-        if(this.organization.length == 0 || !this.localuser.position || !this.localuser.email){
+        if(this.organization.length == 0 || !this.localuser.position || !this.localuser.email || !this.localuser.name){
           this.dialog = true
         }
         this.localuser = JSON.parse(JSON.stringify(this.person))
@@ -511,7 +511,7 @@ export default {
           return
         }
 
-        if(this.localuser.position && this.userAffiliation.length && this.localuser.email){
+        if(this.localuser.position && this.userAffiliation.length && this.localuser.email && this.localuser.name){
           this.dialog=false
         }
 
