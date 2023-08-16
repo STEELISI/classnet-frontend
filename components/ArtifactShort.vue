@@ -5,7 +5,7 @@
         <v-row>
           <v-col cols="9">
             <v-card-title class="align-start">
-              <span class="headline">{{ artifact.title | titlecase }}</span>
+              <router-link :to="`/artifact/view/${artifact.artifact_group_id}`" class="headline custom-link">{{ artifact.title | titlecase }}</router-link>
             </v-card-title>
           </v-col>
           <v-col cols="3">
@@ -190,7 +190,7 @@ export default {
         else this.$store.commit('artifacts/REMOVE_FAVORITE', this.artifact.artifact_group_id)
       }
     }
-  },      
+  },
   methods: {
     async favoriteThis() {
       if (!this.$auth.loggedIn) {
@@ -238,5 +238,9 @@ export default {
 
 .v-card__title {
   word-break: normal;
+}
+.custom-link {
+  text-decoration: none; /* Remove underline */
+  color: #000000; /* Customize hyperlink color */
 }
 </style>
