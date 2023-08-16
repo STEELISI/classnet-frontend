@@ -116,6 +116,12 @@ export const actions = {
       commit('SET_USER_IS_ADMIN', response.user.is_admin)
       commit('SET_USER_ORGS', response.user.affiliations)
     }
+
+    if (response.user.person && !response.user.person.emailAuthenticated && response.user.person.email) {
+      if (this.$router.currentRoute.path !== '/profile') {
+        this.$router.push('/profile');
+      }
+    }
   },
   async setUserToken({ commit }, user_token) {
     commit('SET_USER_TOKEN', user_token)

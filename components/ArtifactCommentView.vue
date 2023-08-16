@@ -1,5 +1,22 @@
 <template>
   <div>
+    <v-container
+      v-if="!artifactReleased"
+      fill-height
+      fluid
+      grid-list-xl
+    >
+      <v-row justify="center">
+        <v-col cols="12">
+          <material-card
+            color="#E64A19"
+            title="You do not have access to this artifact"
+            text="Please request for access to this artifact to rate and comment."
+          >
+          </material-card>
+        </v-col>
+      </v-row>
+    </v-container>
     <v-card
       class="mx-auto overflow-hidden"
       elevation="3"
