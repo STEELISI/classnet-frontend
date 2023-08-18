@@ -1,5 +1,40 @@
 <template>
+
   <div v-if="record.artifact">
+    <v-dialog
+      v-model="dialog"
+      persistent
+      max-width="450"
+    >
+
+      <v-card>
+        <v-card-title class="text-h5">
+          Action Required!
+        </v-card-title>
+        <v-card-text>
+          <v-alert dense text type="warning">
+      Your profile must be complete before you can request access to datasets. Go to Manage account page to complete profile.
+    </v-alert>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="green darken-1"
+            text
+            @click="navigate"
+          >
+            Go to Profile
+          </v-btn>
+          <v-btn
+            color="green darken-1"
+            text
+            @click="dialog = false"
+          >
+            Stay on this page
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <v-card class="mx-auto my-2">
       <v-card-title>{{ record.artifact.title }}</v-card-title>
       <v-card-subtitle>
@@ -14,6 +49,7 @@
 
         <!-- <v-divider class="mx-4"></v-divider> -->
       </div>
+
         <div
           v-if="record.artifact.artifact_group.publication != null &&
                 record.artifact.artifact_group.publication.artifact_id != record.artifact.id"
@@ -499,6 +535,9 @@
   <div v-else>
     {{ loadingMessage }}
   </div>
+
+
+
 </template>
 
 <script>
@@ -532,13 +571,14 @@ export default {
       loadingMessage: 'Loading...',
       artifactRequested: false,
       artifactReleased: false,
-
+      dialog: false,
     }
   },
   mounted() {
     setTimeout(() => {
       this.loadingMessage = 'Error loading'
     }, 5000)
+    
   },
   watch: {
     record: {
@@ -554,7 +594,10 @@ export default {
     ...mapState({
       userid: state => state.user.userid,
       favorites: state => state.artifacts.favoritesIDs,
-      user_is_admin: state => state.user.user_is_admin
+      user_is_admin: state => state.user.user_is_admin,
+      userAffiliation: state => state.user.organization,
+      user: state => state.user,
+      userDetails:state => state.user.user,
     }),
     sanitizedDescription: function() {
       return this.$sanitize(this.record.artifact.description.replace(/\<\\pre\>/, ''))
@@ -751,8 +794,16 @@ export default {
       if (!this.$auth.loggedIn) {
         this.$router.push('/login')
       } else {
+        if (this.userAffiliation.length === 0 || this.userDetails.name.length === 0 || this.userDetails.email.length === 0 || this.userDetails.position.length === 0){
+          this.dialog = true
+          return
+        }
         this.$router.push('/artifact/request/'+this.record.artifact.artifact_group_id)
       }
+    },
+    navigate(){
+      this.dialog = false
+      this.$router.push('/profile')
     },
     async updateTicketStatus() {
       let response = await this.$artifactRequestStatusEndpoint.show(this.record.artifact.artifact_group_id)

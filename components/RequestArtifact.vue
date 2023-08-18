@@ -65,14 +65,15 @@
         required
       ></v-textarea>
       </div>
-      <div style="margin-top: 20px; font-weight: bold;">Enter details of the researcher representative</div>
+      <div style="margin-top: 20px; font-weight: bold;">Details of the researcher representative (Fetched from your profile)</div>
       <v-container>
         <v-row align="center">
-          <v-col md="5">
+          <v-col md="4">
             <v-text-field
-              v-model="representative_researcher.name"
+              v-model="requester.name"
               type="text"
               hint="Enter researcher name"
+              disabled
               required>
               <template #label>
                   <span>Name<span style='color: red;'> *</span></span>
@@ -81,15 +82,27 @@
           </v-col>
           <v-col md="3">
             <v-text-field
-              v-model="representative_researcher.email"
+              v-model="requester.email"
               label="Email"
               type="email"
               hint="Enter researcher email"
+              disabled
               required>
               <template #label>
                   <span>Email<span style='color: red;'> *</span></span>
               </template>
             </v-text-field>
+          </v-col>
+          <v-col md="1">
+            <v-text-field
+            v-model="countryCode"
+          label="Country Code"
+          type="number"
+          prefix="+"
+          hint="Enter country code"
+          pattern="^[0-9]+$"
+          required
+          ></v-text-field>
           </v-col>
           <v-col md="3">
             <v-text-field
@@ -97,6 +110,7 @@
               type="text"
               hint="Enter researcher phone number"
               required
+
               pattern="^[0-9]+$">
               <template #label>
                   <span>Phone Number (only digits)<span style='color: red;'> *</span></span>
@@ -104,21 +118,41 @@
             </v-text-field>
           </v-col>
           <v-col md="5">
-            <v-text-field
-              v-model="representative_researcher.organization"
-              type="text"
-              hint="Enter researcher organization"
-              required>
-              <template #label>
-                  <span>Organization<span style='color: red;'> *</span></span>
-              </template>
-            </v-text-field>
+            <v-combobox
+                      label="Affiliation"
+                      multiple
+                      small-chips
+                      deletable-chips
+                      persistent-hint
+                      :items="orgNames"
+                      v-model="requester_orgs"
+                      :search-input.sync="orgSearch"
+                      item-text="org.name"
+                      item-value="org.name"
+                      disabled
+                      return-object
+                    >
+                      <template v-slot:no-data>
+                        <v-list-item>
+                          <v-list-item-content>
+                            <v-list-item-title>
+                              No results matching "<strong>{{
+                                orgSearch
+                              }}</strong
+                              >". Press <kbd>tab</kbd> to create a new one
+                            </v-list-item-title>
+                          </v-list-item-content>
+                        </v-list-item>
+                      </template>
+                    </v-combobox>
           </v-col>
           <v-col md="5">
             <v-text-field
-              v-model="representative_researcher.title"
+
+              v-model="requester.position"
               type="text"
               hint="Enter researcher title"
+              disabled
               required>
               <template #label>
                   <span>Researcher Title<span style='color: red;'> *</span></span>
@@ -154,7 +188,11 @@
                 </template>
               </v-text-field>
             </v-col>
+
+
+
             <v-col md="3">
+
               <v-text-field
                 v-model="researcher.number"
                 label="Phone Number (only digits)"
@@ -186,10 +224,23 @@
         >
           <v-icon>mdi-plus</v-icon>
         </v-btn>
+
       </div>
+
+        <div style="margin-top: 20px; font-weight: bold;">Enter Your public key for downloading datasets:</div>
+        <v-text-field
+            v-model="publicKey"
+            :rules="[rules.required, rules.min]"
+            :type=" 'text' "
+            name="input-10-1"
+            hint="Enter your public key "
+          ></v-text-field>
+
+
       <div v-if ="record.artifact.irb" style="margin-top: 20px; font-weight: bold;">Upload IRB approval Letter</div>
       <v-file-input v-if ="record.artifact.irb" v-model = "irbContent" clearable label="Upload IRB approval letter" variant="underlined" @change ="getContent"></v-file-input>
       <div>
+
       <input type="submit" value="Review" class="btn-submit" style="margin-top: 20px;" :disabled="requestMode">
       </div>
     </form>
@@ -268,19 +319,31 @@ export default {
       isModalVisible: false,
       irbContent : '',
       irbData: '',
+      publicKey: '',
+      show1: false,
+      password: 'Password',
+      countryCode: '',
+      rules: {
+          required: value => !!value || 'Required.',
+          min: v => v.length >= 8 || 'Min 8 characters',
+
+        },
     }
   },
-  mounted() {
+   mounted() {
     setTimeout(() => {
       this.loadingMessage = 'Error loading'
     }, 5000)
-
+     this.$store.dispatch('user/fetchOrgs')
   },
   computed: {
+
     ...mapState({
       userid: state => state.user.userid,
+      requester: state=> state.user.user,
       favorites: state => state.artifacts.favoritesIDs,
-      user_is_admin: state => state.user.user_is_admin
+      user_is_admin: state => state.user.user_is_admin,
+      requester_orgs: state =>state.user.organization
     }),
     sanitizedDescription: function() {
       return this.$sanitize(this.record.artifact.description)
@@ -452,10 +515,10 @@ export default {
       this.project = this.project.trim();
       this.project_description = this.project_description.trim();
       this.project_justification = this.project_justification.trim();
-      this.representative_researcher.name = this.representative_researcher.name.trim();
-      this.representative_researcher.email = this.representative_researcher.email.trim();
-      this.representative_researcher.number = this.representative_researcher.number.trim();
-      this.representative_researcher.organization = this.representative_researcher.organization.trim();
+      this.representative_researcher.name = this.requester.name.trim();
+      this.representative_researcher.email = this.requester.email.trim();
+      this.representative_researcher.number = "+" +this.countryCode + this.representative_researcher.number.trim();
+      this.representative_researcher.organization = this.requester_orgs.join(", ")
       this.representative_researcher.title = this.representative_researcher.title.trim();
       this.researchers_that_interact.forEach((researcher) => {
         researcher.name = researcher.name.trim();
@@ -551,6 +614,7 @@ export default {
         return;
       }
 
+
       this.formSubmittedError = false;
       this.formSubmittedErrorMessage = "";
       this.requestMode = true;
@@ -573,6 +637,7 @@ export default {
       payload.append('researchers', researchersJSON);
       payload.append('dataset', this.record.artifact.title)
       payload.append('representative_researcher_email', this.representative_researcher['email']);
+      payload.append('public_key', this.publicKey)
 
       let response = await this.$artifactRequestEndpoint.post(
         [this.record.artifact.artifact_group_id, this.record.artifact.id],payload
