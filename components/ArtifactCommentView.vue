@@ -162,7 +162,9 @@ export default {
       immediate: true,
       async handler(newVal, oldVal) {
         if (newVal !== oldVal) {
-          await this.updateTicketStatus()
+          if (newVal.artifact) {
+            await this.updateTicketStatus()
+          }
         }
       }
     }
@@ -238,7 +240,6 @@ export default {
       }
     },
     async updateTicketStatus() {
-      
       let response = await this.$artifactRequestStatusEndpoint.show(this.artifact.artifact.artifact_group_id)
       this.ticket_status = response.ticket_status
       this.artifactRequested = this.ticket_status && this.ticket_status !== "unrequested"
