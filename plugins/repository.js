@@ -22,7 +22,10 @@ export default (ctx, inject) => {
     'artifactSearchEndpoint',
     repositoryWithAxios('kg/' + 'artifact/search')
   )
-
+  inject(
+    'artifactSearchCategoryEndpoint',
+    repositoryWithAxios('kg/' + 'artifact/searchCategory')
+  )
   inject(
     'artifactRecommendationEndpoint',
     repositoryWithAxios('kg/' + 'artifact/recommendation')

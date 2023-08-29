@@ -270,8 +270,12 @@ export default {
         this.owner ? (payload['owner'] = this.owner) : false
         this.organization ? (payload['organization'] = this.organization) : false
         this.advanced.badge_ids ? (payload['badge_id'] = this.advanced.badge_ids) : false
-
+        let response = await this.$artifactSearchCategoryEndpoint.index({
+          ...payload
+        })
+        console.log("category endpoint response", response)
         this.$store.dispatch('artifacts/fetchArtifacts', payload)
+        
       }
       this.searchInterval = setTimeout(() => {
         if (!this.searchLoading) {
