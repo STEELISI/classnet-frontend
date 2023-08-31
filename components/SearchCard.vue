@@ -114,7 +114,7 @@
               v-model="selectedCategories[index]"
               :label="category[0] + '(' + category[1] + ')'"
               color="success"
-              
+              @change="getArtifacts(index)"
               hide-details
             ></v-switch>
           </v-col>
@@ -128,7 +128,7 @@
               v-model="selectedCategories[index + 5]"
               :label="category[0] + '(' + category[1] + ')'"
               color="success"
-
+              @change="getArtifacts(index+5)"
               hide-details
             ></v-switch>
           </v-col>
@@ -219,9 +219,10 @@ export default {
       filters: ['Name', 'Organization'],
       showScrollToTop: 0,
       panel: [],
-        items: 5,
-        categories: [],
-        selectedCategories: [],
+      items: 5,
+      categories: [],
+      selectedCategories: [],
+      fetchingArtifacts: false
     }
   },
   beforeMount() {
@@ -324,9 +325,7 @@ export default {
         }
         this.categories = data
         this.selectedCategories = new Array(this.categories.length).fill(false);
-        console.log(this.categories)
 
-        this.$store.dispatch('artifacts/fetchArtifacts', payload)
       }
       this.searchInterval = setTimeout(() => {
         if (!this.searchLoading) {
@@ -334,6 +333,30 @@ export default {
         }
       }, 3000)
       this.submitted = false
+    },
+    getArtifacts(index) {
+      this.$store.commit('artifacts/RESET_ARTIFACTS') // clear artifacts so the Searching... message is shown
+      console.log(this.selectedCategories, "getArtifacts selectedCategories")
+      if (this.selectedCategories[index]) {
+        this.fetchingArtifacts = true
+        let payload = {
+          keywords: this.search,
+          page: this.page,
+          items_per_page: this.limit,
+          type: this.advanced.types
+        }
+
+        this.author ? (payload['author'] = this.author) : false
+        this.owner ? (payload['owner'] = this.owner) : false
+        this.organization ? (payload['organization'] = this.organization) : false
+        this.advanced.badge_ids ? (payload['badge_id'] = this.advanced.badge_ids) : false
+        payload['category'] = this.categories[index][0]
+        console.log("getArtifacts payload", payload)
+        console.log("artifacts total", this.artifacts)
+
+        this.$store.dispatch('artifacts/fetchArtifacts', payload)
+        this.fetchingArtifacts = false
+      }
     },
     onChange() {
       this.searchMessage = ''
@@ -365,7 +388,7 @@ export default {
   },
   watch: {
     page() {
-      this.onSubmit()
+      this.getArtifacts(this.selectedCategories.indexOf(true))
     },
     searchLoading(val) {
       if (val) {
