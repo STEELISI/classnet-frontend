@@ -38,12 +38,13 @@
             <v-row align="center">
 
               <v-col cols="12">
-                <v-text-field
-                  label="Organization"
-                  placeholder="Search for artifacts by organization name..."
-                  v-model="organization"
-                >
-                </v-text-field>
+                <v-select
+                :items="providers"
+                label="Provider"
+                v-model = "organization"
+                dense
+                ></v-select>
+                
               </v-col>
               <v-col cols="12">
                 <v-select
@@ -215,7 +216,8 @@ export default {
         org: '',
         badge_ids: []
       },
-      types: ['presentation', 'publication', 'dag', 'argus', 'pcap',  'netflow', 'flowtools', 'flowride', 'fsdb', 'csv', 'custom'],
+      types: [ 'dag', 'argus', 'pcap',  'netflow', 'flowtools', 'flowride', 'fsdb', 'csv', 'custom'],
+      providers: ['USC', 'MERIT', 'MEMPHIS'],
       filters: ['Name', 'Organization'],
       showScrollToTop: 0,
       panel: [],

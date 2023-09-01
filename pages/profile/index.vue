@@ -137,6 +137,14 @@
                       v-model="localuser.position"
                     />
                   </v-col>
+                  <v-col cols="12" md="12">
+                    <v-textarea
+                    auto-grow
+                      label="Public Key"
+                      class="primary-input"
+                      v-model="localuser.publicKey"
+                    />
+                  </v-col>
                   <v-col cols="12" class="text-right">
                     <v-btn color="success" @click="updateProfile">
                       {{submitMessage}}
@@ -195,7 +203,7 @@
                     </v-icon>
                     Owned Datasets
                   </v-tab>
-                  
+
                 </v-tabs>
 
               </template>
@@ -215,9 +223,9 @@
                         :field="[item.type]"
                         :type="item.type"
                       ></ArtifactChips>
-                      <v-list-item-title
+                      <router-link :to="`/artifact/view/${item.artifact_group_id}`" class="custom-link"><v-list-item-title
                         v-text="item.title"
-                      ></v-list-item-title>
+                      ></v-list-item-title></router-link>
                       <div class="d-flex">
                         <v-tooltip top content-class="top">
                           <template v-slot:activator="{ attrs, on }">
@@ -256,9 +264,9 @@
                         :field="[item.type]"
                         :type="item.type"
                       ></ArtifactChips>
-                      <v-list-item-title
+                      <router-link :to="`/artifact/view/${item.artifact_group_id}`" class="custom-link"><v-list-item-title
                         v-text="item.title"
-                      ></v-list-item-title>
+                      ></v-list-item-title></router-link>
                       <div class="d-flex">
                         <v-tooltip top content-class="top">
                           <template v-slot:activator="{ attrs, on }">
@@ -296,9 +304,9 @@
                         :field="[item.type]"
                         :type="item.type"
                       ></ArtifactChips>
-                      <v-list-item-title
+                      <router-link :to="`/artifact/view/${item.artifact_group_id}`" class="custom-link"><v-list-item-title
                         v-text="item.title"
-                      ></v-list-item-title>
+                      ></v-list-item-title></router-link>
                       <div class="d-flex">
                         <v-tooltip top content-class="top">
                           <template v-slot:activator="{ attrs, on }">
@@ -337,7 +345,9 @@
                         :type="item.type"
                       ></ArtifactChips>
 
-                      <v-list-item-title v-text="item.title" />
+                      <router-link :to="`/artifact/view/${item.artifact_group_id}`" class="custom-link"><v-list-item-title
+                        v-text="item.title"
+                      ></v-list-item-title></router-link>
 
                       <div class="d-flex">
                         <v-tooltip top content-class="top">
@@ -374,7 +384,7 @@
                     >
                       <div>
                         <div class="font-weight-normal">
-                          <strong>{{ new Date(item.ctime) }}</strong>
+                          <router-link :to="`/artifact/view/${item.artifact_group_id}`" class="custom-link"> <strong>{{ new Date(item.ctime) }}</strong></router-link>
                         </div>
                         <div>
                           {{ item.title }}
@@ -479,7 +489,8 @@ export default {
       dialogMessage: '',
       submitMessage:'Update Profile',
       otpSent: false,
-      otpSentDialog: false
+      otpSentDialog: false,
+      publicKey: ''
     }
   },
   computed: {
@@ -490,7 +501,8 @@ export default {
       orgs: state => state.user.orgs,
       interests: state => state.user.interests,
       authUser: state => state.auth.user,
-      position: state => state.user.user.position
+      position: state => state.user.user.position,
+      publicKey: state => state.user.publicKey
     }),
     orgNames: {
       get: function() {
@@ -551,6 +563,9 @@ export default {
     userPosition(val){
       this.userPosition = val
     },
+    userPublicKey(val){
+      this.publicKey = val
+    }
   },
   async mounted() {
     this.$store.dispatch('user/fetchUser')
@@ -563,10 +578,11 @@ export default {
       let requested_artifact = this.dashboard.requested_artifacts[index]
 
       let status = await this.$artifactRequestStatusEndpoint.show(requested_artifact.artifact_group_id)
-      if (status.ticket_status == "released") {
+
+      if (status && status.ticket_status == "released") {
         this.released_artifacts.push(requested_artifact)
       }
-      if (status.ticket_status != "unrequested" && status.ticket_status != "released") {
+      if (status && status.ticket_status != "unrequested" && status.ticket_status != "released") {
         this.requested_artifacts.push(requested_artifact)
       }
     }
@@ -601,11 +617,11 @@ export default {
           console.log(this.localuser.userOTP)
           if ((this.localuser.userOTP && this.localuser.userOTP.length == 0) || (this.localuser.userOTP == undefined)) { // This is to handle the case where a user sends an empty OTP
             this.localuser.userOTP = 'undefined'
-          } 
+          }
         }
         await this.$userEndpoint.update(this.userid, this.localuser).then(response => {
 
-          if(response.action){ 
+          if(response.action){
             this.dialogMessage = response.message
             if (response.action == "OTP_SENT") {
               this.otpSent = true
@@ -667,3 +683,10 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.custom-link {
+  text-decoration: none; /* Remove underline */
+  color: #000000; /* Customize hyperlink color */
+}
+</style>
