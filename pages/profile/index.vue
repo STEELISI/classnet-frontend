@@ -26,7 +26,11 @@
 
                 <p class="font-weight-light">
                   {{ userEmail }}
+                  <v-icon v-if="(userEmail == localuser.email) && localuser.emailAuthenticated && !userUpdateIncomplete" class="font-weight-light" style="color: green;">
+                  mdi-checkbox-marked-circle
+                </v-icon>
                 </p>
+                
               </v-card-text>
             </material-card>
           </LazyHydrate>
@@ -54,14 +58,6 @@
                       label="Email Address"
                       class="primary-input"
                       v-model="userEmail"
-                    />
-                  </v-col>
-
-                  <v-col cols="12" md="4" v-if="otpSent">
-                    <v-text-field
-                      label="OTP"
-                      class="primary-input"
-                      v-model="localuser.userOTP"
                     />
                   </v-col>
 
@@ -147,11 +143,11 @@
                   </v-col>
                   <v-col cols="12" class="text-right">
                     <v-btn color="success" @click="updateProfile">
-                      {{submitMessage}}
+                      Update Profile
                     </v-btn>
                   </v-col>
-                  <v-col cols="12" v-if="dialogMessage">
-                    <span style="color:red">{{dialogMessage}}</span>
+                  <v-col cols="12" v-if="profileCardMessage">
+                    <span style="color:red">{{profileCardMessage}}</span>
                   </v-col>
                 </v-row>
               </v-container>
@@ -410,7 +406,7 @@
         </v-col>
       </v-row>
     </v-container>
-    <v-dialog
+    <v-dialog persistent
     v-model="otpSentDialog"
     width="300"
     >
@@ -419,9 +415,33 @@
           <div style="padding-top: 20px; font-weight: bold;">
             <p>A One-time password will be sent to your new email for verification.</p>
           </div>
+          <v-form>
+            <v-container class="py-0">
+              <v-row v-if="localuser">
+                <v-col cols="12" md="12">
+                  <v-text-field
+                    label="Email Address"
+                    class="primary-input"
+                    v-model="userEmail"
+                  />
+                </v-col>
+
+                <v-col cols="12" md="4" v-if="otpSent">
+                  <v-text-field
+                    label="OTP"
+                    class="primary-input"
+                    v-model="localuser.userOTP"
+                  />
+                </v-col>
+                <v-col cols="12" v-if="dialogMessage">
+                    <span style="color:red">{{dialogMessage}}</span>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-form>
         </v-card-text>
         <v-card-actions>
-          <v-btn color="primary" block  @click="closeDialog">Okay</v-btn>
+          <v-btn color="primary" block  @click="updateProfile">{{dialogBtnMessage}}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -487,10 +507,13 @@ export default {
       released_artifacts: [],
       owned_artifacts:[],
       dialogMessage: '',
-      submitMessage:'Update Profile',
+      dialogBtnMessage:'',
+      profileCardMessage:'',
       otpSent: false,
       otpSentDialog: false,
-      publicKey: ''
+      publicKey: '',
+      userUpdateIncomplete: false,
+      emailOnPageLoad: ''
     }
   },
   computed: {
@@ -559,6 +582,12 @@ export default {
     },
     user(val) {
       this.localuser = JSON.parse(JSON.stringify(val))
+      if (!this.localuser.emailAuthenticated) {
+        if (!this.otpSent) {
+          this.dialogBtnMessage = 'Verify Email'
+        }
+        this.otpSentDialog = true
+      }
     },
     userPosition(val){
       this.userPosition = val
@@ -571,6 +600,7 @@ export default {
     this.$store.dispatch('user/fetchUser')
     this.$store.dispatch('user/fetchOrgs')
     this.$store.dispatch('user/fetchInterests')
+    this.localuser = JSON.parse(JSON.stringify(this.user))
     let response = await this.$dashboardEndpoint.index()
     this.dashboard = response
     this.owned_artifacts = this.dashboard.owned_artifacts
@@ -588,10 +618,7 @@ export default {
     }
 
     this.userAffiliation = this.organization ? this.organization : []
-    this.localuser = JSON.parse(JSON.stringify(this.user))
-    if(!this.otpSent) { // If the OTP is sent we are trying to register a new email, in which case we must not overwrite userEmail with the old email registered in the DB
-      this.userEmail = this.localuser.email
-    }
+    this.userEmail = this.localuser.email
     this.userPosition = this.position
   },
   created() {
@@ -612,32 +639,39 @@ export default {
         this.$router.push('/login')
       } else {
         this.dialogMessage = ''
+        this.dialogBtnMessage = 'Submit'
+        this.profileCardMessage = ''
+        this.userUpdateIncomplete = true
         this.localuser.email = this.userEmail
         if (this.otpSent) {
-          console.log(this.localuser.userOTP)
           if ((this.localuser.userOTP && this.localuser.userOTP.length == 0) || (this.localuser.userOTP == undefined)) { // This is to handle the case where a user sends an empty OTP
             this.localuser.userOTP = 'undefined'
           }
         }
         await this.$userEndpoint.update(this.userid, this.localuser).then(response => {
-
-          if(response.action){
-            this.dialogMessage = response.message
-            if (response.action == "OTP_SENT") {
-              this.otpSent = true
-              this.otpSentDialog = true
-              this.submitMessage = 'Submit'
-            }
-            if (response.action == "OTP_INVALID") {
+          if(response.action){ 
+            if (response.action == "OTP_SENT" || response.action == "OTP_INVALID") {
               this.localuser.userOTP = ''
-              this.submitMessage = 'Verify Email'
-              this.otpSent = false
+              this.otpSentDialog = true
+              this.dialogMessage = response.message
+              if (response.action == "OTP_SENT") {
+                this.otpSent = true
+              }
+              else if (response.action == "OTP_INVALID") {
+                this.otpSent = false
+                this.dialogBtnMessage = 'Verify Email'
+              }
+            }
+            else {
+              this.otpSentDialog = false
+              this.profileCardMessage = response.message
             }
             return
           } else {
-            this.submitMessage = 'Update Profile'
             this.otpSent = false
+            this.otpSentDialog = false
           }
+          this.userUpdateIncomplete = false
         })
 
         // create any affiliations that were added
@@ -677,9 +711,6 @@ export default {
       )
       return Buffer.from(encodeURI(image.data), 'base64')
     },
-    closeDialog() {
-      this.otpSentDialog = false
-    }
   }
 }
 </script>

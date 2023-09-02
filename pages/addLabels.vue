@@ -221,8 +221,11 @@ import axios from 'axios'
     console.log(this.artifacts[0])
     console.log(this.titles)
     console.log(this.user)
-    let res = await axios.get("https://api.github.com/search/users?q="+this.user["email"])
-    this.labelLink = "https://www.github.com/" + res["data"]["items"][0]["login"]
+    let strategy = this.$auth.$storage.getUniversal('strategy')
+    if (strategy == 'github') {
+      let res = await axios.get("https://api.github.com/search/users?q="+this.user["email"])
+      this.labelLink = "https://www.github.com/" + res["data"]["items"][0]["login"]
+    }
 
   },
   mounted() {
