@@ -112,7 +112,9 @@ export default {
       immediate: true,
       async handler(newVal, oldVal) {
         if (newVal !== oldVal) {
-          await this.updateTicketStatus()
+          if (newVal.artifact) {
+            await this.updateTicketStatus()
+          }
         }
       }
     }

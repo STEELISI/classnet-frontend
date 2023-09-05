@@ -115,7 +115,7 @@
               v-model="selectedCategories[index]"
               :label="category[0] + '(' + category[1] + ')'"
               color="success"
-              @change="getArtifacts(index)"
+              @change="getArtifacts()"
               hide-details
             ></v-switch>
           </v-col>
@@ -129,7 +129,7 @@
               v-model="selectedCategories[index + 5]"
               :label="category[0] + '(' + category[1] + ')'"
               color="success"
-              @change="getArtifacts(index+5)"
+              @change="getArtifacts()"
               hide-details
             ></v-switch>
           </v-col>
@@ -336,10 +336,12 @@ export default {
       }, 3000)
       this.submitted = false
     },
-    getArtifacts(index) {
+    getArtifacts() {
       this.$store.commit('artifacts/RESET_ARTIFACTS') // clear artifacts so the Searching... message is shown
       console.log(this.selectedCategories, "getArtifacts selectedCategories")
-      if (this.selectedCategories[index]) {
+      
+      if (this.selectedCategories.indexOf(true) >= 0) {
+
         this.fetchingArtifacts = true
         let payload = {
           keywords: this.search,
@@ -352,9 +354,10 @@ export default {
         this.owner ? (payload['owner'] = this.owner) : false
         this.organization ? (payload['organization'] = this.organization) : false
         this.advanced.badge_ids ? (payload['badge_id'] = this.advanced.badge_ids) : false
-        payload['category'] = this.categories[index][0]
-        console.log("getArtifacts payload", payload)
-        console.log("artifacts total", this.artifacts)
+
+        const categoryNames = Object.values(this.categories).map(category => category[0]);
+        const selectedCategoryNames = categoryNames.filter((category, index) => this.selectedCategories[index]);
+        payload['category'] = selectedCategoryNames
 
         this.$store.dispatch('artifacts/fetchArtifacts', payload)
         this.fetchingArtifacts = false
@@ -390,7 +393,7 @@ export default {
   },
   watch: {
     page() {
-      this.getArtifacts(this.selectedCategories.indexOf(true))
+      this.getArtifacts()
     },
     searchLoading(val) {
       if (val) {

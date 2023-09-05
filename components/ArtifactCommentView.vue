@@ -1,5 +1,22 @@
 <template>
   <div>
+    <v-container
+      v-if="!artifactReleased"
+      fill-height
+      fluid
+      grid-list-xl
+    >
+      <v-row justify="center">
+        <v-col cols="12">
+          <material-card
+            color="#E64A19"
+            title="You do not have access to this artifact"
+            text="Please request for access to this artifact to rate and comment."
+          >
+          </material-card>
+        </v-col>
+      </v-row>
+    </v-container>
     <v-card
       class="mx-auto overflow-hidden"
       elevation="3"
@@ -145,7 +162,9 @@ export default {
       immediate: true,
       async handler(newVal, oldVal) {
         if (newVal !== oldVal) {
-          await this.updateTicketStatus()
+          if (newVal.artifact) {
+            await this.updateTicketStatus()
+          }
         }
       }
     }
@@ -221,7 +240,6 @@ export default {
       }
     },
     async updateTicketStatus() {
-      
       let response = await this.$artifactRequestStatusEndpoint.show(this.artifact.artifact.artifact_group_id)
       this.ticket_status = response.ticket_status
       this.artifactRequested = this.ticket_status && this.ticket_status !== "unrequested"
