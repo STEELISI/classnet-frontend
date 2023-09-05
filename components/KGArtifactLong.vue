@@ -39,7 +39,7 @@
       <v-card-title>{{ record.artifact.title }}</v-card-title>
       <v-card-subtitle>
         <div v-if="labels && labels.length">
-        <!-- <v-card-title class="py-0">Labels</v-card-title> -->
+        <v-card-title class="py-0">Labels</v-card-title>
         <ArtifactChips
           :field="labels"
           type='label'
@@ -578,7 +578,7 @@ export default {
     setTimeout(() => {
       this.loadingMessage = 'Error loading'
     }, 5000)
-    
+
   },
   watch: {
     record: {
