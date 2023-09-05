@@ -230,10 +230,10 @@
         <div style="margin-top: 20px; font-weight: bold;">Enter Your public key for downloading datasets:</div>
         <v-text-field
             v-model="publicKey"
-            :rules="[rules.required, rules.min]"
             :type=" 'text' "
             name="input-10-1"
             hint="Enter your public key "
+            pattern = "^(ssh-(ed25519|rsa|dss|ecdsa)) AAAA(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=|[A-Za-z0-9+\/]{4})( [^@]+@[^@]+)?$"
           ></v-text-field>
 
 
@@ -335,6 +335,7 @@ export default {
       this.loadingMessage = 'Error loading'
     }, 5000)
      this.$store.dispatch('user/fetchOrgs')
+
   },
   computed: {
 
@@ -343,7 +344,8 @@ export default {
       requester: state=> state.user.user,
       favorites: state => state.artifacts.favoritesIDs,
       user_is_admin: state => state.user.user_is_admin,
-      requester_orgs: state =>state.user.organization
+      requester_orgs: state =>state.user.organization,
+      requ: state => state.user
     }),
     sanitizedDescription: function() {
       return this.$sanitize(this.record.artifact.description)
@@ -518,8 +520,15 @@ export default {
       this.representative_researcher.name = this.requester.name.trim();
       this.representative_researcher.email = this.requester.email.trim();
       this.representative_researcher.number = "+" +this.countryCode + this.representative_researcher.number.trim();
-      this.representative_researcher.organization = this.requester_orgs.join(", ")
-      this.representative_researcher.title = this.representative_researcher.title.trim();
+
+      let orgNames = []
+      for (let i of this.requester_orgs){
+        orgNames.push(i.org.name)
+      }
+
+      this.representative_researcher.organization = orgNames.join(", ")
+      this.representative_researcher.title = this.requester.position.trim();
+      this.representative_researcher.publicKey = this.publicKey
       this.researchers_that_interact.forEach((researcher) => {
         researcher.name = researcher.name.trim();
         researcher.email = researcher.email.trim();
@@ -594,6 +603,7 @@ export default {
     async submitRequest() {
       this.formSubmitted = false;
       let isEntryEmpty = false;
+      console.log(this.representative_researcher)
       if ((this.representative_researcher.name == "" || this.representative_researcher.email == "" || this.representative_researcher.number == "" || this.representative_researcher.organization == "" || this.representative_researcher.title == "")) {
           isEntryEmpty = true;
       }
@@ -607,7 +617,11 @@ export default {
           isEntryEmpty = true;
         }
       }
+
       if(!(this.project_description) || isEntryEmpty || !(this.project)) {
+        console.log(this.project_description)
+        console.log(isEntryEmpty)
+        console.log(this.project)
         this.formSubmittedError = true;
         this.formSubmittedErrorMessage = "Please fill all the fields";
         this.formSubmitted = true;
@@ -637,6 +651,7 @@ export default {
       payload.append('researchers', researchersJSON);
       payload.append('dataset', this.record.artifact.title)
       payload.append('representative_researcher_email', this.representative_researcher['email']);
+      
       payload.append('public_key', this.publicKey)
 
       let response = await this.$artifactRequestEndpoint.post(

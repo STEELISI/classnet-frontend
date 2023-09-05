@@ -38,12 +38,13 @@
             <v-row align="center">
 
               <v-col cols="12">
-                <v-text-field
-                  label="Organization"
-                  placeholder="Search for artifacts by organization name..."
-                  v-model="organization"
-                >
-                </v-text-field>
+                <v-select
+                :items="providers"
+                label="Provider"
+                v-model = "organization"
+                dense
+                ></v-select>
+                
               </v-col>
               <v-col cols="12">
                 <v-select
@@ -99,6 +100,44 @@
     </v-form>
     <br />
     <v-divider></v-divider>
+
+
+    <v-container fluid>
+      <v-card>
+        <v-card-title>
+          Categories
+        </v-card-title>
+        <v-card-text>
+      <v-row>
+
+        <v-col v-for="(category, index) in categories.slice(0, 5)" :key="index" >
+            <v-switch
+              v-model="selectedCategories[index]"
+              :label="category[0] + '(' + category[1] + ')'"
+              color="success"
+              @change="getArtifacts()"
+              hide-details
+            ></v-switch>
+          </v-col>
+
+
+      </v-row>
+      <v-row>
+          <!-- Display the remaining switches in the second row -->
+          <v-col v-for="(category, index) in categories.slice(5)" :key="index">
+            <v-switch
+              v-model="selectedCategories[index + 5]"
+              :label="category[0] + '(' + category[1] + ')'"
+              color="success"
+              @change="getArtifacts()"
+              hide-details
+            ></v-switch>
+          </v-col>
+        </v-row>
+    </v-card-text>
+    </v-card>
+
+    </v-container>
     <v-pagination
       v-if="artifacts"
       v-model="page"
@@ -177,9 +216,15 @@ export default {
         org: '',
         badge_ids: []
       },
-      types: ['presentation', 'publication', 'dag', 'argus', 'pcap',  'netflow', 'flowtools', 'flowride', 'fsdb', 'csv', 'custom'],
+      types: [ 'dag', 'argus', 'pcap',  'netflow', 'flowtools', 'flowride', 'fsdb', 'csv', 'custom'],
+      providers: ['USC', 'MERIT', 'MEMPHIS'],
       filters: ['Name', 'Organization'],
-      showScrollToTop: 0
+      showScrollToTop: 0,
+      panel: [],
+      items: 5,
+      categories: [],
+      selectedCategories: [],
+      fetchingArtifacts: false
     }
   },
   beforeMount() {
@@ -265,13 +310,24 @@ export default {
           items_per_page: this.limit,
           type: this.advanced.types
         }
-       
+
         this.author ? (payload['author'] = this.author) : false
         this.owner ? (payload['owner'] = this.owner) : false
         this.organization ? (payload['organization'] = this.organization) : false
         this.advanced.badge_ids ? (payload['badge_id'] = this.advanced.badge_ids) : false
+        let response = await this.$artifactSearchCategoryEndpoint.index({
+          ...payload
+        })
+        console.log("category endpoint response", response)
+        let data = []
+        this.selectedCategories = []
+        this.categories = []
+        for (let i in response.categoryDict){
+          data.push([i, response.categoryDict [i].count])
+        }
+        this.categories = data
+        this.selectedCategories = new Array(this.categories.length).fill(false);
 
-        this.$store.dispatch('artifacts/fetchArtifacts', payload)
       }
       this.searchInterval = setTimeout(() => {
         if (!this.searchLoading) {
@@ -279,6 +335,33 @@ export default {
         }
       }, 3000)
       this.submitted = false
+    },
+    getArtifacts() {
+      this.$store.commit('artifacts/RESET_ARTIFACTS') // clear artifacts so the Searching... message is shown
+      console.log(this.selectedCategories, "getArtifacts selectedCategories")
+      
+      if (this.selectedCategories.indexOf(true) >= 0) {
+
+        this.fetchingArtifacts = true
+        let payload = {
+          keywords: this.search,
+          page: this.page,
+          items_per_page: this.limit,
+          type: this.advanced.types
+        }
+
+        this.author ? (payload['author'] = this.author) : false
+        this.owner ? (payload['owner'] = this.owner) : false
+        this.organization ? (payload['organization'] = this.organization) : false
+        this.advanced.badge_ids ? (payload['badge_id'] = this.advanced.badge_ids) : false
+
+        const categoryNames = Object.values(this.categories).map(category => category[0]);
+        const selectedCategoryNames = categoryNames.filter((category, index) => this.selectedCategories[index]);
+        payload['category'] = selectedCategoryNames
+
+        this.$store.dispatch('artifacts/fetchArtifacts', payload)
+        this.fetchingArtifacts = false
+      }
     },
     onChange() {
       this.searchMessage = ''
@@ -310,7 +393,7 @@ export default {
   },
   watch: {
     page() {
-      this.onSubmit()
+      this.getArtifacts()
     },
     searchLoading(val) {
       if (val) {
