@@ -204,20 +204,17 @@ import axios from 'axios'
 
     let response = await this.$artifactRequestListEndpoint.show([])
 
-    let requestToTicketIDObj = response.requestToTicketIDObj
-    for (const [key, value] of Object.entries(requestToTicketIDObj)) {
-      let status = await this.$artifactRequestStatusEndpoint.show(key)
-      this.requestedIdToStatus[key] = status.ticket_status
-    }
+    let requestedArtifactIDs = response.requestedArtifactIDs
 
-    await this.$store.dispatch('artifacts/fetchArtifacts', payload)
-    for (let i of this.artifacts){
-      if (this.requestedIdToStatus[i.id]=="released") {
-        this.titles.push(i.title)
-        this.artifact_ids.push(i.id)
-        this.nameToID[i.title] =i.id
+    for (const [key, value] of Object.entries(requestedArtifactIDs)) {
+      let status = await this.$artifactRequestStatusEndpoint.show(key)
+      if (status.ticket_status == "released") {
+        this.titles.push(value)
+        this.artifact_ids.push(key)
+        this.nameToID[value] = key
       }
     }
+
     console.log(this.artifacts[0])
     console.log(this.titles)
     console.log(this.user)
