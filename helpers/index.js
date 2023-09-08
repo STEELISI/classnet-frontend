@@ -49,6 +49,8 @@ export const artifactColor = type => {
       return 'grey white--text'
     case 'argus':
       return 'green white--text'
+    case 'label':
+      return 'green white--text'
     case 'netflow':
       return 'orange white--text'
     case 'flowtools':
