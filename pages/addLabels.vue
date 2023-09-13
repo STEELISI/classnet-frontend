@@ -187,6 +187,8 @@ import axios from 'axios'
       total: state => state.artifacts.artifacts.total,
       search_init: state => state.artifacts.search,
       user: state => state.user.user,
+      user_is_admin: state => state.user.user_is_admin,
+      user_can_admin: state => state.user.user_can_admin
     })
 
   },
@@ -205,13 +207,20 @@ import axios from 'axios'
     let response = await this.$artifactRequestListEndpoint.show([])
 
     let requestedArtifactIDs = response.requestedArtifactIDs
-
-    for (const [key, value] of Object.entries(requestedArtifactIDs)) {
-      let status = await this.$artifactRequestStatusEndpoint.show(key)
-      if (status.ticket_status == "released") {
+    if (this.user_can_admin && this.user_is_admin) {
+      for (const [key, value] of Object.entries(requestedArtifactIDs)) {
         this.titles.push(value)
         this.artifact_ids.push(key)
         this.nameToID[value] = key
+      }
+    } else {
+      for (const [key, value] of Object.entries(requestedArtifactIDs)) {
+        let status = await this.$artifactRequestStatusEndpoint.show(key)
+        if (status.ticket_status == "released") {
+          this.titles.push(value)
+          this.artifact_ids.push(key)
+          this.nameToID[value] = key
+        }
       }
     }
 
