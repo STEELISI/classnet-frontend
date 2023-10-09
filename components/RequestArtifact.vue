@@ -651,16 +651,21 @@ export default {
       payload.append('researchers', researchersJSON);
       payload.append('dataset', this.record.artifact.title)
       payload.append('representative_researcher_email', this.representative_researcher['email']);
-      
+
       payload.append('public_key', this.publicKey)
 
       let response = await this.$artifactRequestEndpoint.post(
         [this.record.artifact.artifact_group_id, this.record.artifact.id],payload
       );
-      if(response.status == 1) {
+      if(response.status && response.status == 1) {
         this.formSubmittedError = true;
         this.formSubmittedErrorMessage = response.error;
-      } else {
+      }
+      else if (response.status && response.status == 500){
+        this.formSubmittedError = true;
+        this.formSubmittedErrorMessage = response.message;
+      }
+       else {
         this.formSubmittedError = false;
       }
       this.formSubmitted = true;
