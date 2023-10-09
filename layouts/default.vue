@@ -252,6 +252,11 @@ export default {
           title: 'Importer Status',
           to: '/admin/importers'
         })
+        adminItems.push({
+          icon: 'mdi-wrench',
+          title: 'Dataset Statistics',
+          to: '/admin/adminStats'
+        })
       }
       return adminItems
     },
