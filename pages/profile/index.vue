@@ -30,7 +30,7 @@
                   mdi-checkbox-marked-circle
                 </v-icon>
                 </p>
-                
+
               </v-card-text>
             </material-card>
           </LazyHydrate>
@@ -450,7 +450,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { artifactIcon, artifactColor } from '@/helpers'
+import { artifactIcon, artifactColor, isReleased } from '@/helpers'
 import $RefParser from 'json-schema-ref-parser'
 import schemaWithPointers from '~/schema/affiliation.json'
 
@@ -609,10 +609,10 @@ export default {
 
       let status = await this.$artifactRequestStatusEndpoint.show(requested_artifact.artifact_group_id)
 
-      if (status && status.ticket_status == "released") {
+      if (status && isReleased(status.ticket_status)) {
         this.released_artifacts.push(requested_artifact)
       }
-      if (status && status.ticket_status != "unrequested" && status.ticket_status != "released") {
+      if (status && status.ticket_status != "unrequested" && !isReleased(status.ticket_status)) {
         this.requested_artifacts.push(requested_artifact)
       }
     }
@@ -649,7 +649,7 @@ export default {
           }
         }
         await this.$userEndpoint.update(this.userid, this.localuser).then(response => {
-          if(response.action){ 
+          if(response.action){
             if (response.action == "OTP_SENT" || response.action == "OTP_INVALID") {
               this.localuser.userOTP = ''
               this.otpSentDialog = true

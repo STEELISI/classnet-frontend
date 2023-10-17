@@ -81,7 +81,7 @@
 
 <script>
 import { mapState } from 'vuex'
-
+import { isReleased } from '~/helpers'
 export default {
   components: {
     ArtifactCommentView: () => import('@/components/ArtifactCommentView')
@@ -180,9 +180,9 @@ export default {
     async updateTicketStatus() {
       let response = await this.$artifactRequestStatusEndpoint.show(this.artifact.artifact.artifact_group_id)
       this.ticket_status = response.ticket_status
-      this.artifactReleased = this.ticket_status && this.ticket_status == "released"
+      this.artifactReleased = this.ticket_status && isReleased(this.ticket_status)
     },
   },
-  
+
 }
 </script>

@@ -100,6 +100,7 @@
           type="number"
           prefix="+"
           hint="Enter country code"
+          min = "1"
           pattern="^[0-9]+$"
           required
           ></v-text-field>
@@ -110,7 +111,7 @@
               type="text"
               hint="Enter researcher phone number"
               required
-
+              min = "1"
               pattern="^[0-9]+$">
               <template #label>
                   <span>Phone Number (only digits)<span style='color: red;'> *</span></span>
@@ -651,6 +652,7 @@ export default {
       payload.append('researchers', researchersJSON);
       payload.append('dataset', this.record.artifact.title)
       payload.append('representative_researcher_email', this.representative_researcher['email']);
+
 
       payload.append('public_key', this.publicKey)
 
