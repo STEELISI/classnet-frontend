@@ -153,6 +153,7 @@
 
 <script>
 import { mapState } from 'vuex'
+import { isReleased } from '~/helpers'
 import axios from 'axios'
     export default {
   components: {
@@ -216,7 +217,7 @@ import axios from 'axios'
     } else {
       for (const [key, value] of Object.entries(requestedArtifactIDs)) {
         let status = await this.$artifactRequestStatusEndpoint.show(key)
-        if (status.ticket_status == "released") {
+        if (isReleased(status.ticket_status)) {
           this.titles.push(value)
           this.artifact_ids.push(key)
           this.nameToID[value] = key
@@ -228,7 +229,7 @@ import axios from 'axios'
     console.log(this.titles)
     console.log(this.user)
     let strategy = this.$auth.$storage.getUniversal('strategy')
-    
+
     let res = await axios.get("https://api.github.com/search/users?q="+this.user["email"])
     let link = res?.data?.items?.[0]?.login ?? ""
     if (link.length > 0) {

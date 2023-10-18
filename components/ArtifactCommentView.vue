@@ -102,7 +102,7 @@
         >
           <template v-slot:activator="{ on }">
             <v-btn
-             
+
               color="green"
               v-on="on"
             >
@@ -121,7 +121,7 @@
 <script>
 import clip from 'text-clipper'
 import { mapState } from 'vuex'
-import { artifactIcon, artifactColor } from '@/helpers'
+import { artifactIcon, artifactColor, isReleased } from '@/helpers'
 
 export default {
   components: {
@@ -149,7 +149,7 @@ export default {
             .fill(1)
             .map(Number.call, Number)
         : [],
-       
+
     }
   },
   mounted() {
@@ -243,7 +243,7 @@ export default {
       let response = await this.$artifactRequestStatusEndpoint.show(this.artifact.artifact.artifact_group_id)
       this.ticket_status = response.ticket_status
       this.artifactRequested = this.ticket_status && this.ticket_status !== "unrequested"
-      this.artifactReleased = this.ticket_status && this.ticket_status == "released"
+      this.artifactReleased = this.ticket_status && isReleased(this.ticket_status)
     },
   }
 }

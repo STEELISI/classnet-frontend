@@ -424,6 +424,13 @@
         </v-btn>
         <v-spacer></v-spacer>
 
+        <v-btn
+          v-if="isFetchingStatus"
+          color="primary"
+          nuxt
+        >
+          Checking Access
+        </v-btn>
         <span v-if="(isOwner() || isAdmin()) && !published">
           <v-btn
             color="success"
@@ -453,7 +460,7 @@
           </v-btn>
         </span>
         <v-btn
-          v-if="!(isOwner() || isAdmin()) && !artifactRequested "
+          v-if="!(isOwner() || isAdmin()) && !artifactRequested && !isFetchingStatus"
           color="primary"
           @click="requestArtifact()"
           nuxt
@@ -461,7 +468,7 @@
           Request Access
         </v-btn>
         <v-btn
-          v-if="!(isOwner() || isAdmin()) && artifactRequested && !artifactReleased"
+          v-if="!(isOwner() || isAdmin()) && artifactRequested && !artifactReleased && !isFetchingStatus"
           color="orange"
           nuxt
         >
@@ -469,7 +476,7 @@
         </v-btn>
 
         <v-tooltip top content-class="top"
-          v-if="!(isOwner() || isAdmin()) && artifactRequested && artifactReleased"
+          v-if="!(isOwner() || isAdmin()) && artifactRequested && artifactReleased && !isFetchingStatus"
         >
           <template v-slot:activator="{ on }">
             <v-btn
@@ -542,7 +549,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { artifactIcon, artifactColor, bytesToSize } from '@/helpers'
+import { artifactIcon, artifactColor, bytesToSize, isReleased } from '@/helpers'
 
 export default {
   name: 'KGArtifactLong',
@@ -572,6 +579,7 @@ export default {
       artifactRequested: false,
       artifactReleased: false,
       dialog: false,
+      isFetchingStatus: false,
     }
   },
   mounted() {
@@ -806,10 +814,12 @@ export default {
       this.$router.push('/profile')
     },
     async updateTicketStatus() {
+      this.isFetchingStatus = true
       let response = await this.$artifactRequestStatusEndpoint.show(this.record.artifact.artifact_group_id)
       this.ticket_status = response.ticket_status
       this.artifactRequested = this.ticket_status && this.ticket_status !== "unrequested"
-      this.artifactReleased = this.ticket_status && this.ticket_status == "released"
+      this.artifactReleased = this.ticket_status &&  isReleased(this.ticket_status)
+      this.isFetchingStatus = false
     },
   }
 }

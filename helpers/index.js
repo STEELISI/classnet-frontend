@@ -133,4 +133,11 @@ export const zipArray = (tag, input) => {
   return array
 }
 
+export const isReleased = status =>{
+  if (status.toLowerCase() == "released"){
+    return true
+  }
+  return false
+}
+
 export const EventBus = new Vue()
