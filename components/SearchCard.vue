@@ -326,8 +326,8 @@ export default {
           data.push([i, response.categoryDict [i].count])
         }
         this.categories = data
-        this.selectedCategories = new Array(this.categories.length).fill(false);
-
+        this.selectedCategories = new Array(this.categories.length).fill(true);
+        this.getArtifacts()
       }
       this.searchInterval = setTimeout(() => {
         if (!this.searchLoading) {
