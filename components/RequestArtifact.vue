@@ -107,7 +107,7 @@
           </v-col>
           <v-col md="3">
             <v-text-field
-              v-model="representative_researcher.number"
+              v-model="researcher_phone"
               type="text"
               hint="Enter researcher phone number"
               required
@@ -324,6 +324,7 @@ export default {
       show1: false,
       password: 'Password',
       countryCode: '',
+      researcher_phone:'',
       rules: {
           required: value => !!value || 'Required.',
           min: v => v.length >= 8 || 'Min 8 characters',
@@ -520,7 +521,7 @@ export default {
       this.project_justification = this.project_justification.trim();
       this.representative_researcher.name = this.requester.name.trim();
       this.representative_researcher.email = this.requester.email.trim();
-      this.representative_researcher.number = "+" +this.countryCode + this.representative_researcher.number.trim();
+      this.representative_researcher.number = "+" +this.countryCode + this.researcher_phone.trim();
 
       let orgNames = []
       for (let i of this.requester_orgs){
