@@ -224,7 +224,8 @@ export default {
       items: 5,
       categories: [],
       selectedCategories: [],
-      fetchingArtifacts: false
+      fetchingArtifacts: false,
+      isUpdatingPageInGetArtifacts: false
     }
   },
   beforeMount() {
@@ -336,16 +337,21 @@ export default {
       }, 3000)
       this.submitted = false
     },
-    getArtifacts() {
+    getArtifacts(page = 1) {
+      // By default the page is 1 since we want to show the first page of our new results
+      // However we want topreserve page number when it is specifically clicked on
+      if (page == 1) {
+        this.isUpdatingPageInGetArtifacts = true
+        this.page = page
+        this.isUpdatingPageInGetArtifacts = false
+      }
       this.$store.commit('artifacts/RESET_ARTIFACTS') // clear artifacts so the Searching... message is shown
-      console.log(this.selectedCategories, "getArtifacts selectedCategories")
       
       if (this.selectedCategories.indexOf(true) >= 0) {
-
         this.fetchingArtifacts = true
         let payload = {
           keywords: this.search,
-          page: this.page,
+          page: page,
           items_per_page: this.limit,
           type: this.advanced.types
         }
@@ -392,8 +398,10 @@ export default {
     }
   },
   watch: {
-    page() {
-      this.getArtifacts()
+    page(newPage, oldPage) {
+       if (!this.isUpdatingPageInGetArtifacts) {
+        this.getArtifacts(newPage);
+      }
     },
     searchLoading(val) {
       if (val) {
