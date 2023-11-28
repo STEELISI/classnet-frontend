@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-container
-      v-if="!artifactReleased"
+      v-if="!isStatusUnchecked && !artifactReleased"
       fill-height
       fluid
       grid-list-xl
@@ -142,6 +142,7 @@ export default {
     return {
       loadingMessage: 'Loading...',
       ticket_status: '',
+      isStatusUnchecked : true,
       artifactRequested: false,
       artifactReleased: false,
       expanded: this.comments
@@ -244,6 +245,8 @@ export default {
       this.ticket_status = response.ticket_status
       this.artifactRequested = this.ticket_status && this.ticket_status !== "unrequested"
       this.artifactReleased = this.ticket_status && isReleased(this.ticket_status)
+      this.isStatusUnchecked = false
+
     },
   }
 }
