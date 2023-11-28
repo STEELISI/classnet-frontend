@@ -106,7 +106,7 @@
               color="green"
               v-on="on"
             >
-             Access
+             Access Granted
             </v-btn>
           </template>
           <span>Your dataset request has been approved and released (check your mailbox)</span>
