@@ -230,10 +230,10 @@
 
         <div style="margin-top: 20px; font-weight: bold;">Enter Your public key for downloading datasets:</div>
         <v-text-field
-            v-model="publicKey"
+            v-model="requester.publicKey"
             :type=" 'text' "
             name="input-10-1"
-            hint="Enter your public key "
+            hint="Enter your SSH public key "
             pattern = "^(ssh-(ed25519|rsa|dss|ecdsa)) AAAA(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=|[A-Za-z0-9+\/]{4})( [^@]+@[^@]+)?$"
           ></v-text-field>
 
@@ -530,7 +530,7 @@ export default {
 
       this.representative_researcher.organization = orgNames.join(", ")
       this.representative_researcher.title = this.requester.position.trim();
-      this.representative_researcher.publicKey = this.publicKey
+      this.representative_researcher.publicKey = this.requester.publicKey
       this.researchers_that_interact.forEach((researcher) => {
         researcher.name = researcher.name.trim();
         researcher.email = researcher.email.trim();

@@ -136,7 +136,7 @@
                   <v-col cols="12" md="12">
                     <v-textarea
                     auto-grow
-                      label="Public Key"
+                      label="SSH Public Key"
                       class="primary-input"
                       v-model="localuser.publicKey"
                     />
