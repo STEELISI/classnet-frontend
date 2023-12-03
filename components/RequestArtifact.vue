@@ -1,5 +1,34 @@
 <template>
   <div v-if="record.artifact">
+    <v-dialog
+      v-model="incompleteProfileDialog"
+      persistent
+      max-width="450"
+    >
+
+      <v-card>
+        <v-card-title class="text-h5">
+          Action Required!
+        </v-card-title>
+        <v-card-text>
+          <v-alert dense text type="warning">
+            Your profile must be complete before you can request access to datasets. Go to Manage account page to complete profile.<br><br>
+            
+            <span style="color: red;" v-html="incompleteProfileDialogMessage"></span>
+          </v-alert>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="green darken-1"
+            text
+            @click="navigateToProfile"
+          >
+            Go to Profile
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <v-card class="mx-auto my-2">
       <v-card-title>{{ record.artifact.title }}</v-card-title>
       <v-card-subtitle>
@@ -303,6 +332,7 @@ export default {
       diff_results_dialog: false,
       diff_results_tab: "visual",
       loadingMessage: 'Loading...',
+      incompleteProfileDialogMessage: "",
       project: "",
       project_description: "",
       project_justification: "",
@@ -347,8 +377,30 @@ export default {
       favorites: state => state.artifacts.favoritesIDs,
       user_is_admin: state => state.user.user_is_admin,
       requester_orgs: state =>state.user.organization,
-      requ: state => state.user
+      requ: state => state.user,
+      userAffiliation: state => state.user.organization,
+      userDetails:state => state.user.user,
     }),
+    incompleteProfileDialog: function() {
+      if (!(this.userAffiliation.length > 0 && this.userDetails && this.userDetails.name && this.userDetails.email && this.userDetails.position)) {
+        this.incompleteProfileDialogMessage = "Please fill the following:<br><ul>"
+        if (!this.userDetails.name) {
+          this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "<li>Name</li>"
+        }
+        if (!this.userDetails.email) {
+          this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "<li>Email</li>"
+        }
+        if (this.userAffiliation.length ===  0) {
+          this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "<li>Affiliation</li>"
+        }
+        if (!this.userDetails.position) {
+          this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "<li>Position</li>"
+        }
+        this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "</ul>"
+        return true
+      }
+      return false
+    },
     sanitizedDescription: function() {
       return this.$sanitize(this.record.artifact.description)
     },
@@ -461,6 +513,10 @@ export default {
     }
   },
   methods: {
+    navigateToProfile(){
+      this.dialog = false
+      this.$router.push('/profile')
+    },
     showModal() {
       this.isModalVisible = true;
     },
