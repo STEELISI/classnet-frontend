@@ -511,7 +511,6 @@ export default {
       profileCardMessage:'',
       otpSent: false,
       otpSentDialog: false,
-      publicKey: '',
       userUpdateIncomplete: false,
       emailOnPageLoad: '',
       publicKeyPatternRegex: /^(ssh-(ed25519|rsa|dss|ecdsa)) AAAA(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=|[A-Za-z0-9+\/]{4})( [^@]+@[^@]+)?$/
@@ -525,8 +524,7 @@ export default {
       orgs: state => state.user.orgs,
       interests: state => state.user.interests,
       authUser: state => state.auth.user,
-      position: state => state.user.user.position,
-      publicKey: state => state.user.publicKey
+      position: state => state.user.user.position
     }),
     orgNames: {
       get: function() {
@@ -592,9 +590,6 @@ export default {
     },
     userPosition(val){
       this.userPosition = val
-    },
-    userPublicKey(val){
-      this.publicKey = val
     }
   },
   async mounted() {
@@ -658,7 +653,7 @@ export default {
         this.userUpdateIncomplete = true
         this.localuser.email = this.userEmail
         if (this.otpSent) {
-          if ((this.localuser.userOTP && this.localuser.userOTP.length == 0) || (this.localuser.userOTP == undefined)) { // This is to handle the case where a user sends an empty OTP
+          if ((this.localuser.userOTP && this.localuser.userOTP.length == 0) || (this.localuser.userOTP == undefined)) { // This is to handle the case where a user sends an empty OTP. Note that this might be a case where no OTP is expected (the user didn't change their emai so no OTP would have been sent for validation)
             this.localuser.userOTP = 'undefined'
           }
         }
