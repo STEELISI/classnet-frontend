@@ -513,7 +513,8 @@ export default {
       otpSentDialog: false,
       publicKey: '',
       userUpdateIncomplete: false,
-      emailOnPageLoad: ''
+      emailOnPageLoad: '',
+      publicKeyPatternRegex: /^(ssh-(ed25519|rsa|dss|ecdsa)) AAAA(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=|[A-Za-z0-9+\/]{4})( [^@]+@[^@]+)?$/
     }
   },
   computed: {
@@ -634,6 +635,10 @@ export default {
     })
   },
   methods: {
+    validatePublicKey() {
+      var match = this.localuser.publicKey.match(this.publicKeyPatternRegex)
+      return match && this.localuser.publicKey === match[0];
+    },
     async updateProfile() {
       if (!this.$auth.loggedIn) {
         this.$router.push('/login')
@@ -641,6 +646,15 @@ export default {
         this.dialogMessage = ''
         this.dialogBtnMessage = 'Submit'
         this.profileCardMessage = ''
+
+        // Validate the format of the SSH public key before proceeding
+        let isValidPublicKey = this.validatePublicKey()
+        if (!isValidPublicKey) {
+          console.log("Invalid format for the submitted SSH public key.");
+          this.profileCardMessage = 'Invalid format for the submitted SSH public key.'
+          return
+        }
+        
         this.userUpdateIncomplete = true
         this.localuser.email = this.userEmail
         if (this.otpSent) {
