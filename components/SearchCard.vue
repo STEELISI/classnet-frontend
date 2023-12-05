@@ -138,12 +138,6 @@
     </v-card>
 
     </v-container>
-    <v-pagination
-      v-if="artifacts"
-      v-model="page"
-      :length="pages"
-      circle
-    ></v-pagination>
     <ArtifactList
       :artifacts="artifacts"
       :limit="limit"
@@ -155,14 +149,12 @@
     <span v-if="!searchLoading && artifacts.total == 0 && search === ''"
       ><h3>Type a search term into the input above and press Enter</h3></span
     >
-    <v-btn
-      v-if="showScrollToTop != 0"
-      class="secondary"
-      id="scrollbtn"
-      @click="scrollToTop()"
-      elevation="10"
-      ><v-icon large color="lightblue">mdi-chevron-up</v-icon></v-btn
-    >
+    <v-pagination
+      v-if="artifacts"
+      v-model="page"
+      :length="pages"
+      circle
+    ></v-pagination>
   </div>
 </template>
 
