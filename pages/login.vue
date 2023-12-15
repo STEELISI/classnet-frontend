@@ -81,7 +81,7 @@ export default {
       let response = await this.$auth.loginWith('github')
     },
     async googleLogin() {
-      let response = await this.$auth.loginWith('google')
+      let response = await this.$auth.loginWith('googlecustom')
     },
     async cilogonLogin() {
       let response = await this.$auth.loginWith('cilogon')
