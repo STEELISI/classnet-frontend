@@ -257,14 +257,14 @@
 
       </div>
 
-        <div style="margin-top: 20px; font-weight: bold;">Enter Your public key for downloading datasets:</div>
+        <div style="margin-top: 20px; font-weight: bold;">Enter your SSH public key for downloading datasets:</div>
         <v-text-field
-            v-model="publicKey"
+            v-model="requester.publicKey"
             :type=" 'text' "
             name="input-10-1"
-            hint="Enter your public key "
-            pattern = "^(ssh-(ed25519|rsa|dss|ecdsa)) AAAA(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=|[A-Za-z0-9+\/]{4})( [^@]+@[^@]+)?$"
-          ></v-text-field>
+            hint="Enter your SSH public key "
+            disabled
+        ></v-text-field>
 
 
       <div v-if ="record.artifact.irb" style="margin-top: 20px; font-weight: bold;">Upload IRB approval Letter</div>
@@ -586,7 +586,7 @@ export default {
 
       this.representative_researcher.organization = orgNames.join(", ")
       this.representative_researcher.title = this.requester.position.trim();
-      this.representative_researcher.publicKey = this.publicKey
+      this.representative_researcher.publicKey = this.requester.publicKey
       this.researchers_that_interact.forEach((researcher) => {
         researcher.name = researcher.name.trim();
         researcher.email = researcher.email.trim();
@@ -709,10 +709,7 @@ export default {
       payload.append('researchers', researchersJSON);
       payload.append('dataset', this.record.artifact.title)
       payload.append('representative_researcher_email', this.representative_researcher['email']);
-
-
-      payload.append('public_key', this.publicKey)
-
+      payload.append('public_key', this.representative_researcher['publicKey'])
       let response = await this.$artifactRequestEndpoint.post(
         [this.record.artifact.artifact_group_id, this.record.artifact.id],payload
       );

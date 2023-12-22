@@ -136,7 +136,7 @@
                   <v-col cols="12" md="12">
                     <v-textarea
                     auto-grow
-                      label="Public Key"
+                      label="SSH Public Key"
                       class="primary-input"
                       v-model="localuser.publicKey"
                     />
@@ -511,9 +511,9 @@ export default {
       profileCardMessage:'',
       otpSent: false,
       otpSentDialog: false,
-      publicKey: '',
       userUpdateIncomplete: false,
-      emailOnPageLoad: ''
+      emailOnPageLoad: '',
+      publicKeyPatternRegex: /^(ssh-(ed25519|rsa|dss|ecdsa)) AAAA(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=|[A-Za-z0-9+\/]{4})( [^@]+@[^@]+)?$/
     }
   },
   computed: {
@@ -524,8 +524,7 @@ export default {
       orgs: state => state.user.orgs,
       interests: state => state.user.interests,
       authUser: state => state.auth.user,
-      position: state => state.user.user.position,
-      publicKey: state => state.user.publicKey
+      position: state => state.user.user.position
     }),
     orgNames: {
       get: function() {
@@ -591,9 +590,6 @@ export default {
     },
     userPosition(val){
       this.userPosition = val
-    },
-    userPublicKey(val){
-      this.publicKey = val
     }
   },
   async mounted() {
@@ -634,6 +630,10 @@ export default {
     })
   },
   methods: {
+    validatePublicKey() {
+      var match = this.localuser.publicKey.match(this.publicKeyPatternRegex)
+      return match && this.localuser.publicKey === match[0];
+    },
     async updateProfile() {
       if (!this.$auth.loggedIn) {
         this.$router.push('/login')
@@ -641,10 +641,19 @@ export default {
         this.dialogMessage = ''
         this.dialogBtnMessage = 'Submit'
         this.profileCardMessage = ''
+
+        // Validate the format of the SSH public key before proceeding
+        let isValidPublicKey = this.validatePublicKey()
+        if (!isValidPublicKey) {
+          console.log("Invalid format for the submitted SSH public key.");
+          this.profileCardMessage = 'Invalid format for the submitted SSH public key.'
+          return
+        }
+        
         this.userUpdateIncomplete = true
         this.localuser.email = this.userEmail
         if (this.otpSent) {
-          if ((this.localuser.userOTP && this.localuser.userOTP.length == 0) || (this.localuser.userOTP == undefined)) { // This is to handle the case where a user sends an empty OTP
+          if ((this.localuser.userOTP && this.localuser.userOTP.length == 0) || (this.localuser.userOTP == undefined)) { // This is to handle the case where a user sends an empty OTP. Note that this might be a case where no OTP is expected (the user didn't change their emai so no OTP would have been sent for validation)
             this.localuser.userOTP = 'undefined'
           }
         }
