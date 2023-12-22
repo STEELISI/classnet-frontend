@@ -43,7 +43,6 @@
                       label="Review"
                       placeholder="Add review..."
                       v-model="comment"
-                      required
                     >
                     </v-textarea>
                   </v-col>
@@ -126,7 +125,7 @@ export default {
       userid: state => state.user.userid
     }),
     formCheck() {
-      if (this.rating == 0 || this.comment === '') {
+      if (this.rating == 0 && this.comment === '') {
         return false
       }
       return true
@@ -148,7 +147,7 @@ export default {
       if (!this.$auth.loggedIn) {
         this.$router.push('/login')
       } else {
-        if (this.rating && this.comment) {
+        if (this.rating || this.comment) {
           let rating_payload = {
             rating: this.rating
           }
