@@ -631,8 +631,11 @@ export default {
   },
   methods: {
     validatePublicKey() {
-      var match = this.localuser.publicKey.match(this.publicKeyPatternRegex)
-      return match && this.localuser.publicKey === match[0];
+      if (this.localuser.publicKey) { // if public key was entered ensure it matches the expected format
+        var match = this.localuser.publicKey.match(this.publicKeyPatternRegex)
+        return match && (this.localuser.publicKey === match[0]);
+      }
+      return true // an empty public key is allowed and is thus valid
     },
     async updateProfile() {
       if (!this.$auth.loggedIn) {
