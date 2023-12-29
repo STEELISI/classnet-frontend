@@ -372,7 +372,7 @@
       <v-card-title>Description</v-card-title>
 
       <v-card-text>
-        <div v-html="sanitizedDescription"></div>
+        <div v-html="sanitizedDescription" class="artifactDescription"></div>
       </v-card-text>
 
 
@@ -574,7 +574,57 @@ export default {
       userDetails:state => state.user.user,
     }),
     sanitizedDescription: function() {
-      return this.$sanitize(this.record.artifact.description.replace(/\<\\pre\>/, ''))
+      var regex = /\+\-+\+.+?\+\-+\+/s; 
+      var description = this.record.artifact.description.replace(/\<\\pre\>/, '');
+      var matches = description.match(regex); 
+      let contentInsideTable = matches[0]
+
+      var regex2 = /\|-*\+-*\|\n/g;
+      var contentInsideTableWithoutBorders = contentInsideTable.replace(regex2,''); 
+
+      var lines = contentInsideTableWithoutBorders.split('\n');
+
+      // Initialize an empty array to store key-value pairs
+      var keyValuePairArray = [];
+
+      // Initialize a variable to track the previous key
+      var previousKey = '';
+
+      // Iterate through each line
+      lines.forEach(line => {
+          // Split the line based on the '|' delimiter and remove empty elements
+          const elements = line.trim().split('|');
+        
+          // Remove empty elements
+          const filteredElements = elements.filter(Boolean).map(element => element.trim());
+          console.log(filteredElements)
+          // Check if there are at least two elements
+          if (filteredElements.length >= 2) {
+              const key = filteredElements[0];
+              const value = filteredElements[1];
+          
+              // If key is empty, append value to the previous key's value
+              if (key === '') {
+                  if (keyValuePairArray.length > 0) {
+                      // Append to the previous key's value
+                      const previousPair = keyValuePairArray[keyValuePairArray.length - 1];
+                      previousPair[previousKey] += ' ' + value;
+                  }
+              } else {
+                  // Create a key-value pair and push it to the array
+                  keyValuePairArray.push({ [key]: value });
+                  previousKey = key;
+              }
+          }
+      });
+      const tableHtml = '<table> <colgroup> <col/> <col/> </colgroup>' +
+                        keyValuePairArray.map(pair => {
+                            const key = Object.keys(pair)[0];
+                            const value = pair[key];
+                            return `<tr><td>${key}</td><td>${value}</td></tr>`;
+                        }).join('') +
+                        '</table>';
+      return this.$sanitize(description.replace(contentInsideTable, '</pre>'+tableHtml+'<pre>'))
     },
     favorite: {
       get() {
@@ -791,5 +841,21 @@ export default {
 .hideoverflow {
   max-height: 250px;
   overflow: hidden;
+}
+.artifactDescription >>> table{
+  padding: 5px; 
+  margin: 4px;
+  border-collapse:collapse ;
+}
+
+.artifactDescription >>> td{
+  border: 1px solid #ccc; 
+  padding: 5px; 
+  margin: 5px;
+  border-collapse: collapse;
+}
+
+.artifactDescription >>> pre{
+  font-family: 'Roboto', sans-serif;
 }
 </style>
