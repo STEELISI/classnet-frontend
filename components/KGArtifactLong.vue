@@ -856,4 +856,7 @@ export default {
   border-collapse: collapse;
 }
 
+.artifactDescription >>> pre{
+  font-family: 'Roboto', sans-serif;
+}
 </style>
