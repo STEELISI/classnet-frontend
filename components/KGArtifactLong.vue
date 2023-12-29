@@ -624,7 +624,6 @@ export default {
                             return `<tr><td>${key}</td><td>${value}</td></tr>`;
                         }).join('') +
                         '</table>';
-      console.log(description.replace(contentInsideTable, '</pre>'+tableHtml+'<pre>'));
       return this.$sanitize(description.replace(contentInsideTable, '</pre>'+tableHtml+'<pre>'))
     },
     favorite: {
