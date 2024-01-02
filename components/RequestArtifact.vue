@@ -124,7 +124,7 @@
           </v-col>
           <v-col md="1">
             <v-text-field
-            v-model="countryCode"
+            v-model="requester.countryCode"
           label="Country Code"
           type="number"
           prefix="+"
@@ -132,16 +132,18 @@
           min = "1"
           pattern="^[0-9]+$"
           required
+          disabled
           ></v-text-field>
           </v-col>
           <v-col md="3">
             <v-text-field
-              v-model="researcher_phone"
+              v-model="requester.mobileNumber"
               type="text"
               hint="Enter researcher phone number"
               required
               min = "1"
-              pattern="^[0-9]+$">
+              pattern="^[0-9]+$"
+              disabled>
               <template #label>
                   <span>Phone Number (only digits)<span style='color: red;'> *</span></span>
               </template>
@@ -353,8 +355,6 @@ export default {
       publicKey: '',
       show1: false,
       password: 'Password',
-      countryCode: '',
-      researcher_phone:'',
       rules: {
           required: value => !!value || 'Required.',
           min: v => v.length >= 8 || 'Min 8 characters',
@@ -577,7 +577,7 @@ export default {
       this.project_justification = this.project_justification.trim();
       this.representative_researcher.name = this.requester.name.trim();
       this.representative_researcher.email = this.requester.email.trim();
-      this.representative_researcher.number = "+" +this.countryCode + this.researcher_phone.trim();
+      this.representative_researcher.number = "+" +this.requester.countryCode + this.requestor.mobileNumber.trim();
 
       let orgNames = []
       for (let i of this.requester_orgs){

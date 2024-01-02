@@ -61,6 +61,32 @@
                     />
                   </v-col>
 
+                  <v-col cols = "12" md="2">
+                    <v-text-field
+                      v-model="localuser.countryCode"
+                      label="Country Code"
+                      type="number"
+                      prefix="+"
+                      hint="Enter country code"
+                      min = "1"
+                      pattern="^[0-9]+$"
+                      required
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" md="10">
+                  <v-text-field
+                    v-model="localuser.mobileNumber"
+                    type="number"
+                    hint="Enter researcher phone number"
+                    required
+                    min = "1"
+                    pattern="^[0-9]+$">
+                    <template #label>
+                        <span>Phone Number (only digits)<span style='color: red;'> *</span></span>
+                    </template>
+                  </v-text-field>
+                  </v-col>
+
                   <v-col cols="12" md="12">
                     <v-text-field
                       label="Website"
