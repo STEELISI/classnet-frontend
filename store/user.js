@@ -88,6 +88,12 @@ export const mutations = {
   SET_POSITION(state, position){
     state.user.position = position
   },
+  SET_MOBILE_NUMBER(state, mobileNumber){
+    state.user.mobileNumber = mobileNumber
+  },
+  SET_COUNTRY_CODE(state, countyCode){
+    state.user.countyCode = countyCode
+  },
   LOGOUT(state) {
     state.user = null
     state.organization = []
@@ -175,4 +181,6 @@ export const actions = {
     })
     dispatch('fetchUser')
   }
+
+
 }

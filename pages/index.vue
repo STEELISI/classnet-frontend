@@ -314,7 +314,7 @@
       </template>
       <v-card>
         <v-card-title>
-          Enter Affiliation and Designation
+          Enter Affiliation, Designation and Phone Number
         </v-card-title>
         <v-col cols="12" >
           <v-text-field
@@ -370,6 +370,33 @@
             </template>
           </v-combobox>
         </v-col>
+        <v-row>
+        <v-col cols = "12" md="2">
+          <v-text-field
+            v-model="userCountryCode"
+            label="Country Code"
+            type="number"
+            prefix="+"
+            hint="Enter country code"
+            min = "1"
+            pattern="^[0-9]+$"
+            required
+          ></v-text-field>
+        </v-col>
+        <v-col cols="12" md="10">
+          <v-text-field
+            v-model="userMobileNumber"
+            type="number"
+            hint="Enter researcher phone number"
+            required
+            min = "1"
+            pattern="^[0-9]+$">
+            <template #label>
+                <span>Phone Number (only digits)<span style='color: red;'> *</span></span>
+            </template>
+          </v-text-field>
+        </v-col>
+      </v-row>
         <v-col cols="12" v-if="dialogMessage">
           <span style="color:red">{{dialogMessage}}</span>
         </v-col>
@@ -402,6 +429,8 @@ export default {
         userName:'',
         userEmail:'',
         userOTP:'',
+        userCountryCode:'',
+        userMobileNumber:'',
         otpSent: false,
         model: 0,
         dialogMessage: '',
@@ -466,14 +495,18 @@ export default {
 
       await this.$store.dispatch('user/fetchUser').then(response => {
 
-        if(this.organization.length == 0 || !this.localuser.position || !this.localuser.email || !this.localuser.name){
+        if(this.organization.length == 0 || !this.localuser.position || !this.localuser.email || !this.localuser.name || !this.localuser.countryCode || !this.localuser.mobileNumber  ){
           this.dialog = true
         }
         this.localuser = JSON.parse(JSON.stringify(this.person))
         this.userAffiliation = this.organization ? this.organization : []
 
         this.localuser.position = this.localuser.position ? this.localuser.position : ''
+        this.localuser.countryCode = this.localuser.countryCode ? this.localuser.countryCode : ''
+        this.localuser.mobileNumber = this.localuser.mobileNumber ? this.localuser.mobileNumber : '' 
         this.userPosition = this.localuser.position
+        this.user.countryCode = this.localuser.countryCode
+        this.user.mobileNumber = this.localuser.mobileNumber
         if(this.localuser.email) { // If a user's email is already stored in the backend we do not need to verify it, thus we change the submitMessage from 'Verify email' to 'Submit'
           this.submitMessage = 'Submit'
         }
@@ -493,6 +526,8 @@ export default {
       } else {
         this.dialogMessage = ''
         this.localuser.position = this.userPosition
+        this.localuser.countryCode = this.userCountryCode
+        this.localuser.mobileNumber = this.userMobileNumber
         this.localuser.name = this.userName
         this.localuser.email = this.userEmail
         this.localuser.userOTP = this.userOTP.length == 0 && this.otpSent ? 'undefined' : this.userOTP
@@ -511,7 +546,7 @@ export default {
           return
         }
 
-        if(this.localuser.position && this.userAffiliation.length && this.localuser.email && this.localuser.name){
+        if(this.localuser.position && this.userAffiliation.length && this.localuser.email && this.localuser.name && this.localuser.mobileNumber && this.localuser.countryCode){
           this.dialog=false
         }
 
