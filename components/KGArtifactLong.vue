@@ -574,15 +574,30 @@ export default {
       userDetails:state => state.user.user,
     }),
     sanitizedDescription: function() {
-      var regex = /\+\-+\+.+?\+\-+\+/s; 
+      var regexOld = /\+\-+\+.+?\+\-+\+/s; 
+      var regexNew = /┌\─+\┬\─+┐.+?└\─+┴\─+┘/s;
+      var usingOldFormat = false;      
       var description = this.record.artifact.description.replace(/\<\\pre\>/, '');
-      var matches = description.match(regex); 
-      let contentInsideTable = matches[0]
+      var matches = description.match(regexOld); 
+      var contentInsideTable;
+      if (matches) {
+        contentInsideTable = matches[0];
+        usingOldFormat = true;
+      } else {
+        var matches = description.match(regexNew); 
+        contentInsideTable = matches[0];
+      }
+      if (usingOldFormat) {
+        var regexOld2 = /\|-*\+-*\|\n/g;
+        var contentInsideTableWithoutBorders = contentInsideTable.replace(regexOld2,''); 
+      } else {
+        var regexNew2 = /┌\─+\┬\─+┐/s;
+        var regexNew3 = /\└\─+┴\─+┘/s;
+        var regexNew4 = /\├\─+\┼\─+\┤/sg;
+        var contentInsideTableWithoutBorders = contentInsideTable.replace(regexNew2,'').replace(regexNew3,'').replace(regexNew4,''); 
+      }
 
-      var regex2 = /\|-*\+-*\|\n/g;
-      var contentInsideTableWithoutBorders = contentInsideTable.replace(regex2,''); 
-
-      var lines = contentInsideTableWithoutBorders.split('\n');
+      var lines = contentInsideTableWithoutBorders.split('\n').filter(str => str.trim() !== "");
 
       // Initialize an empty array to store key-value pairs
       var keyValuePairArray = [];
@@ -593,7 +608,8 @@ export default {
       // Iterate through each line
       lines.forEach(line => {
           // Split the line based on the '|' delimiter and remove empty elements
-          const elements = line.trim().split('|');
+          var delimiter = usingOldFormat ? '|' : '│' 
+          const elements = line.trim().split(delimiter);
         
           // Remove empty elements
           const filteredElements = elements.filter(Boolean).map(element => element.trim());
