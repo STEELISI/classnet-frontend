@@ -401,6 +401,7 @@
           <span style="color:red">{{dialogMessage}}</span>
         </v-col>
         <v-card-actions>
+          <v-btn color="green darken-1" text @click="logout()">Logout</v-btn>
           <v-spacer></v-spacer>
           <v-btn
             color="green darken-1"
@@ -560,7 +561,16 @@ export default {
           }
         })
       }
-    }
+    },
+    async logout() {
+      if (confirm('Log out of COMUNDA?')) {
+        this.dialog=false
+        console.log('Logging out')
+        this.$store.commit('user/LOGOUT')
+        this.$store.commit('system/LOGOUT')
+        this.$auth.logout()
+      }
+    },
   }
   // async computed(){
 
