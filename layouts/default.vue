@@ -90,9 +90,10 @@
                     alt="comunda Logo"
                     max-width="15"
                     max-height = "20"
-                    class="ma-2"
-                  ></v-img>
-      <v-toolbar-title>
+                    class="ma-2 cursor-pointer"
+                    @click="redirectHome"
+      ></v-img>
+      <v-toolbar-title class="cursor-pointer" @click="redirectHome">
         {{title}}
       </v-toolbar-title>
       <v-spacer />
@@ -299,6 +300,9 @@ export default {
         this.$auth.logout()
       }
     },
+    async redirectHome(){
+      this.$router.push('/');
+    },
     async setAdmin(mode) {
       console.log('Setting admin mode', mode)
       await this.$loginEndpoint
@@ -331,3 +335,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.cursor-pointer {
+  cursor: pointer;
+}
+</style>
