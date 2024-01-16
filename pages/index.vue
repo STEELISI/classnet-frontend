@@ -370,8 +370,8 @@
             </template>
           </v-combobox>
         </v-col>
-        <v-row>
-        <v-col cols = "12" md="2">
+        <v-row class="pl-3">
+        <v-col md = "2">
           <v-text-field
             v-model="userCountryCode"
             label="Country Code"
@@ -383,7 +383,7 @@
             required
           ></v-text-field>
         </v-col>
-        <v-col cols="12" md="10">
+        <v-col md="6" >
           <v-text-field
             v-model="userMobileNumber"
             type="number"
