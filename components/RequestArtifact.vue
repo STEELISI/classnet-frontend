@@ -369,6 +369,24 @@ export default {
      this.$store.dispatch('user/fetchOrgs')
 
   },
+  watch: {
+    userAffiliation: {
+      immediate: true,
+      async handler(newVal, oldVal) {
+        if (newVal !== oldVal) {
+          await this.incompleteProfileDialog
+        }
+      }
+    },
+    userDetails: {
+      immediate: true,
+      async handler(newVal, oldVal) {
+        if (newVal !== oldVal) {
+          await this.incompleteProfileDialog
+        }
+      }
+    }
+  },
   computed: {
 
     ...mapState({
@@ -382,7 +400,7 @@ export default {
       userDetails:state => state.user.user,
     }),
     incompleteProfileDialog: function() {
-      if (!(this.userAffiliation.length > 0 && this.userDetails && this.userDetails.name && this.userDetails.email && this.userDetails.position)) {
+      if (!(this.userAffiliation.length > 0 && this.userDetails.mobileNumber && this.userDetails && this.userDetails.name && this.userDetails.email && this.userDetails.position)) {
         this.incompleteProfileDialogMessage = "Please fill the following:<br><ul>"
         if (!this.userDetails.name) {
           this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "<li>Name</li>"
@@ -395,6 +413,9 @@ export default {
         }
         if (!this.userDetails.position) {
           this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "<li>Position</li>"
+        }
+        if (!this.userDetails.mobileNumber) {
+          this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "<li>Phone Number</li>"
         }
         this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "</ul>"
         return true
