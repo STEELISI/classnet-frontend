@@ -374,7 +374,7 @@ export default {
       immediate: true,
       async handler(newVal, oldVal) {
         if (newVal !== oldVal) {
-          await this.incompleteProfileDialog()
+          await this.incompleteProfileDialog
         }
       }
     },
@@ -382,7 +382,7 @@ export default {
       immediate: true,
       async handler(newVal, oldVal) {
         if (newVal !== oldVal) {
-          await this.incompleteProfileDialog()
+          await this.incompleteProfileDialog
         }
       }
     }
