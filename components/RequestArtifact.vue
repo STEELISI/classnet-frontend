@@ -382,7 +382,7 @@ export default {
       userDetails:state => state.user.user,
     }),
     incompleteProfileDialog: function() {
-      if (!(this.userAffiliation.length > 0 && this.userDetails.mobileNumber > 0  && this.userDetails && this.userDetails.name && this.userDetails.email && this.userDetails.position)) {
+      if (!(this.userAffiliation.length > 0 && this.userDetails.mobileNumber && this.userDetails && this.userDetails.name && this.userDetails.email && this.userDetails.position)) {
         this.incompleteProfileDialogMessage = "Please fill the following:<br><ul>"
         if (!this.userDetails.name) {
           this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "<li>Name</li>"
