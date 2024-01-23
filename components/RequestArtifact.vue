@@ -369,6 +369,24 @@ export default {
      this.$store.dispatch('user/fetchOrgs')
 
   },
+  watch: {
+    userAffiliation: {
+      immediate: true,
+      async handler(newVal, oldVal) {
+        if (newVal !== oldVal) {
+          await this.incompleteProfileDialog()
+        }
+      }
+    },
+    userDetails: {
+      immediate: true,
+      async handler(newVal, oldVal) {
+        if (newVal !== oldVal) {
+          await this.incompleteProfileDialog()
+        }
+      }
+    }
+  },
   computed: {
 
     ...mapState({
