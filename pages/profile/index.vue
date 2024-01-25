@@ -68,16 +68,16 @@
                       type="number"
                       prefix="+"
                       hint="Enter country code"
-                  
-                     
-                      
+                      min = "1"
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12" md="10">
                   <v-text-field
                     v-model="localuser.mobileNumber"
                     type="number"
-                    hint="Enter researcher phone number">
+                    min = "1"
+                    hint="Enter researcher phone number"
+                  >
                     <template #label>
                         <span>Phone Number (only digits)</span>
                     </template>
