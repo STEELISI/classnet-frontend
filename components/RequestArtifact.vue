@@ -598,7 +598,7 @@ export default {
       this.project_justification = this.project_justification.trim();
       this.representative_researcher.name = this.requester.name.trim();
       this.representative_researcher.email = this.requester.email.trim();
-      this.representative_researcher.number = "+" +this.requester.countryCode + this.requestor.mobileNumber.trim();
+      this.representative_researcher.number = "+" +this.requester.countryCode + this.requester.mobileNumber.trim();
 
       let orgNames = []
       for (let i of this.requester_orgs){
