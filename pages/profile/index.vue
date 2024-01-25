@@ -68,21 +68,18 @@
                       type="number"
                       prefix="+"
                       hint="Enter country code"
-                      min = "1"
-                      pattern="^[0-9]+$"
-                      required
+                  
+                     
+                      
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12" md="10">
                   <v-text-field
                     v-model="localuser.mobileNumber"
                     type="number"
-                    hint="Enter researcher phone number"
-                    required
-                    min = "1"
-                    pattern="^[0-9]+$">
+                    hint="Enter researcher phone number">
                     <template #label>
-                        <span>Phone Number (only digits)<span style='color: red;'> *</span></span>
+                        <span>Phone Number (only digits)</span>
                     </template>
                   </v-text-field>
                   </v-col>
@@ -539,7 +536,8 @@ export default {
       otpSentDialog: false,
       userUpdateIncomplete: false,
       emailOnPageLoad: '',
-      publicKeyPatternRegex: /^(ssh-(ed25519|rsa|dss|ecdsa)) AAAA(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=|[A-Za-z0-9+\/]{4})( [^@]+@[^@]+)?$/
+      publicKeyPatternRegex: /^(ssh-(ed25519|rsa|dss|ecdsa)) AAAA(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=|[A-Za-z0-9+\/]{4})( [^@]+@[^@]+)?$/,
+      numberPattern: /\d+/g
     }
   },
   computed: {
@@ -663,6 +661,14 @@ export default {
       }
       return true // an empty public key is allowed and is thus valid
     },
+    validateNumber() {
+      if (this.localuser.countryCode || this.localuser.mobileNumber) { // if countryCode or mobileNumber was entered ensure it matches the expected format
+        var match1 = this.localuser.countryCode.match(this.numberPattern)
+        var match2 = this.localuser.mobileNumber.match(this.numberPattern)
+        return match1 && (this.localuser.countryCode === match1[0]) && match2 && (this.localuser.mobileNumber === match2[0]);
+      }
+      return true // an empty countryCode and mobileNumber at the same time is allowed
+    },
     async updateProfile() {
       if (!this.$auth.loggedIn) {
         this.$router.push('/login')
@@ -676,6 +682,14 @@ export default {
         if (!isValidPublicKey) {
           console.log("Invalid format for the submitted SSH public key.");
           this.profileCardMessage = 'Invalid format for the submitted SSH public key.'
+          return
+        }
+
+        // Validate the format of mobile number before proceeding
+        let isValidNumber = this.validateNumber()
+        if (!isValidNumber) {
+          console.log("Both country code and mobile number must be a number.");
+          this.profileCardMessage = 'Both country code and mobile number must be a number.'
           return
         }
         
