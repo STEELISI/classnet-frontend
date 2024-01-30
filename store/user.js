@@ -139,7 +139,6 @@ export const actions = {
     let response = {}
     console.log('fetching organizations')
     let payload = {
-      verified: 1,
       all: 1
     }
     response = await this.$organizationEndpoint.index(payload)

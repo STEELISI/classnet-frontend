@@ -349,8 +349,11 @@
             multiple
             small-chips
             deletable-chips
+            persistent-hint
+            :items="orgNames"
             v-model="userAffiliation"
             hint="Select applicable organization from the list or type in your own"
+            :search-input.sync="orgSearch"
             item-text="org.name"
             item-value="org.name"
             return-object
@@ -362,8 +365,7 @@
                   <v-list-item-title>
                     No results matching "<strong>{{
                       orgSearch
-                    }}</strong
-                    >". Press <kbd>tab</kbd> to create a new one
+                    }}</strong>". Press <kbd>Enter</kbd> to create a new one
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
@@ -432,6 +434,7 @@ export default {
         userOTP:'',
         userCountryCode:'',
         userMobileNumber:'',
+        orgSearch: null,
         otpSent: false,
         model: 0,
         dialogMessage: '',
@@ -463,11 +466,39 @@ export default {
       person:state =>state.user.user,
       organization: state => state.user.organization,
       userid: state => state.user.userid,
-    })
+      orgs: state => state.user.orgs,
+    }),
+    orgNames: {
+      get: function() {
+        console.log("from here",this.orgs.map(m => m.name))
+        return this.orgs ? this.orgs.map(m => m.name) : []
+      }
+    },
   },
   watch:{
     person(val) {
       this.localuser = JSON.parse(JSON.stringify(val))
+    },
+    organization(val) {
+      this.userAffiliation = val
+    },
+    userAffiliation(newValue, oldValue) {
+      if(! this.$auth.loggedIn){
+        return
+      }
+      // delete case
+      let diff = oldValue.filter(
+        affil => newValue.findIndex(newAffil => newAffil.id == affil.id) == -1
+      )
+      if (diff.length > 0) {
+        diff.forEach(affil => {
+          if (typeof affil === 'object') {
+            // cannot use await here as this is inside a foreach loop
+            this.$userAffiliationEndpoint.delete(affil.id)
+          }
+        })
+        diff = []
+      }
     },
     userEmail(val) {
       console.log(val)
