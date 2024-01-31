@@ -112,7 +112,7 @@
                               No results matching "<strong>{{
                                 interestSearch
                               }}</strong
-                              >". Press <kbd>Enter</kbd> to create a new one.
+                              >". Press <kbd>tab</kbd> to create a new one.
                             </v-list-item-title>
                           </v-list-item-content>
                         </v-list-item>
@@ -141,7 +141,7 @@
                             <v-list-item-title>
                               No results matching "<strong>{{
                                 orgSearch
-                              }}</strong>". Press <kbd>Enter</kbd> to create a new one.
+                              }}</strong>". Press <kbd>tab</kbd> to create a new one.
                             </v-list-item-title>
                           </v-list-item-content>
                         </v-list-item>
@@ -728,6 +728,7 @@ export default {
         // create any affiliations that were added
         this.userAffiliation.forEach((affil, index, object) => {
           if (typeof affil === 'string') {
+            console.log('here')
             this.$store.dispatch('user/createAffiliation', affil)
             object.splice(index, 0)
           }

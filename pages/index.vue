@@ -365,7 +365,7 @@
                   <v-list-item-title>
                     No results matching "<strong>{{
                       orgSearch
-                    }}</strong>". Press <kbd>Enter</kbd> to create a new one
+                    }}</strong>". Press <kbd>tab</kbd> to create a new one
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
@@ -582,15 +582,16 @@ export default {
           this.dialog=false
         }
 
-        this.$store.dispatch('user/fetchUser') // adds latest user data to store
-
         // create any affiliations that were added
         this.userAffiliation.forEach((affil, index, object) => {
           if (typeof affil === 'string') {
+            console.log('here')
             this.$store.dispatch('user/createAffiliation', affil)
             object.splice(index, 0)
           }
         })
+        this.$store.dispatch('user/fetchUser') // adds latest user data to store
+
       }
     },
     async logout() {

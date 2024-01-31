@@ -116,7 +116,7 @@
                               No results matching "<strong>{{
                                 orgSearch
                               }}</strong
-                              >". Press <kbd>Enter</kbd> to create a new one
+                              >". Press <kbd>tab</kbd> to create a new one
                             </v-list-item-title>
                           </v-list-item-content>
                         </v-list-item>
