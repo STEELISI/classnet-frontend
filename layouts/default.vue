@@ -215,12 +215,7 @@ export default {
         items.push({
           icon: 'mdi-share-all-outline',
           title: 'Contribute Datasets',
-          href: 'https://steelisi.github.io/CLASSNET-DOCS/contribute/'
-        })
-        items.push({
-          icon: 'mdi-upload-outline',
-          title: 'Upload Datasets',
-          to: '/uploadDatasets'
+          to: '/contributeDatasets'
         })
         items.push({
           icon: 'mdi-account-cog',
