@@ -62,31 +62,152 @@
             ></v-text-field>
 
             <div style="font-weight: bold; margin-top:20px;">Is commercial use of the dataset allowed?</div>
-            <v-select
-            name="commercialUse"
-            v-model="commercialAllowed"
-            :items="trueFalseOptions"
-            auto-grow
-            clearable
-            ></v-select>
+            <v-row>
+              <v-col cols="12" sm="6" md="4">
+                <v-select
+                name="commercialUse"
+                v-model="commercialAllowed"
+                :items="trueFalseOptions"
+                auto-grow
+                clearable
+                ></v-select>
+              </v-col>
+            </v-row>
 
             <div style="font-weight: bold; margin-top:20px;">Should the results obtained from the dataset be reviewed by the provider before publication?</div>
-            <v-select
-            name="productReview"
-            v-model="productReviewRequired"
-            :items="trueFalseOptions"
-            auto-grow
-            clearable
-            ></v-select>
+            <v-row>
+              <v-col cols="12" sm="6" md="4">
+                <v-select
+                name="productReview"
+                v-model="productReviewRequired"
+                :items="trueFalseOptions"
+                auto-grow
+                clearable
+                ></v-select>
+              </v-col>
+            </v-row>
+
+        
+            <div style="font-weight: bold; margin-top:20px;">When does the dataset become available?<span style='color: red;'><strong> *</strong></span></div>
+              <v-row>
+                <v-col cols="12" sm="6" md="4">
+                  <v-menu
+                    ref="menu"
+                    v-model="availabilityStartDateTime.dialog"
+                    :close-on-content-click="false"
+                    :nudge-right="40"
+                    transition="scale-transition"
+                    offset-y
+                    min-width="auto"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field
+                        v-model="availabilityStartDateTime.val"
+                        prepend-icon="mdi-calendar"
+                        readonly
+                        v-bind="attrs"
+                        v-on="on"
+                      ></v-text-field>
+                    </template>
+                    <v-date-picker v-model="availabilityStartDateTime.val" @input="availabilityStartDateTime.dialog= false"></v-date-picker>
+                  </v-menu>
+                </v-col>
+              </v-row>
+
+            <div style="font-weight: bold; margin-top:20px;">When does the dataset cease to be available?<span style='color: red;'><strong> *</strong></span></div>
+              <v-row>
+                <v-col cols="12" sm="6" md="4">
+                  <v-menu
+                    ref="menu"
+                    v-model="availabilityEndDateTime.dialog"
+                    :close-on-content-click="false"
+                    :nudge-right="40"
+                    transition="scale-transition"
+                    offset-y
+                    min-width="auto"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field
+                        v-model="availabilityEndDateTime.val"
+                        prepend-icon="mdi-calendar"
+                        readonly
+                        v-bind="attrs"
+                        v-on="on"
+                      ></v-text-field>
+                    </template>
+                    <v-date-picker v-model="availabilityEndDateTime.val" @input="availabilityEndDateTime.dialog= false"></v-date-picker>
+                  </v-menu>
+                </v-col>
+              </v-row>
+          
 
             <div style="font-weight: bold; margin-top:20px;">Is the collection still in progress?</div>
-            <v-select
-            name="ongoingMeasurement"
-            v-model="ongoingMeasurement"
-            :items="trueFalseOptions"
-            auto-grow
-            clearable
-            ></v-select>
+            <v-row>
+              <v-col cols="12" sm="6" md="4">
+                <v-select
+                name="ongoingMeasurement"
+                v-model="ongoingMeasurement"
+                :items="trueFalseOptions"
+                auto-grow
+                clearable
+                ></v-select>
+              </v-col>
+            </v-row>
+
+            <div style="font-weight: bold; margin-top:20px;">When did the collection start?<span style='color: red;'><strong> *</strong></span></div>
+              <v-row>
+                <v-col cols="12" sm="6" md="4">
+                  <v-menu
+                    ref="menu"
+                    v-model="collectionStartDateTime.dialog"
+                    :close-on-content-click="false"
+                    :nudge-right="40"
+                    transition="scale-transition"
+                    offset-y
+                    min-width="auto"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field
+                        v-model="collectionStartDateTime.val"
+                        prepend-icon="mdi-calendar"
+                        readonly
+                        v-bind="attrs"
+                        v-on="on"
+                        required
+                      ></v-text-field>
+                    </template>
+                    <v-date-picker v-model="collectionStartDateTime.val" @input="collectionStartDateTime.dialog= false"></v-date-picker>
+                  </v-menu>
+                </v-col>
+              </v-row>
+
+            <!-- collection end date : When did the collection end? -->
+            <div style="font-weight: bold; margin-top:20px;">When did the collection stop?<span style='color: red;'><strong> *</strong></span></div>
+              <v-row>
+                <v-col cols="12" sm="6" md="4">
+                  <v-menu
+                    ref="menu"
+                    v-model="collectionEndDateTime.dialog"
+                    :close-on-content-click="false"
+                    :nudge-right="40"
+                    transition="scale-transition"
+                    offset-y
+                    min-width="auto"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field
+                        v-model="collectionEndDateTime.val"
+                        prepend-icon="mdi-calendar"
+                        readonly
+                        v-bind="attrs"
+                        v-on="on"
+                        required
+                      ></v-text-field>
+                    </template>
+                    <v-date-picker v-model="collectionEndDateTime.val" @input="collectionEndDateTime.dialog= false"></v-date-picker>
+                  </v-menu>
+                </v-col>
+              </v-row>
 
             <div style="font-weight: bold; margin-top:20px;">What is the size of the dataset?<span style='color: red;'><strong> *</strong></span></div>
             <v-row>
@@ -98,7 +219,7 @@
                   required
                 ></v-text-field>
               </v-col>
-              <v-col cols="1" md="1">
+              <v-col cols="2" md="2">
                 <v-select
                   name="Unit"
                   v-model="byteSizeUnit"
@@ -109,13 +230,17 @@
 
 
             <div style="font-weight: bold; margin-top:20px;"> Once downloaded, can the contents be retained and used indefinitely?</div>
-            <v-select
-            name="archivingAllowed"
-            v-model="archivingAllowed"
-            :items="trueFalseOptions"
-            auto-grow
-            clearable
-            ></v-select>
+            <v-row>
+              <v-col cols="12" sm="6" md="4">
+                <v-select
+                name="archivingAllowed"
+                v-model="archivingAllowed"
+                :items="trueFalseOptions"
+                auto-grow
+                clearable
+                ></v-select>
+              </v-col>
+            </v-row>
 
             <div style="margin-top: 20px; font-weight: bold;">What anonymization was used if any?<span style='color: red;'><strong> *</strong></span></div>
             <v-select
@@ -128,13 +253,17 @@
             ></v-select>
 
             <div style="margin-top: 20px; font-weight: bold;">Types of access given?</div>
-            <v-select
-              name="accessList"
-              v-model="accessList"
-              :items="accessListOptions"
-              auto-grow
-              clearable
-            ></v-select>
+            <v-row>
+              <v-col cols="12" sm="6" md="4">
+                <v-select
+                  name="accessList"
+                  v-model="accessList"
+                  :items="accessListOptions"
+                  auto-grow
+                  clearable
+                ></v-select>
+              </v-col>
+            </v-row>
 
             <div style="font-weight: bold; margin-top:20px;">Provider Name<span style='color: red;'><strong> *</strong></span></div>
             <v-text-field
@@ -155,7 +284,7 @@
                   v-model="uncompressedSize"
                 ></v-text-field>
               </v-col>
-              <v-col cols="1" md="1">
+              <v-col cols="2" md="2">
                 <v-select
                   name="Unit"
                   v-model="uncompressedSizeUnit"
@@ -166,23 +295,62 @@
             </v-row>
 
             <div style="font-weight: bold; margin-top:20px;">Duration of access (in weeks)</div>
+            <v-row>
+              <v-col cols="12" sm="6" md="4">
+                <v-text-field
+                name="expirationDate"
+                v-model="expirationDays"
+                type="number"
+                auto-grow
+                clearable
+                required
+                ></v-text-field>
+              </v-col>
+            </v-row>
+
+            <div style="font-weight: bold; margin-top:20px;">Grouping ID</div>
+            <v-row>
+              <v-col cols="12" sm="6" md="4">
+                <v-text-field
+                name="groupingId"
+                v-model="groupingId"
+                type="text"
+                auto-grow
+                clearable
+                ></v-text-field>
+              </v-col>
+            </v-row>
+
+            <div style="font-weight: bold; margin-top:20px;">What User Agreement should be used?</div>
             <v-text-field
-            name="expirationDate"
-            v-model="expirationDays"
-            type="number"
+            name="useAgreement"
+            v-model="useAgreement"
+            type="text"
             auto-grow
             clearable
             required
             ></v-text-field>
 
             <div style="font-weight: bold; margin-top:20px;"> Is IRB approval required for access?</div>
-            <v-select
-            name="irbRequired"
-            v-model="irbRequired"
-            :items="trueFalseOptions"
+            <v-row>
+              <v-col cols="12" sm="6" md="4">
+                <v-select
+                name="irbRequired"
+                v-model="irbRequired"
+                :items="trueFalseOptions"
+                auto-grow
+                clearable
+                ></v-select>
+              </v-col>
+            </v-row>
+
+            <div style="font-weight: bold; margin-top:20px;"> Link to dataset</div>
+            <v-text-field
+            name="retrievalInstructions"
+            v-model="retrievalInstructions"
             auto-grow
             clearable
-            ></v-select>
+            ></v-text-field>
           </v-form>
 
           </v-card-text>
@@ -226,11 +394,11 @@ export default {
       datasetClass:'',
       commercialAllowed:'',
       productReviewRequired:'',
-      availabilityStartDateTime:'',
-      availabilityEndDateTime:'',
+      availabilityStartDateTime:{dialog:false, val:null},
+      availabilityEndDateTime:{dialog:false, val:null},
       ongoingMeasurement:'',
-      collectionStartDateTime:'',
-      collectionEndDateTime:'',
+      collectionStartDateTime:{dialog:false, val:null},
+      collectionEndDateTime:{dialog:false, val:null},
       byteSize:'',
       byteSizeUnit:0,
       archivingAllowed:'',
@@ -261,6 +429,10 @@ export default {
     })
   },
   methods:{
+    handleDateChange(value) {
+      this.dateDialog = false;
+      this.availabilityStartDateTime = value;
+    },
     submitForm(){
     let metadata = {"datasetName":this.datasetName,
                   "shortDesc":this.shortDesc,
@@ -268,11 +440,11 @@ export default {
                   "datasetClass":this.datasetClass,
                   "commercialAllowed":this.commercialAllowed,
                   "productReviewRequired":this.productReviewRequired,
-                  "availabilityStartDateTime":'',
-                  "availabilityEndDateTime":'',
+                  "availabilityStartDateTime":this.availabilityStartDateTime.val,
+                  "availabilityEndDateTime":this.availabilityEndDateTime.val,
                   "ongoingMeasurement":this.ongoingMeasurement,
-                  "collectionStartDateTime":'',
-                  "collectionEndDateTime":'',
+                  "collectionStartDateTime":this.collectionStartDateTime.val,
+                  "collectionEndDateTime":this.collectionEndDateTime.val,
                   "byteSize":this.byteSize*(1024**this.byteSizeUnit),
                   "archivingAllowed":this.archivingAllowed,
                   "keywordList":'',
@@ -281,10 +453,10 @@ export default {
                   "providerName":this.providerName,
                   "uncompressedSize":this.uncompressedSize*(1024**this.uncompressedSizeUnit),
                   "expirationDays":this.expirationDays,
-                  "groupingId":'',
-                  "useAgreement":'',
+                  "groupingId":this.groupingId,
+                  "useAgreement":this.useAgreement,
                   "irbRequired":this.irbRequired,
-                  "retrievalInstructions":''} 
+                  "retrievalInstructions":this.retrievalInstructions} 
       console.log("Form Submitted",metadata)
     }
 
