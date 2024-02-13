@@ -23,11 +23,12 @@
               Form Title
             </v-card-title>
           <v-card-text>
-          <v-form @submit.prevent="submitForm" >
+          <v-form ref="form" validate-on="submit" fast-fail @submit.prevent="submit" >
             <div style="font-weight: bold; margin-top:20px;">Enter dataset name<span style='color: red;'><strong> *</strong></span></div>
             <v-text-field
             name="datasetName"
             v-model="datasetName"
+            :rules="datasetNameRules"
             type="text"
             auto-grow
             clearable
@@ -37,6 +38,7 @@
             <v-text-field
               name="shortDescription"
               v-model="shortDesc"
+              :rules="shortDescRules"
               type="text"
               auto-grow
               clearable
@@ -47,6 +49,7 @@
             <v-textarea
             name="longDescription"
             v-model="longDesc"
+            :rules="longDescRules"
             type="text"
             auto-grow
             clearable
@@ -56,6 +59,7 @@
             <v-text-field
             name="datasetClass"
             v-model="datasetClass"
+            :rules="datasetClassRules"
             type="text"
             auto-grow
             clearable
@@ -216,6 +220,7 @@
                   name="byteSize"
                   type="number"
                   v-model="byteSize"
+                  :rules="byteSizeRules"
                   required
                 ></v-text-field>
               </v-col>
@@ -223,6 +228,7 @@
                 <v-select
                   name="Unit"
                   v-model="byteSizeUnit"
+                  :rules="byteSizeUnitRules"
                   :items="byteSizeUnitOptions"
                 ></v-select>
               </v-col>
@@ -246,6 +252,7 @@
             <v-select
               name="anonymizationList"
               v-model="anonymizationList"
+              :rules="anonymizationListRules"
               :items="anonymizationListOptions"
               auto-grow
               clearable
@@ -269,6 +276,7 @@
             <v-text-field
             name="providerName"
             v-model="providerName"
+            :rules="providerNameRules"
             type="text"
             auto-grow
             clearable
@@ -280,8 +288,9 @@
               <v-col cols="3" md="3">
                 <v-text-field
                   name="uncompressedSize"
-                  type="number"
                   v-model="uncompressedSize"
+                  :rules="uncompressedSizeRules"
+                  @input="handleNumericInput"
                 ></v-text-field>
               </v-col>
               <v-col cols="2" md="2">
@@ -351,12 +360,13 @@
             auto-grow
             clearable
             ></v-text-field>
+            <v-card-actions>
+              <v-btn color="primary" type="submit">Submit</v-btn>
+            </v-card-actions>
           </v-form>
 
           </v-card-text>
-            <v-card-actions>
-              <v-btn color="primary" @click="submitForm">Submit</v-btn>
-            </v-card-actions>
+            
       
          </v-card>
       </v-col>
@@ -389,9 +399,24 @@ export default {
   data() {
     return {
       datasetName:'',
+      datasetNameRules: [
+          value => !!value || 'Dataset name is required',
+          value => /^[A-Za-z0-9_.-]{5,250}$/.test(value) || 'Dataset name must only contain letters, numbers, underscores, hyphens, and dots, and be between 5 and 250 characters long',
+      ],
       shortDesc:'',
+      shortDescRules: [
+        value => !!value || 'Short description is required',
+        value => /^.{10,350}$/.test(value) || 'Short description must be between 10 and 350 characters long',
+      ],
       longDesc:'',
+      longDescRules: [
+        value => !!value || 'Long description is required',
+        value => /^.{20,10000}$/.test(value) || 'Long description must be between 20 and 10000 characters long',
+      ],
       datasetClass:'',
+      datasetClassRules: [
+        value => /^.{0,30}$/.test(value) || 'Dataset class can be a maximum of 30 characters long',
+      ],
       commercialAllowed:'',
       productReviewRequired:'',
       availabilityStartDateTime:{dialog:false, val:null},
@@ -400,14 +425,31 @@ export default {
       collectionStartDateTime:{dialog:false, val:null},
       collectionEndDateTime:{dialog:false, val:null},
       byteSize:'',
+      byteSizeRules: [
+        value => !!value || 'Byte size (in digits) is required',
+        value => /^\d+$/.test(value) || 'Byte size must be a positive integer',
+      ],
       byteSizeUnit:0,
+      byteSizeUnitRules: [
+        value => value!=undefined || 'Byte size unit is required',
+      ],
       archivingAllowed:'',
       keywordList:'',
       anonymizationList:'',
+      anonymizationListRules: [
+        value => value!=undefined || 'Anonymization method is required',
+      ],
       accessList:'',
       providerName:'',
+      providerNameRules: [
+        value => !!value || 'Provider name is required',
+        value => /^COMUNDA:.*/.test(value) || 'Provider name must start with "COMUNDA:"',
+      ],
       uncompressedSize:'',
       uncompressedSizeUnit:0,
+      uncompressedSizeRules: [
+        value => (/^[0-9]{0,20}$/.test(value)) || 'Uncompressed size must be empty or a number with 0 to 20 digits',
+      ],
       expirationDays:'',
       groupingId:'',
       useAgreement:'',
@@ -433,8 +475,15 @@ export default {
       this.dateDialog = false;
       this.availabilityStartDateTime = value;
     },
-    submitForm(){
-    let metadata = {"datasetName":this.datasetName,
+    async submit(){
+      
+      const valid = await this.$refs.form.validate();
+      if (!valid){
+        console.log("not valid!")
+        return
+      }
+      
+      let metadata = {"datasetName":this.datasetName,
                   "shortDesc":this.shortDesc,
                   "longDesc":this.longDesc,
                   "datasetClass":this.datasetClass,
@@ -458,8 +507,12 @@ export default {
                   "irbRequired":this.irbRequired,
                   "retrievalInstructions":this.retrievalInstructions} 
       console.log("Form Submitted",metadata)
+      
+    },
+    handleNumericInput() {
+      // Remove any non-numeric characters from the input
+      this.uncompressedSize = this.uncompressedSize.replace(/\D/g, '');
     }
-
   }
 }
 </script>
