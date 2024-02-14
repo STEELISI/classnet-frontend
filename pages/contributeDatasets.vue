@@ -20,7 +20,7 @@
           <!-- Card component to create the box effect -->
           <v-card>
             <v-card-title>
-              Form Title
+              Metadata Details
             </v-card-title>
           <v-card-text>
           <v-form ref="form" validate-on="submit" fast-fail @submit.prevent="submit" >
@@ -43,7 +43,9 @@
               auto-grow
               clearable
               required
+              :maxlength="shortDescCharLimit"
             ></v-text-field>
+            <span>{{ shortDesc.length }} / {{ shortDescCharLimit }}</span>
 
             <div style="font-weight: bold; margin-top:20px;">Provide a detailed description of the dataset<span style='color: red;'><strong> *</strong></span></div>
             <v-textarea
@@ -53,7 +55,9 @@
             type="text"
             auto-grow
             clearable
+            :maxlength="longDescCharLimit"
             required></v-textarea>
+            <span>{{ longDesc.length }} / {{ longDescCharLimit }}</span>
 
             <div style="font-weight: bold; margin-top:20px;">Enter dataset class</div>
             <v-text-field
@@ -248,6 +252,23 @@
               </v-col>
             </v-row>
 
+            <div style="font-weight: bold; margin-top:20px;"> Keywords to facilitate search ? </div>
+              <div class="input-bubble-container">
+                <div class="bubbles">
+                  <span class="bubble" v-for="(word, index) in keywordList" :key="index"
+                    >{{ word }}
+                    <span class="delete-bubble" @click="deleteWord(index)">×</span>
+                  </span>
+                  <v-text-field
+                    type="text"
+                    v-model="keywordInput"
+                    @keydown.space.prevent="addWord"
+                    @blur="addWord"
+                    class="bubble-input"
+                  ></v-text-field>
+                </div>
+              </div>
+
             <div style="margin-top: 20px; font-weight: bold;">What anonymization was used if any?<span style='color: red;'><strong> *</strong></span></div>
             <v-select
               name="anonymizationList"
@@ -303,7 +324,7 @@
               </v-col>
             </v-row>
 
-            <div style="font-weight: bold; margin-top:20px;">Duration of access (in weeks)</div>
+            <div style="font-weight: bold; margin-top:20px;">Duration of access (in days)</div>
             <v-row>
               <v-col cols="12" sm="6" md="4">
                 <v-text-field
@@ -322,6 +343,7 @@
               <v-col cols="12" sm="6" md="4">
                 <v-text-field
                 name="groupingId"
+                :rules="groupingIdRules"
                 v-model="groupingId"
                 type="text"
                 auto-grow
@@ -330,15 +352,22 @@
               </v-col>
             </v-row>
 
-            <div style="font-weight: bold; margin-top:20px;">What User Agreement should be used?</div>
-            <v-text-field
-            name="useAgreement"
-            v-model="useAgreement"
-            type="text"
-            auto-grow
-            clearable
-            required
-            ></v-text-field>
+            <!-- USE DUA DROPDOWN -->
+
+            <div style="font-weight: bold; margin-top:20px;">What User Agreement should be used?<span style='color: red;'><strong> *</strong></span></div>
+            <v-row>
+              <v-col cols="12" sm="6" md="4">
+                <v-select
+                name="useAgreement"
+                v-model="useAgreement"
+                :items="duaListOptions"
+                auto-grow
+                clearable
+                required
+                ></v-select>
+              </v-col>
+            </v-row>
+
 
             <div style="font-weight: bold; margin-top:20px;"> Is IRB approval required for access?</div>
             <v-row>
@@ -395,6 +424,7 @@ export default {
       ]
     }
   },
+  
 
   data() {
     return {
@@ -408,11 +438,13 @@ export default {
         value => !!value || 'Short description is required',
         value => /^.{10,350}$/.test(value) || 'Short description must be between 10 and 350 characters long',
       ],
+      shortDescCharLimit:350,
       longDesc:'',
       longDescRules: [
         value => !!value || 'Long description is required',
         value => /^.{20,10000}$/.test(value) || 'Long description must be between 20 and 10000 characters long',
       ],
+      longDescCharLimit:10000, 
       datasetClass:'',
       datasetClassRules: [
         value => /^.{0,30}$/.test(value) || 'Dataset class can be a maximum of 30 characters long',
@@ -420,6 +452,7 @@ export default {
       commercialAllowed:'',
       productReviewRequired:'',
       availabilityStartDateTime:{dialog:false, val:null},
+      // datetime rule??
       availabilityEndDateTime:{dialog:false, val:null},
       ongoingMeasurement:'',
       collectionStartDateTime:{dialog:false, val:null},
@@ -434,7 +467,8 @@ export default {
         value => value!=undefined || 'Byte size unit is required',
       ],
       archivingAllowed:'',
-      keywordList:'',
+      keywordInput:'',
+      keywordList:[],
       anonymizationList:'',
       anonymizationListRules: [
         value => value!=undefined || 'Anonymization method is required',
@@ -450,15 +484,31 @@ export default {
       uncompressedSizeRules: [
         value => (/^[0-9]{0,20}$/.test(value)) || 'Uncompressed size must be empty or a number with 0 to 20 digits',
       ],
-      expirationDays:'',
+      expirationDays:14,
       groupingId:'',
+      groupingIdRules: [
+        value => /^.{0,250}$/.test(value) || 'Grouping Id can be a maximum of 250 characters long',
+      ],
       useAgreement:'',
       irbRequired:'',
       retrievalInstructions:'',
       trueFalseOptions:[{text:'Yes',value:true},{text:'No',value:false}],
       byteSizeUnitOptions:[{text:'B', value:0},{text:'KB', value:1},{text:'MB', value:2},{text:'GB', value:3}],
       anonymizationListOptions:[{text:'cryptopan/full', value:'cryptopan/full'},{text:'cryptopan/host', value:'cryptopan/host'},{text:'None', value:'None'},{text:'Other', value:"Other"}],
-      accessListOptions:[{text:'Google BigQuery', value:'Google BigQuery'},{text:'https', value:'https'},{text:'rsync', value:'rsync'},{text:'other', value:'other'}]
+      accessListOptions:[{text:'Google BigQuery', value:'Google BigQuery'},{text:'https', value:'https'},{text:'rsync', value:'rsync'},{text:'other', value:'other'}],
+      duaListOptions:['USC','FRGP','MERIT'] 
+    }
+  },
+  watch: {
+    longDesc(newVal) {
+      if (newVal.length > longDescCharLimit) {
+        this.longDesc = newVal.slice(0, longDescCharLimit);
+      }
+    },
+    shortDesc(newVal) {
+      if(newVal.length > shortDescCharLimit){
+        this.shortDesc = newVal.slice(0, shortDescCharLimit);
+      }
     }
   },
   async mounted() {
@@ -474,6 +524,15 @@ export default {
     handleDateChange(value) {
       this.dateDialog = false;
       this.availabilityStartDateTime = value;
+    },
+    addWord() {
+        if (this.keywordInput.trim() !== '') {
+          this.keywordList.push(this.keywordInput.trim())
+          this.keywordInput = '' // Clear input field after adding the word
+        }
+    },
+    deleteWord(index) {
+      this.keywordList.splice(index, 1); // Remove the word at the specified index
     },
     async submit(){
       
@@ -496,12 +555,12 @@ export default {
                   "collectionEndDateTime":this.collectionEndDateTime.val,
                   "byteSize":this.byteSize*(1024**this.byteSizeUnit),
                   "archivingAllowed":this.archivingAllowed,
-                  "keywordList":'',
+                  "keywordList":this.keywordList,
                   "anonymizationList":this.anonymizationList,
                   "accessList":this.accessList,
                   "providerName":this.providerName,
                   "uncompressedSize":this.uncompressedSize*(1024**this.uncompressedSizeUnit),
-                  "expirationDays":this.expirationDays,
+                  "expirationDays":this.expirationDays==''?14:this.expirationDays,
                   "groupingId":this.groupingId,
                   "useAgreement":this.useAgreement,
                   "irbRequired":this.irbRequired,
@@ -515,4 +574,36 @@ export default {
     }
   }
 }
+//dates and required field validation
 </script>
+
+<style scoped>
+  .input-bubble-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .bubbles {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .bubble {
+    background-color: #e0e0e0;
+    border-radius: 16px;
+    padding: 5px 10px;
+    margin-right: 5px;
+    font-size: 14px;
+  }
+
+  .bubble-input {
+    flex-grow: 1;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    padding: 5px;
+    min-width: 100px; /* Ensure there is space for typing */
+  }
+</style>
