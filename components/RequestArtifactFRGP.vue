@@ -72,7 +72,7 @@
           clearable
           required
         ></v-text-field>
-        <div style="margin-top: 20px; font-weight: bold;">Briefly describe the research to be done with the dataset<span style='color: red;'><strong> *</strong></span></div>
+        <div style="margin-top: 20px; font-weight: bold;">What are you researching?<span style='color: red;'><strong> *</strong></span></div>
         <v-textarea
           name="project_description"
           v-model="project_description"
@@ -865,6 +865,8 @@
         payload.append('dataset', this.record.artifact.title)
         payload.append('representative_researcher_email', this.representative_researcher['email']);
         payload.append('public_key', this.representative_researcher['publicKey'])
+        payload.append('frgpData',this.frgpData)
+        payload.append('isFrgp', this.isFrgp)
         let response = await this.$artifactRequestEndpoint.post(
           [this.record.artifact.artifact_group_id, this.record.artifact.id],payload
         );
