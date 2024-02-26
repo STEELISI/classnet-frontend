@@ -334,6 +334,7 @@ export default {
       diff_results_dialog: false,
       diff_results_tab: "visual",
       loadingMessage: 'Loading...',
+      incompleteProfileDialog: false,
       incompleteProfileDialogMessage: "",
       project: "",
       project_description: "",
@@ -363,45 +364,14 @@ export default {
         },
     }
   },
-   mounted() {
+  async mounted() {
     setTimeout(() => {
       this.loadingMessage = 'Error loading'
     }, 5000)
-     this.$store.dispatch('user/fetchOrgs')
+    await this.$store.dispatch('user/fetchUser').then(response => {
+      
 
-  },
-  watch: {
-    userAffiliation: {
-      immediate: true,
-      async handler(newVal, oldVal) {
-        if (newVal !== oldVal) {
-          await this.incompleteProfileDialog
-        }
-      }
-    },
-    userDetails: {
-      immediate: true,
-      async handler(newVal, oldVal) {
-        if (newVal !== oldVal) {
-          await this.incompleteProfileDialog
-        }
-      }
-    }
-  },
-  computed: {
-
-    ...mapState({
-      userid: state => state.user.userid,
-      requester: state=> state.user.user,
-      favorites: state => state.artifacts.favoritesIDs,
-      user_is_admin: state => state.user.user_is_admin,
-      requester_orgs: state =>state.user.organization,
-      requ: state => state.user,
-      userAffiliation: state => state.user.organization,
-      userDetails:state => state.user.user,
-    }),
-    incompleteProfileDialog: function() {
-      if (!(this.userAffiliation.length > 0 && this.userDetails.mobileNumber && this.userDetails && this.userDetails.name && this.userDetails.email && this.userDetails.position)) {
+      if (!(this.userAffiliation.length > 0 && this.userDetails && this.userDetails.mobileNumber && this.userDetails.name && this.userDetails.email && this.userDetails.position)) {
         this.incompleteProfileDialogMessage = "Please fill the following:<br><ul>"
         if (!this.userDetails.name) {
           this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "<li>Name</li>"
@@ -419,10 +389,27 @@ export default {
           this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "<li>Phone Number</li>"
         }
         this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "</ul>"
-        return true
+
+        this.incompleteProfileDialog = true
+      } else {
+      this.incompleteProfileDialog = false
       }
-      return false
-    },
+    })
+    this.$store.dispatch('user/fetchOrgs')
+
+  },
+  computed: {
+
+    ...mapState({
+      userid: state => state.user.userid,
+      requester: state=> state.user.user,
+      favorites: state => state.artifacts.favoritesIDs,
+      user_is_admin: state => state.user.user_is_admin,
+      requester_orgs: state =>state.user.organization,
+      requ: state => state.user,
+      userAffiliation: state => state.user.organization,
+      userDetails:state => state.user.user,
+    }),
     sanitizedDescription: function() {
       return this.$sanitize(this.record.artifact.description)
     },
