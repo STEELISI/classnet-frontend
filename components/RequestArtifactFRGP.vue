@@ -265,11 +265,10 @@
               <v-col md="3">
   
                 <v-text-field
-                  v-model="researcher.number"
-                  label="Phone Number (only digits)"
+                  v-model="researcher.organization"
+                  label="Affiliation"
                   type="text"
-                  hint="Enter researcher phone number"
-                  pattern="^[0-9]+$"
+                  hint="Enter researcher affiliation"
                 ></v-text-field>
               </v-col>
               <v-col md="1">
@@ -671,7 +670,7 @@
         let researcherObj = {
           name: "",
           email: "",
-          number: ""
+          organization: ""
         }
         this.researchers_that_interact.push(researcherObj);
       },
@@ -732,7 +731,7 @@
         this.researchers_that_interact.forEach((researcher) => {
           researcher.name = researcher.name.trim();
           researcher.email = researcher.email.trim();
-          researcher.number = researcher.number.trim();
+          researcher.organization = researcher.organization.trim();
         });
         // Researchers is a combination of representative_researcher and the researchers_that_interact list
         this.researchers = [this.representative_researcher].concat(this.researchers_that_interact)
