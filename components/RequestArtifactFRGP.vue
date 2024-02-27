@@ -487,7 +487,7 @@
         publicKey: '',
         show1: false,
         password: 'Password',
-        isFrgp:true,
+        incompleteProfileDialog: false,
         rules: {
             required: value => !!value || 'Required.',
             min: v => v.length >= 8 || 'Min 8 characters',
@@ -495,30 +495,40 @@
           },
       }
     },
-     mounted() {
+    async mounted() {
       setTimeout(() => {
         this.loadingMessage = 'Error loading'
       }, 5000)
+      await this.$store.dispatch('user/fetchUser').then(response => {
+      
+
+      if (!(this.userAffiliation.length > 0 && this.userDetails && this.userDetails.mobileNumber && this.userDetails.name && this.userDetails.email && this.userDetails.position)) {
+        this.incompleteProfileDialogMessage = "Please fill the following:<br><ul>"
+        if (!this.userDetails.name) {
+          this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "<li>Name</li>"
+        }
+        if (!this.userDetails.email) {
+          this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "<li>Email</li>"
+        }
+        if (this.userAffiliation.length ===  0) {
+          this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "<li>Affiliation</li>"
+        }
+        if (!this.userDetails.position) {
+          this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "<li>Position</li>"
+        }
+        if (!this.userDetails.mobileNumber) {
+          this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "<li>Phone Number</li>"
+        }
+        this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "</ul>"
+
+        this.incompleteProfileDialog = true
+      } else {
+      this.incompleteProfileDialog = false
+      }
+    })
+
        this.$store.dispatch('user/fetchOrgs')
   
-    },
-    watch: {
-      userAffiliation: {
-        immediate: true,
-        async handler(newVal, oldVal) {
-          if (newVal !== oldVal) {
-            await this.incompleteProfileDialog
-          }
-        }
-      },
-      userDetails: {
-        immediate: true,
-        async handler(newVal, oldVal) {
-          if (newVal !== oldVal) {
-            await this.incompleteProfileDialog
-          }
-        }
-      }
     },
     computed: {
   
@@ -532,29 +542,6 @@
         userAffiliation: state => state.user.organization,
         userDetails:state => state.user.user,
       }),
-      incompleteProfileDialog: function() {
-        if (!(this.userAffiliation.length > 0 && this.userDetails.mobileNumber && this.userDetails && this.userDetails.name && this.userDetails.email && this.userDetails.position)) {
-          this.incompleteProfileDialogMessage = "Please fill the following:<br><ul>"
-          if (!this.userDetails.name) {
-            this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "<li>Name</li>"
-          }
-          if (!this.userDetails.email) {
-            this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "<li>Email</li>"
-          }
-          if (this.userAffiliation.length ===  0) {
-            this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "<li>Affiliation</li>"
-          }
-          if (!this.userDetails.position) {
-            this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "<li>Position</li>"
-          }
-          if (!this.userDetails.mobileNumber) {
-            this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "<li>Phone Number</li>"
-          }
-          this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "</ul>"
-          return true
-        }
-        return false
-      },
       sanitizedDescription: function() {
         return this.$sanitize(this.record.artifact.description)
       },
@@ -866,7 +853,6 @@
         payload.append('representative_researcher_email', this.representative_researcher['email']);
         payload.append('public_key', this.representative_researcher['publicKey'])
         payload.append('frgpData',this.frgpData)
-        payload.append('isFrgp', this.isFrgp)
         let response = await this.$artifactRequestEndpoint.post(
           [this.record.artifact.artifact_group_id, this.record.artifact.id],payload
         );

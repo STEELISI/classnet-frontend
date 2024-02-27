@@ -356,7 +356,6 @@ export default {
       publicKey: '',
       show1: false,
       password: 'Password',
-      isFrgp:false,
       rules: {
           required: value => !!value || 'Required.',
           min: v => v.length >= 8 || 'Min 8 characters',
@@ -719,7 +718,6 @@ export default {
       payload.append('dataset', this.record.artifact.title)
       payload.append('representative_researcher_email', this.representative_researcher['email']);
       payload.append('public_key', this.representative_researcher['publicKey'])
-      payload.append('isFrgp', this.isFrgp)
       let response = await this.$artifactRequestEndpoint.post(
         [this.record.artifact.artifact_group_id, this.record.artifact.id],payload
       );
