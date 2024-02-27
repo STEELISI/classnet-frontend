@@ -851,7 +851,7 @@
         payload.append('dataset', this.record.artifact.title)
         payload.append('representative_researcher_email', this.representative_researcher['email']);
         payload.append('public_key', this.representative_researcher['publicKey'])
-        payload.append('frgpData',this.frgpData)
+        payload.append('frgpData',JSON.stringify(this.frgpData));
         let response = await this.$artifactRequestEndpoint.post(
           [this.record.artifact.artifact_group_id, this.record.artifact.id],payload
         );
