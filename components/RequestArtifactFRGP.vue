@@ -320,7 +320,7 @@
         <div style="margin-top: 20px;font-weight: bold;">Where will the data be stored, is it at your institution, a cloud provider, or other? Please specify.<span style='color: red;'><strong> *</strong></span></div>
         <v-text-field
           name="storage"
-          v-model="frgpData.storage"
+          v-model="frgpData.storageLocation"
           type="text"
           auto-grow
           clearable
@@ -474,7 +474,7 @@
         formSubmittedErrorMessage: "",
         representative_researcher: {name: "", email: "", number: "", organization:"", title:""},
         frgpData: {supervisor_researcher:{name:"", email:"",title:""},nationality:'',timeperiod:'',
-        storage:'',numberOfResearchers:'',grants:"",dataUsage:'',resultSharing:'',targetAudience:'',dataDisposal:''},
+        storageLocation:'',numberOfResearchers:'',grants:"",dataUsage:'',resultSharing:'',targetAudience:'',dataDisposal:''},
         researchers_that_interact: [],
         researchers: [],
         requestMode: false,
@@ -712,7 +712,6 @@
   
       },
       submitForm() {
-        console.log(this.frgpData)
         this.project = this.project.trim();
         this.project_description = this.project_description.trim();
         this.project_justification = this.project_justification.trim();
