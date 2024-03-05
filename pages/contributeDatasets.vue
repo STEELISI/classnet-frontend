@@ -111,6 +111,7 @@
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
                         v-model="availabilityStartDateTime.val"
+                        :rules="availabilityStartDateTimeRules"
                         prepend-icon="mdi-calendar"
                         readonly
                         v-bind="attrs"
@@ -137,6 +138,7 @@
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
                         v-model="availabilityEndDateTime.val"
+                        :rules="availabilityEndDateTimeRules"
                         prepend-icon="mdi-calendar"
                         readonly
                         v-bind="attrs"
@@ -177,6 +179,7 @@
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
                         v-model="collectionStartDateTime.val"
+                        :rules="collectionStartDateTimeRules"
                         prepend-icon="mdi-calendar"
                         readonly
                         v-bind="attrs"
@@ -205,6 +208,7 @@
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
                         v-model="collectionEndDateTime.val"
+                        :rules="collectionEndDateTimeRules"
                         prepend-icon="mdi-calendar"
                         readonly
                         v-bind="attrs"
@@ -252,7 +256,7 @@
               </v-col>
             </v-row>
 
-            <div style="font-weight: bold; margin-top:20px;"> Keywords to facilitate search ? </div>
+            <div style="font-weight: bold; margin-top:20px;"> Keywords to facilitate search (add tab after typing a keyword)?<span style='color: red;'><strong> *</strong></span> </div>
               <div class="input-bubble-container">
                 <div class="bubbles">
                   <span class="bubble" v-for="(word, index) in keywordList" :key="index"
@@ -262,13 +266,23 @@
                   <v-text-field
                     type="text"
                     v-model="keywordInput"
+                    :rules="keywordListRules"
                     @keydown.space.prevent="addWord"
                     @blur="addWord"
                     class="bubble-input"
                   ></v-text-field>
                 </div>
               </div>
-
+            <div style="margin-top: 20px; font-weight: bold;">What format was used if any?<span style='color: red;'><strong> *</strong></span></div>
+            <v-select
+              name="formatList"
+              v-model="formatList"
+              :rules="formatListRules"
+              :items="formatListOptions"
+              auto-grow
+              clearable
+              required
+            ></v-select>
             <div style="margin-top: 20px; font-weight: bold;">What anonymization was used if any?<span style='color: red;'><strong> *</strong></span></div>
             <v-select
               name="anonymizationList"
@@ -330,6 +344,7 @@
                 <v-text-field
                 name="expirationDate"
                 v-model="expirationDays"
+                :rules="expirationDaysRules"
                 type="number"
                 auto-grow
                 clearable
@@ -360,7 +375,8 @@
                 <v-select
                 name="useAgreement"
                 v-model="useAgreement"
-                :items="duaListOptions"
+                :rules="useAgreementRules"
+                :items="useAgreementOptions"
                 auto-grow
                 clearable
                 required
@@ -383,24 +399,47 @@
             </v-row>
 
             <div style="font-weight: bold; margin-top:20px;"> Link to dataset</div>
-            <v-text-field
+            <v-select
             name="retrievalInstructions"
             v-model="retrievalInstructions"
+            :items="retrievalInstructionsOptions"
             auto-grow
             clearable
-            ></v-text-field>
+            ></v-select>
             <v-card-actions>
               <v-btn color="primary" type="submit">Submit</v-btn>
             </v-card-actions>
           </v-form>
 
           </v-card-text>
-            
-      
+          <v-col cols="12" v-if="submitCardMessage">
+                    <span style="color:red">{{submitCardMessage}}</span>
+          </v-col> 
          </v-card>
       </v-col>
+      
       </v-row>
       </v-container>
+
+    <v-dialog
+    v-model="formSubmitted"
+    width="auto "
+    >
+      <v-card>
+        <v-card-text>
+          <div v-if="formSubmittedError" class="form-submit-error">
+            <p>{{formSubmittedErrorMessage}}</p>
+          </div>
+          <div v-else class="form-submit-success">
+            <p>Dataset contributed successfully!</p>
+          </div>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn color="primary" block @click="$router.push('/');">Go to homepage</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  
   </span>
 </template>
 
@@ -452,15 +491,27 @@ export default {
       commercialAllowed:'',
       productReviewRequired:'',
       availabilityStartDateTime:{dialog:false, val:null},
-      // datetime rule??
+      availabilityStartDateTimeRules: [
+        value => (value!=undefined && value.length > 0)  || 'Availability Start Date Time is required',
+      ],
       availabilityEndDateTime:{dialog:false, val:null},
+      availabilityEndDateTimeRules: [
+        value => (value!=undefined && value.length > 0)  || 'Availability End Date Time is required',
+      ],
       ongoingMeasurement:'',
       collectionStartDateTime:{dialog:false, val:null},
+      collectionStartDateTimeRules: [
+        value => (value!=undefined && value.length > 0)  || 'Collection Start Date Time is required',
+      ],
       collectionEndDateTime:{dialog:false, val:null},
+      collectionEndDateTimeRules: [
+        value => (value!=undefined && value.length > 0)  || 'Collection End Date Time is required',
+      ],
+
       byteSize:'',
       byteSizeRules: [
         value => !!value || 'Byte size (in digits) is required',
-        value => /^\d+$/.test(value) || 'Byte size must be a positive integer',
+        value => /^[1-9][0-9]{1,19}$/.test(value) || 'Byte size must be a positive integer between 2 to 20 digits and cannot start with 0s',
       ],
       byteSizeUnit:0,
       byteSizeUnitRules: [
@@ -469,50 +520,66 @@ export default {
       archivingAllowed:'',
       keywordInput:'',
       keywordList:[],
+      keywordListRules: [
+        value => (value == '' || value.length > 1) || 'Keyword length must be greater than 1',
+        value => (value!=undefined  && this.keywordList.length > 0)  || 'You must enter at least one keyword',
+      ],
+      formatList:'',
+      formatListRules: [
+        value => (value!=undefined && value.length > 0)  || 'Format method is required',
+      ],
       anonymizationList:'',
       anonymizationListRules: [
-        value => value!=undefined || 'Anonymization method is required',
+        value => (value!=undefined && value.length > 0)  || 'Anonymization method is required',
       ],
       accessList:'',
       providerName:'',
       providerNameRules: [
         value => !!value || 'Provider name is required',
-        value => /^COMUNDA:.*/.test(value) || 'Provider name must start with "COMUNDA:"',
       ],
       uncompressedSize:'',
       uncompressedSizeUnit:0,
       uncompressedSizeRules: [
-        value => (/^[0-9]{0,20}$/.test(value)) || 'Uncompressed size must be empty or a number with 0 to 20 digits',
+        value => (/^[0-9]{0}$|^[1-9][0-9]{1,19}$/.test(value)) || 'Uncompressed size must be empty or a number with 2 to 20 digits and cannot start with 0s',
       ],
-      expirationDays:14,
+      expirationDays:'14',
+      expirationDaysRules: [
+        value => (/^[0-9]{0,3}$/.test(value)) || 'Expiration can be a maximum of 3 digits',
+      ],
       groupingId:'',
       groupingIdRules: [
-        value => /^.{0,250}$/.test(value) || 'Grouping Id can be a maximum of 250 characters long',
+        value => /^.{0}$|^.{5,250}$/.test(value) || 'Grouping Id must be between 5 and 250 characters long',
       ],
       useAgreement:'',
+      useAgreementOptions:['dua-ni-160816','frgp-continuous','merit-dua-v1'] ,
+      useAgreementRules: [
+        value => (value!=undefined && value.length > 0)  || 'Use Agreement is required',
+      ],
       irbRequired:'',
       retrievalInstructions:'',
-      trueFalseOptions:[{text:'Yes',value:true},{text:'No',value:false}],
+      retrievalInstructionsOptions:['download','on-site'] ,
+      trueFalseOptions:[{text:'Yes',value:"True"},{text:'No',value:"False"}],
       byteSizeUnitOptions:[{text:'B', value:0},{text:'KB', value:1},{text:'MB', value:2},{text:'GB', value:3}],
-      anonymizationListOptions:[{text:'cryptopan/full', value:'cryptopan/full'},{text:'cryptopan/host', value:'cryptopan/host'},{text:'None', value:'None'},{text:'Other', value:"Other"}],
+      formatListOptions:[{text:'address-bitstring',value:'address-bitstring'},{text:'adjacency-list',value:'adjacency-list'},{text:'binary',value:'binary'},{text:'coral',value:'coral'},{text:'csv',value:'csv'},{text:'dag',value:'dag'},{text:'netflow-v5',value:'netflow-v5'},{text:'netflow-v8',value:'netflow-v8'},{text:'netflow-v9',value:'netflow-v9'},{text:'pcap',value:'pcap'},{text:'snort',value:'snort'},{text:'syslog',value:'syslog'},{text:'text',value:'text'},{text:'other',value:'other'}],
+      anonymizationListOptions:[{text:'cryptopan/full', value:'cryptopan/full'},{text:'cryptopan/host', value:'cryptopan/host'},{text:'None', value:'none'},{text:'Other', value:"other"}],
       accessListOptions:[{text:'Google BigQuery', value:'Google BigQuery'},{text:'https', value:'https'},{text:'rsync', value:'rsync'},{text:'other', value:'other'}],
-      duaListOptions:['USC','FRGP','MERIT'] 
+      submitCardMessage: '',
+      formSubmitted: false,
+      formSubmittedError: false,
+      formSubmittedErrorMessage: ''
     }
   },
   watch: {
     longDesc(newVal) {
-      if (newVal.length > longDescCharLimit) {
-        this.longDesc = newVal.slice(0, longDescCharLimit);
+      if (newVal.length > this.longDescCharLimit) {
+        this.longDesc = newVal.slice(0, this.longDescCharLimit);
       }
     },
     shortDesc(newVal) {
-      if(newVal.length > shortDescCharLimit){
-        this.shortDesc = newVal.slice(0, shortDescCharLimit);
+      if(newVal.length > this.shortDescCharLimit){
+        this.shortDesc = newVal.slice(0, this.shortDescCharLimit);
       }
     }
-  },
-  async mounted() {
-    
   },
   computed: {
     ...mapState({
@@ -526,22 +593,26 @@ export default {
       this.availabilityStartDateTime = value;
     },
     addWord() {
-        if (this.keywordInput.trim() !== '') {
-          this.keywordList.push(this.keywordInput.trim())
-          this.keywordInput = '' // Clear input field after adding the word
-        }
+      if (this.keywordInput.trim().length < 2) {
+        return;
+      }
+      if (this.keywordInput.trim() !== '') {
+        this.keywordList.push(this.keywordInput.trim())
+        this.keywordInput = '' // Clear input field after adding the word
+      }
     },
     deleteWord(index) {
       this.keywordList.splice(index, 1); // Remove the word at the specified index
     },
     async submit(){
-      
+      this.submitCardMessage = '';
       const valid = await this.$refs.form.validate();
       if (!valid){
-        console.log("not valid!")
+        this.submitCardMessage = 'Please  fill in all required fields in the expected format.'
         return
       }
-      
+
+
       let metadata = {"datasetName":this.datasetName,
                   "shortDesc":this.shortDesc,
                   "longDesc":this.longDesc,
@@ -555,18 +626,31 @@ export default {
                   "collectionEndDateTime":this.collectionEndDateTime.val,
                   "byteSize":this.byteSize*(1024**this.byteSizeUnit),
                   "archivingAllowed":this.archivingAllowed,
-                  "keywordList":this.keywordList,
+                  "keywordList":this.keywordList.join(','),
+                  "formatList":this.formatList,
                   "anonymizationList":this.anonymizationList,
                   "accessList":this.accessList,
                   "providerName":this.providerName,
-                  "uncompressedSize":this.uncompressedSize*(1024**this.uncompressedSizeUnit),
+                  "uncompressedSize": this.uncompressedSize == '' ? '' : this.uncompressedSize*(1024**this.uncompressedSizeUnit),
                   "expirationDays":this.expirationDays==''?14:this.expirationDays,
                   "groupingId":this.groupingId,
                   "useAgreement":this.useAgreement,
                   "irbRequired":this.irbRequired,
-                  "retrievalInstructions":this.retrievalInstructions} 
-      console.log("Form Submitted",metadata)
-      
+                  "retrievalInstructions":this.retrievalInstructions
+                } 
+      for (const key in metadata) {
+        metadata[key] = this.$sanitize(metadata[key]);
+      }
+      let response = await this.$artifactContributeEndpoint.create(metadata);
+
+      this.formSubmitted = true
+      if (response.success == "true") {
+        this.formSubmittedError = false
+      } else {
+        this.formSubmittedError = true
+        this.formSubmittedErrorMessage = response.message
+      }
+
     },
     handleNumericInput() {
       // Remove any non-numeric characters from the input
@@ -605,5 +689,17 @@ export default {
     font-size: 14px;
     padding: 5px;
     min-width: 100px; /* Ensure there is space for typing */
+  }
+
+  .form-submit-error {
+    color: red;
+    padding: 10px;
+    font-size: 15px;
+  }
+
+  .form-submit-success {
+    color: green;
+    padding: 10px;
+    font-size: 15px;
   }
 </style>

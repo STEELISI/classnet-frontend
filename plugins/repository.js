@@ -17,6 +17,8 @@ export default (ctx, inject) => {
 
   inject('artifactRequestListEndpoint', repositoryWithAxios('kg/' + 'artifact/requestList'))
 
+  inject('artifactContributeEndpoint', repositoryWithAxios('kg/' + 'artifact/contribute'))
+
   // artifact searching
   inject(
     'artifactSearchEndpoint',
