@@ -497,6 +497,7 @@ export default {
       availabilityEndDateTime:{dialog:false, val:null},
       availabilityEndDateTimeRules: [
         value => (value!=undefined && value.length > 0)  || 'Availability End Date Time is required',
+        value => (value>= this.availabilityStartDateTime.val)  || 'Availability End Date Time must be the on or after Start time',
       ],
       ongoingMeasurement:'',
       collectionStartDateTime:{dialog:false, val:null},
@@ -506,6 +507,7 @@ export default {
       collectionEndDateTime:{dialog:false, val:null},
       collectionEndDateTimeRules: [
         value => (value!=undefined && value.length > 0)  || 'Collection End Date Time is required',
+        value => (value>= this.collectionStartDateTime.val)  || 'Collection End Date Time must be the on or after Start time',
       ],
 
       byteSize:'',
