@@ -67,7 +67,7 @@
         name="project"
         v-model="project"
         type="text"
-        hint="Enter your project name"
+        hint="Please indiacate the name of research project (including funder, if any), project URL (if any) and supporting organization (school, business, etc.) where the work will be done."
         auto-grow
         clearable
         required
@@ -77,7 +77,7 @@
         name="project_description"
         v-model="project_description"
         type="text"
-        hint="Enter your research purpose"
+        hint="Please provide briefly describe the research you plan to do"
         auto-grow
         clearable
         required
@@ -88,7 +88,7 @@
         name="project_justification"
         v-model="project_justification"
         type="text"
-        hint="Enter your justification for using this dataset."
+        hint="Please describe why the dataset is needed to advance the research."
         auto-grow
         clearable
         required
@@ -193,8 +193,10 @@
           </v-col>
         </v-row>
       </v-container>
-
-      <div style="margin-top: 20px; font-weight: bold;">Enter details of all other researchers that will interact with the data:</div>
+      
+      <div style="margin-top: 20px; font-weight: bold;">Enter details of all other researchers that will interact with the data:
+        <div style="font-weight: normal; font-size: smaller; margin-top: 5px;">Please identify any researchers (in addition to the dataset requester) that will use the data. Please provide their name and e-mail address.</div>
+      </div>
       <div v-for="(researcher, index) in researchers_that_interact" :key="index">
         <v-container>
           <v-row align="center">
@@ -220,11 +222,7 @@
                 </template>
               </v-text-field>
             </v-col>
-
-
-
             <v-col md="3">
-
               <v-text-field
                 v-model="researcher.number"
                 label="Phone Number (only digits)"
@@ -259,12 +257,12 @@
 
       </div>
 
-        <div style="margin-top: 20px; font-weight: bold;">Enter your SSH public key for downloading datasets:</div>
+        <div style="margin-top: 20px; font-weight: bold;">Your SSH public key for datasets download (optional)</div>
         <v-text-field
             v-model="requester.publicKey"
             :type=" 'text' "
             name="input-10-1"
-            hint="Enter your SSH public key "
+            hint="We support dataset download by HTTPS with username and password, or via ssh+rsync. Please provide the public part of your ssh key if you want to use rsync"
             disabled
         ></v-text-field>
 

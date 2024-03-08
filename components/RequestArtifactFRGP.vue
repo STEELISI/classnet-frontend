@@ -67,7 +67,7 @@
           name="project"
           v-model="project"
           type="text"
-          hint="Enter your project name"
+          hint="Please indiacate the name of research project (including funder, if any), project URL (if any) and supporting organization (school, business, etc.) where the work will be done."
           auto-grow
           clearable
           required
@@ -233,7 +233,9 @@
             </v-row>
           </v-container>
   
-        <div style="margin-top: 20px; font-weight: bold;">Enter details of all other researchers that will interact with the data:</div>
+        <div style="margin-top: 20px; font-weight: bold;">Enter details of all other researchers that will interact with the data:
+          <div style="font-weight: normal; font-size: smaller; margin-top: 5px;">Please identify any researchers (in addition to the dataset requester) that will use the data. Please provide their name and e-mail address.</div>
+        </div>
         <div v-for="(researcher, index) in researchers_that_interact" :key="index">
           <v-container>
             <v-row align="center">
@@ -378,7 +380,7 @@
         ></v-text-field>
 
         <div style="margin-top: 20px;font-weight: bold;">How will the data be disposed of once finished?<span style='color: red;'><strong> *</strong></span></div>
-        <div>Once data has been safely disposed of, frgp-eng@ucar.edu must be notified.</div>
+        <div style="font-weight: normal; font-size: smaller; margin-top: 5px;">Once data has been safely disposed of, frgp-eng@ucar.edu must be notified.</div>
         <v-text-field     
           name="data_disposal"
           v-model="frgpData.dataDisposal"
@@ -393,7 +395,7 @@
               v-model="requester.publicKey"
               :type=" 'text' "
               name="input-10-1"
-              hint="Enter your SSH public key "
+              hint="We support dataset download by HTTPS with username and password, or via ssh+rsync. Please provide the public part of your ssh key if you want to use rsync"
               disabled
           ></v-text-field>
   
