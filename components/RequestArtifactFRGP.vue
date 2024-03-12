@@ -67,7 +67,7 @@
         name="project"
         v-model="project"
         type="text"
-        hint="Please indiacate the name of research project (including funder, if any), project URL (if any) and supporting organization (school, business, etc.) where the work will be done."
+        hint="Enter your project name"
         auto-grow
         clearable
         required
@@ -233,9 +233,7 @@
           </v-row>
         </v-container>
 
-      <div style="margin-top: 20px; font-weight: bold;">Enter details of all other researchers that will interact with the data:
-        <div style="font-weight: normal; font-size: smaller; margin-top: 5px;">Please identify any researchers (in addition to the dataset requester) that will use the data. Please provide their name and e-mail address.</div>
-      </div>
+      <div style="margin-top: 20px; font-weight: bold;">Enter details of all other researchers that will interact with the data:</div>
       <div v-for="(researcher, index) in researchers_that_interact" :key="index">
         <v-container>
           <v-row align="center">
@@ -395,7 +393,7 @@
             v-model="requester.publicKey"
             :type=" 'text' "
             name="input-10-1"
-            hint="We support dataset download by HTTPS with username and password, or via ssh+rsync. Please provide the public part of your ssh key if you want to use rsync"
+            hint="Enter your SSH public key "
             disabled
         ></v-text-field>
 
@@ -873,7 +871,7 @@ export default {
     },
     async fetchDUA() {
       // get representative from researchers
-      let dua_payload = {
+let dua_payload = {
           'researchers': JSON.stringify(this.researchers),
           'project': this.project,
           'project_description': this.project_description,
@@ -881,9 +879,6 @@ export default {
           'representative_researcher': JSON.stringify(this.representative_researcher),
           'frgpData':JSON.stringify(this.frgpData)
         }
-
-      console.log("dua payload",dua_payload)
-
       let response = await this.$duaEndpoint.show(
         this.record.artifact.artifact_group_id,dua_payload
       );
