@@ -299,85 +299,85 @@
   
         </div>
 
-        <div style="margin-top: 20px;font-weight: bold;">Enter nationality of researcher (for UCAR export restrictions):<span style='color: red;'><strong> *</strong></span></div>
-        <v-text-field
-          name="nationality"
-          v-model="frgpData.nationality"
-          type="text"
-          auto-grow
-          clearable
-          required
-        ></v-text-field>
+      <div style="margin-top: 20px;font-weight: bold;">Enter nationality of researcher (for UCAR export restrictions):<span style='color: red;'><strong> *</strong></span></div>
+      <v-text-field
+        name="nationality"
+        v-model="frgpData.nationality"
+        type="text"
+        auto-grow
+        clearable
+        required
+      ></v-text-field>
 
-        <div style="margin-top: 20px;font-weight: bold;">What is the estimated time period of the project?<span style='color: red;'><strong> *</strong></span></div>
-        <v-text-field
-          name="timeperiod"
-          v-model="frgpData.timeperiod"
-          type="text"
-          auto-grow
-          clearable
-          required
-        ></v-text-field>
+      <div style="margin-top: 20px;font-weight: bold;">What is the estimated time period of the project?<span style='color: red;'><strong> *</strong></span></div>
+      <v-text-field
+        name="timeperiod"
+        v-model="frgpData.timeperiod"
+        type="text"
+        auto-grow
+        clearable
+        required
+      ></v-text-field>
 
-        <div style="margin-top: 20px;font-weight: bold;">Where will the data be stored, is it at your institution, a cloud provider, or other? Please specify.<span style='color: red;'><strong> *</strong></span></div>
-        <v-text-field
-          name="storage"
-          v-model="frgpData.storageLocation"
-          type="text"
-          auto-grow
-          clearable
-          required
-        ></v-text-field>
+      <div style="margin-top: 20px;font-weight: bold;">Where will the data be stored, is it at your institution, a cloud provider, or other? Please specify.<span style='color: red;'><strong> *</strong></span></div>
+      <v-text-field
+        name="storage"
+        v-model="frgpData.storageLocation"
+        type="text"
+        auto-grow
+        clearable
+        required
+      ></v-text-field>
 
-        <div style="margin-top: 20px;font-weight: bold;">How many people will have direct access to the data?<span style='color: red;'><strong> *</strong></span></div>
-        <v-text-field
-          name="number_researchers"
-          v-model="frgpData.numberOfResearchers"
-          type="number"
-          auto-grow
-          clearable
-          required
-        ></v-text-field>
+      <div style="margin-top: 20px;font-weight: bold;">How many people will have direct access to the data?<span style='color: red;'><strong> *</strong></span></div>
+      <v-text-field
+        name="number_researchers"
+        v-model="frgpData.numberOfResearchers"
+        type="number"
+        auto-grow
+        clearable
+        required
+      ></v-text-field>
 
-        <div style="margin-top: 20px;font-weight: bold;">Is the data to be used as part of a NSF (or other) grant? Please list<span style='color: red;'><strong> *</strong></span></div>
-        <v-text-field
-          name="grant"
-          v-model="frgpData.grants"
-          type="text"
-          auto-grow
-          clearable
-          required
-        ></v-text-field>
+      <div style="margin-top: 20px;font-weight: bold;">Is the data to be used as part of a NSF (or other) grant? Please list<span style='color: red;'><strong> *</strong></span></div>
+      <v-text-field
+        name="grant"
+        v-model="frgpData.grants"
+        type="text"
+        auto-grow
+        clearable
+        required
+      ></v-text-field>
 
-        <div style="margin-top: 20px;font-weight: bold;">What do you propose to do with the data?<span style='color: red;'><strong> *</strong></span></div>
-        <v-text-field
-          name="data_usage"
-          v-model="frgpData.dataUsage"
-          type="text"
-          auto-grow
-          clearable
-          required
-        ></v-text-field>
+      <div style="margin-top: 20px;font-weight: bold;">What do you propose to do with the data?<span style='color: red;'><strong> *</strong></span></div>
+      <v-text-field
+        name="data_usage"
+        v-model="frgpData.dataUsage"
+        type="text"
+        auto-grow
+        clearable
+        required
+      ></v-text-field>
 
-        <div style="margin-top: 20px;font-weight: bold;">How will the research results from the data be shared?<span style='color: red;'><strong> *</strong></span></div>
-        <v-text-field
-          name="results_shared"
-          v-model="frgpData.resultSharing"
-          type="text"
-          auto-grow
-          clearable
-          required
-        ></v-text-field>
+      <div style="margin-top: 20px;font-weight: bold;">How will the research results from the data be shared?<span style='color: red;'><strong> *</strong></span></div>
+      <v-text-field
+        name="results_shared"
+        v-model="frgpData.resultSharing"
+        type="text"
+        auto-grow
+        clearable
+        required
+      ></v-text-field>
 
-        <div style="margin-top: 20px;font-weight: bold;">Who is the audience for the research?<span style='color: red;'><strong> *</strong></span></div>
-        <v-text-field
-          name="target_audience"
-          v-model="frgpData.targetAudience"
-          type="text"
-          auto-grow
-          clearable
-          required
-        ></v-text-field>
+      <div style="margin-top: 20px;font-weight: bold;">Who is the audience for the research?<span style='color: red;'><strong> *</strong></span></div>
+      <v-text-field
+        name="target_audience"
+        v-model="frgpData.targetAudience"
+        type="text"
+        auto-grow
+        clearable
+        required
+      ></v-text-field>
 
         <div style="margin-top: 20px;font-weight: bold;">How will the data be disposed of once finished?<span style='color: red;'><strong> *</strong></span></div>
         <div style="font-weight: normal; font-size: smaller; margin-top: 5px;">Once data has been safely disposed of, frgp-eng@ucar.edu must be notified.</div>
@@ -503,452 +503,451 @@
       await this.$store.dispatch('user/fetchUser').then(response => {
       
 
-      if (!(this.userAffiliation.length > 0 && this.userDetails && this.userDetails.mobileNumber && this.userDetails.name && this.userDetails.email && this.userDetails.position)) {
-        this.incompleteProfileDialogMessage = "Please fill the following:<br><ul>"
-        if (!this.userDetails.name) {
-          this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "<li>Name</li>"
-        }
-        if (!this.userDetails.email) {
-          this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "<li>Email</li>"
-        }
-        if (this.userAffiliation.length ===  0) {
-          this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "<li>Affiliation</li>"
-        }
-        if (!this.userDetails.position) {
-          this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "<li>Position</li>"
-        }
-        if (!this.userDetails.mobileNumber) {
-          this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "<li>Phone Number</li>"
-        }
-        this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "</ul>"
+    if (!(this.userAffiliation.length > 0 && this.userDetails && this.userDetails.mobileNumber && this.userDetails.name && this.userDetails.email && this.userDetails.position)) {
+      this.incompleteProfileDialogMessage = "Please fill the following:<br><ul>"
+      if (!this.userDetails.name) {
+        this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "<li>Name</li>"
+      }
+      if (!this.userDetails.email) {
+        this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "<li>Email</li>"
+      }
+      if (this.userAffiliation.length ===  0) {
+        this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "<li>Affiliation</li>"
+      }
+      if (!this.userDetails.position) {
+        this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "<li>Position</li>"
+      }
+      if (!this.userDetails.mobileNumber) {
+        this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "<li>Phone Number</li>"
+      }
+      this.incompleteProfileDialogMessage = this.incompleteProfileDialogMessage + "</ul>"
 
-        this.incompleteProfileDialog = true
+      this.incompleteProfileDialog = true
+    } else {
+    this.incompleteProfileDialog = false
+    }
+  })
+
+     this.$store.dispatch('user/fetchOrgs')
+
+  },
+  computed: {
+
+    ...mapState({
+      userid: state => state.user.userid,
+      requester: state=> state.user.user,
+      favorites: state => state.artifacts.favoritesIDs,
+      user_is_admin: state => state.user.user_is_admin,
+      requester_orgs: state =>state.user.organization,
+      requ: state => state.user,
+      userAffiliation: state => state.user.organization,
+      userDetails:state => state.user.user,
+    }),
+    sanitizedDescription: function() {
+      return this.$sanitize(this.record.artifact.description)
+    },
+    favorite: {
+      get() {
+        return this.favorites[this.record.artifact.artifact_group_id] ? true : false
+      },
+      set(value) {
+        if (value)
+          this.$store.commit('artifacts/ADD_FAVORITE', this.record.artifact.artifact_group_id)
+        else
+          this.$store.commit(
+            'artifacts/REMOVE_FAVORITE',
+            this.record.artifact.artifact_group_id
+          )
+      }
+    },
+    tags() {
+      let tags = []
+      if (this.record.artifact.tags.length > 0) {
+        return this.record.artifact.tags.map(e => e.tag)
+      }
+      let top = this.record.artifact.meta.find(o => o.name == 'top_keywords')
+      if (top) {
+        tags = tags.concat(JSON.parse(top.value).map(e => e[0]))
+      }
+      top = this.record.artifact.meta
+        ? this.record.artifact.meta.find(o => o.name == 'top_ngram_keywords')
+        : null
+      if (top) {
+        tags = tags.concat(JSON.parse(top.value).map(e => e[0]))
+      }
+      // return only unique
+      let t = [...new Set(tags)]
+      t = t.filter(
+        el => !this.record.artifact.tags.map(e => e.tag).includes(el)
+      )
+      return t
+    },
+    badgesPresent() {
+      return (
+        typeof this.record.artifact.badges !== 'undefined' &&
+        this.record.artifact.badges.length > 0
+      )
+    },
+    languages() {
+      let csv = this.record.artifact.meta.find(o => o.name == 'languages')
+      if (csv) {
+        return csv.value ? csv.value.split(',') : []
       } else {
-      this.incompleteProfileDialog = false
+        return []
       }
-    })
+    },
+    homepage() {
+      let hp = this.record.artifact.meta.find(o => o.name == 'homepage')
+      if (!hp) return null
+      return hp.value
+    },
+    stars() {
+      let stars = this.record.artifact.meta.find(
+        o => o.name == 'stargazers_count'
+      )
+      if (!stars) return null
+      return stars.value
+    },
+    watchers() {
+      let watchers = this.record.artifact.meta.find(
+        o => o.name == 'watchers_count'
+      )
+      if (!watchers) return null
+      return watchers.value
+    },
+    license() {
+      return this.record.artifact.license
+        ? this.record.artifact.license.short_name +
+            ' (' +
+            this.record.artifact.license.long_name +
+            ')'
+        : ''
+    },
+    markdown() {
+      let readmes = {}
+      this.record.artifact.files.map(f => {
+        readmes = f.members.find(m => m.name.toUpperCase() == 'README.MD')
+      })
+      console.log(readmes)
+      if (typeof readmes !== 'undefined' && readmes.file_content)
+         return atob(readmes.file_content.content)
+    },
+    hideOverflow() {
+      return {
+        hideoverflow: !this.expanded
+      }
+    },
+    isOverflow() {
+      if (!this.loaded) return false
+      let element = this.$refs['markdown']
+      return element.offsetHeight >= 250
+    },
+    overflowIcon() {
+      if (!this.expanded) return 'mdi-chevron-down'
+      else return 'mdi-chevron-up'
+    },
+    overflowText() {
+      if (!this.expanded) return 'Show All'
+      else return 'Collapse'
+    },
+    published() {
+      return this.record.artifact.publication ? true : false
+    }
+  },
+  methods: {
+    navigateToProfile(){
+      this.dialog = false
+      this.$router.push('/profile')
+    },
+    showModal() {
+      this.isModalVisible = true;
+    },
+    closeModal() {
+      this.isModalVisible = false;
+    },
+    async deleteResearcher(index) {
+      this.researchers_that_interact.splice(index, 1);
+    },
+    async addResearcher() {
+      let researcherObj = {
+        name: "",
+        email: "",
+        organization: ""
+      }
+      this.researchers_that_interact.push(researcherObj);
+    },
+    async favoriteThis() {
+      if (!this.$auth.loggedIn) {
+        this.$router.push('/login')
+      } else {
+        let action = !this.favorite
+        this.favorite = !this.favorite
+        if (action) {
+          // FIXME: backend API
+          await this.$favoritesEndpoint.post(this.record.artifact.artifact_group_id, {})
+        } else {
+          await this.$favoritesEndpoint.delete(this.record.artifact.artifact_group_id)
+        }
+      }
+    },
+    uploadFile() {
+        this.Images = this.$refs.file.files[0];
+    },
+    getContent(){
 
-       this.$store.dispatch('user/fetchOrgs')
-  
+      if (this.irbContent == null){
+        return
+      }
+
+      if (!this.irbContent) {this.data = "No File Chosen"}
+      var reader = new FileReader();
+
+      // Use the javascript reader object to load the contents
+      // of the file in the v-model prop
+      reader.readAsBinaryString(this.irbContent);
+      reader.onload = () => {
+        this.irbData = reader.result;
+
+
+      }
+
+
     },
-    computed: {
-  
-      ...mapState({
-        userid: state => state.user.userid,
-        requester: state=> state.user.user,
-        favorites: state => state.artifacts.favoritesIDs,
-        user_is_admin: state => state.user.user_is_admin,
-        requester_orgs: state =>state.user.organization,
-        requ: state => state.user,
-        userAffiliation: state => state.user.organization,
-        userDetails:state => state.user.user,
-      }),
-      sanitizedDescription: function() {
-        return this.$sanitize(this.record.artifact.description)
-      },
-      favorite: {
-        get() {
-          return this.favorites[this.record.artifact.artifact_group_id] ? true : false
-        },
-        set(value) {
-          if (value)
-            this.$store.commit('artifacts/ADD_FAVORITE', this.record.artifact.artifact_group_id)
-          else
-            this.$store.commit(
-              'artifacts/REMOVE_FAVORITE',
-              this.record.artifact.artifact_group_id
-            )
-        }
-      },
-      tags() {
-        let tags = []
-        if (this.record.artifact.tags.length > 0) {
-          return this.record.artifact.tags.map(e => e.tag)
-        }
-        let top = this.record.artifact.meta.find(o => o.name == 'top_keywords')
-        if (top) {
-          tags = tags.concat(JSON.parse(top.value).map(e => e[0]))
-        }
-        top = this.record.artifact.meta
-          ? this.record.artifact.meta.find(o => o.name == 'top_ngram_keywords')
-          : null
-        if (top) {
-          tags = tags.concat(JSON.parse(top.value).map(e => e[0]))
-        }
-        // return only unique
-        let t = [...new Set(tags)]
-        t = t.filter(
-          el => !this.record.artifact.tags.map(e => e.tag).includes(el)
-        )
-        return t
-      },
-      badgesPresent() {
-        return (
-          typeof this.record.artifact.badges !== 'undefined' &&
-          this.record.artifact.badges.length > 0
-        )
-      },
-      languages() {
-        let csv = this.record.artifact.meta.find(o => o.name == 'languages')
-        if (csv) {
-          return csv.value ? csv.value.split(',') : []
-        } else {
-          return []
-        }
-      },
-      homepage() {
-        let hp = this.record.artifact.meta.find(o => o.name == 'homepage')
-        if (!hp) return null
-        return hp.value
-      },
-      stars() {
-        let stars = this.record.artifact.meta.find(
-          o => o.name == 'stargazers_count'
-        )
-        if (!stars) return null
-        return stars.value
-      },
-      watchers() {
-        let watchers = this.record.artifact.meta.find(
-          o => o.name == 'watchers_count'
-        )
-        if (!watchers) return null
-        return watchers.value
-      },
-      license() {
-        return this.record.artifact.license
-          ? this.record.artifact.license.short_name +
-              ' (' +
-              this.record.artifact.license.long_name +
-              ')'
-          : ''
-      },
-      markdown() {
-        let readmes = {}
-        this.record.artifact.files.map(f => {
-          readmes = f.members.find(m => m.name.toUpperCase() == 'README.MD')
-        })
-        console.log(readmes)
-        if (typeof readmes !== 'undefined' && readmes.file_content)
-           return atob(readmes.file_content.content)
-      },
-      hideOverflow() {
-        return {
-          hideoverflow: !this.expanded
-        }
-      },
-      isOverflow() {
-        if (!this.loaded) return false
-        let element = this.$refs['markdown']
-        return element.offsetHeight >= 250
-      },
-      overflowIcon() {
-        if (!this.expanded) return 'mdi-chevron-down'
-        else return 'mdi-chevron-up'
-      },
-      overflowText() {
-        if (!this.expanded) return 'Show All'
-        else return 'Collapse'
-      },
-      published() {
-        return this.record.artifact.publication ? true : false
+    submitForm() {
+      this.project = this.project.trim();
+      this.project_description = this.project_description.trim();
+      this.project_justification = this.project_justification.trim();
+      this.representative_researcher.name = this.requester.name.trim();
+      this.representative_researcher.email = this.requester.email.trim();
+      this.representative_researcher.number = "+" +this.requester.countryCode + this.requester.mobileNumber.trim();
+
+      let orgNames = []
+      for (let i of this.requester_orgs){
+        orgNames.push(i.org.name)
+      }
+
+      this.representative_researcher.organization = orgNames.join(", ")
+      this.representative_researcher.title = this.requester.position.trim();
+      this.representative_researcher.publicKey = this.requester.publicKey
+      this.researchers_that_interact.forEach((researcher) => {
+        researcher.name = researcher.name.trim();
+        researcher.email = researcher.email.trim();
+        researcher.organization = researcher.organization.trim();
+      });
+      // Researchers is a combination of representative_researcher and the researchers_that_interact list
+      this.researchers = [this.representative_researcher].concat(this.researchers_that_interact)
+      if (this.$refs.request_form.checkValidity()) {
+        // this.submitRequest();
+        this.fetchDUA();
+      } else {
+        this.$refs.request_form.reportValidity();
       }
     },
-    methods: {
-      navigateToProfile(){
-        this.dialog = false
-        this.$router.push('/profile')
-      },
-      showModal() {
-        this.isModalVisible = true;
-      },
-      closeModal() {
-        this.isModalVisible = false;
-      },
-      async deleteResearcher(index) {
-        this.researchers_that_interact.splice(index, 1);
-      },
-      async addResearcher() {
-        let researcherObj = {
-          name: "",
-          email: "",
-          organization: ""
+    iconColor(type) {
+      return artifactColor(type)
+    },
+    iconImage(type) {
+      return artifactIcon(type)
+    },
+    convertSize(size) {
+      return bytesToSize(size)
+    },
+    isAdmin() {
+      return this.user_is_admin
+    },
+    isOwner() {
+      if (this.user_is_admin) return true
+      return typeof this.record.artifact.owner !== 'undefined'
+        ? this.record.artifact.owner.id == this.userid
+        : false
+    },
+    async newVersion() {
+      let response = await this.$artifactEndpoint.post(
+        [this.record.artifact.artifact_group_id, this.record.artifact.id],{})
+      this.$store.dispatch('artifacts/fetchArtifact', {
+        artifact_group_id: response.artifact.artifact_group_id,
+        id: response.artifact.id
+      })
+      this.$router.push("/artifact/" + response.artifact.artifact_group_id
+        + "/" + response.artifact.id + "?edit=true")
+    },
+    async reImportNewVersion() {
+      let response = await this.$artifactEndpoint.post(
+        [this.record.artifact.artifact_group_id, this.record.artifact.id],
+        { reimport: true })
+      this.$router.push("/import")
+    },
+    async getDiff(from, to) {
+      this.diff_from = from
+      this.diff_to = to
+      let response = await this.$artifactCompareEndpoint.show(
+        [this.record.artifact.artifact_group_id, from],
+        { target_artifact_id: to}
+      )
+      this.diff_results = response.curations.map(
+        function(x) { return { curation: x }; }
+      )
+      console.log(this.diff_results)
+      for (var i = 0; i < this.diff_results.length; ++i) {
+        // NB: opdata from server is a string, not JSON itself.
+        this.diff_results[i].curation.opdata =
+          JSON.parse(this.diff_results[i].curation.opdata)
+
+        // NB: curations might not have IDs, as in this case,
+        // where the server generated a diff.  So we have to
+        // cons up an id for the ArtifactCurationList component.
+        this.diff_results[i]._id = i
+      }
+      this.diff_results_dialog = true
+    },
+    async submitRequest() {
+      this.formSubmitted = false;
+      let isEntryEmpty = false;
+      console.log(this.representative_researcher)
+      if ((this.representative_researcher.name == "" || this.representative_researcher.email == "" || this.representative_researcher.number == "" || this.representative_researcher.organization == "" || this.representative_researcher.title == "")) {
+          isEntryEmpty = true;
+      }
+      this.researchers.forEach((researcher) => {
+        if ((researcher.name == "" || researcher.email == "")) {
+          isEntryEmpty = true;
         }
-        this.researchers_that_interact.push(researcherObj);
-      },
-      async favoriteThis() {
-        if (!this.$auth.loggedIn) {
-          this.$router.push('/login')
-        } else {
-          let action = !this.favorite
-          this.favorite = !this.favorite
-          if (action) {
-            // FIXME: backend API
-            await this.$favoritesEndpoint.post(this.record.artifact.artifact_group_id, {})
-          } else {
-            await this.$favoritesEndpoint.delete(this.record.artifact.artifact_group_id)
-          }
+      });
+      if(this.record.artifact.provider == 'USC') {
+        if (this.project_justification == "") {
+          isEntryEmpty = true;
         }
-      },
-      uploadFile() {
-          this.Images = this.$refs.file.files[0];
-      },
-      getContent(){
-  
-        if (this.irbContent == null){
-          return
-        }
-  
-        if (!this.irbContent) {this.data = "No File Chosen"}
-        var reader = new FileReader();
-  
-        // Use the javascript reader object to load the contents
-        // of the file in the v-model prop
-        reader.readAsBinaryString(this.irbContent);
-        reader.onload = () => {
-          this.irbData = reader.result;
-  
-  
-        }
-  
-  
-      },
-      submitForm() {
-        this.project = this.project.trim();
-        this.project_description = this.project_description.trim();
-        this.project_justification = this.project_justification.trim();
-        this.representative_researcher.name = this.requester.name.trim();
-        this.representative_researcher.email = this.requester.email.trim();
-        this.representative_researcher.number = "+" +this.requester.countryCode + this.requester.mobileNumber.trim();
-  
-        let orgNames = []
-        for (let i of this.requester_orgs){
-          orgNames.push(i.org.name)
-        }
-  
-        this.representative_researcher.organization = orgNames.join(", ")
-        this.representative_researcher.title = this.requester.position.trim();
-        this.representative_researcher.publicKey = this.requester.publicKey
-        this.researchers_that_interact.forEach((researcher) => {
-          researcher.name = researcher.name.trim();
-          researcher.email = researcher.email.trim();
-          researcher.organization = researcher.organization.trim();
-        });
-        // Researchers is a combination of representative_researcher and the researchers_that_interact list
-        this.researchers = [this.representative_researcher].concat(this.researchers_that_interact)
-        if (this.$refs.request_form.checkValidity()) {
-          // this.submitRequest();
-          this.fetchDUA();
-        } else {
-          this.$refs.request_form.reportValidity();
-        }
-      },
-      iconColor(type) {
-        return artifactColor(type)
-      },
-      iconImage(type) {
-        return artifactIcon(type)
-      },
-      convertSize(size) {
-        return bytesToSize(size)
-      },
-      isAdmin() {
-        return this.user_is_admin
-      },
-      isOwner() {
-        if (this.user_is_admin) return true
-        return typeof this.record.artifact.owner !== 'undefined'
-          ? this.record.artifact.owner.id == this.userid
-          : false
-      },
-      async newVersion() {
-        let response = await this.$artifactEndpoint.post(
-          [this.record.artifact.artifact_group_id, this.record.artifact.id],{})
-        this.$store.dispatch('artifacts/fetchArtifact', {
-          artifact_group_id: response.artifact.artifact_group_id,
-          id: response.artifact.id
-        })
-        this.$router.push("/artifact/" + response.artifact.artifact_group_id
-          + "/" + response.artifact.id + "?edit=true")
-      },
-      async reImportNewVersion() {
-        let response = await this.$artifactEndpoint.post(
-          [this.record.artifact.artifact_group_id, this.record.artifact.id],
-          { reimport: true })
-        this.$router.push("/import")
-      },
-      async getDiff(from, to) {
-        this.diff_from = from
-        this.diff_to = to
-        let response = await this.$artifactCompareEndpoint.show(
-          [this.record.artifact.artifact_group_id, from],
-          { target_artifact_id: to}
-        )
-        this.diff_results = response.curations.map(
-          function(x) { return { curation: x }; }
-        )
-        console.log(this.diff_results)
-        for (var i = 0; i < this.diff_results.length; ++i) {
-          // NB: opdata from server is a string, not JSON itself.
-          this.diff_results[i].curation.opdata =
-            JSON.parse(this.diff_results[i].curation.opdata)
-  
-          // NB: curations might not have IDs, as in this case,
-          // where the server generated a diff.  So we have to
-          // cons up an id for the ArtifactCurationList component.
-          this.diff_results[i]._id = i
-        }
-        this.diff_results_dialog = true
-      },
-      async submitRequest() {
-        this.formSubmitted = false;
-        let isEntryEmpty = false;
-        console.log(this.representative_researcher)
-        if ((this.representative_researcher.name == "" || this.representative_researcher.email == "" || this.representative_researcher.number == "" || this.representative_researcher.organization == "" || this.representative_researcher.title == "")) {
-            isEntryEmpty = true;
-        }
-        this.researchers.forEach((researcher) => {
-          if ((researcher.name == "" || researcher.email == "")) {
-            isEntryEmpty = true;
-          }
-        });
-        if(this.record.artifact.provider == 'USC') {
-          if (this.project_justification == "") {
-            isEntryEmpty = true;
-          }
-        }
-  
-        if(!(this.project_description) || isEntryEmpty || !(this.project)) {
-          console.log(this.project_description)
-          console.log(isEntryEmpty)
-          console.log(this.project)
-          this.formSubmittedError = true;
-          this.formSubmittedErrorMessage = "Please fill all the fields";
-          this.formSubmitted = true;
-          return;
-        }
-  
-  
-        this.formSubmittedError = false;
-        this.formSubmittedErrorMessage = "";
-        this.requestMode = true;
-        const payload = new FormData();
-  
-  
-  
-        let blob = new Blob([this.duaHTML], { type: 'text/plain' });
-        let file = new File([blob], "signed_dua.html", {type: "text/plain"});
-        let researchersJSON = JSON.stringify(this.researchers);
-        payload.append('file', file);
-        if(this.record.artifact.irb){
-          let pdfBlob = new Blob([this.irbData], {type: 'application/pdf'})
-          let pdfFile = new File([pdfBlob], "IRB_approval_letter.pdf", {type: 'application/pdf'})
-          payload.append('pdf_file', pdfFile);
-        }
-        payload.append('project', this.project);
-        payload.append('project_description', this.project_description);
-        payload.append('project_justification', this.project_justification);
-        payload.append('researchers', researchersJSON);
-        payload.append('dataset', this.record.artifact.title)
-        payload.append('representative_researcher_email', this.representative_researcher['email']);
-        payload.append('public_key', this.representative_researcher['publicKey'])
-        payload.append('frgpData',JSON.stringify(this.frgpData));
-        let response = await this.$artifactRequestEndpoint.post(
-          [this.record.artifact.artifact_group_id, this.record.artifact.id],payload
-        );
-        if(response.status && response.status == 1) {
-          this.formSubmittedError = true;
-          this.formSubmittedErrorMessage = response.error;
-        }
-        else if (response.status && response.status == 500){
-          this.formSubmittedError = true;
-          this.formSubmittedErrorMessage = response.message;
-        }
-         else {
-          this.formSubmittedError = false;
-        }
+      }
+
+      if(!(this.project_description) || isEntryEmpty || !(this.project)) {
+        console.log(this.project_description)
+        console.log(isEntryEmpty)
+        console.log(this.project)
+        this.formSubmittedError = true;
+        this.formSubmittedErrorMessage = "Please fill all the fields";
         this.formSubmitted = true;
-        this.requestMode = false;
-        this.closeModal();
-      },
-      async fetchDUA() {
-        // get representative from researchers
-  
-        let response = await this.$duaEndpoint.show(
-          this.record.artifact.artifact_group_id,
-          {
-            'researchers': JSON.stringify(this.researchers),
-            'project': this.project,
-            'project_description': this.project_description,
-            'dataset_name': this.record.artifact.title,
-            'representative_researcher': JSON.stringify(this.representative_researcher)
-          }
-        );
-        this.dua = response.dua;
-        this.duaHTML = marked(this.dua);
-        this.showModal();
-        //TODO: Sign DUA
-      },
-    }
+        return;
+      }
+
+
+      this.formSubmittedError = false;
+      this.formSubmittedErrorMessage = "";
+      this.requestMode = true;
+      const payload = new FormData();
+
+
+
+      let blob = new Blob([this.duaHTML], { type: 'text/plain' });
+      let file = new File([blob], "signed_dua.html", {type: "text/plain"});
+      let researchersJSON = JSON.stringify(this.researchers);
+      payload.append('file', file);
+      if(this.record.artifact.irb){
+        let pdfBlob = new Blob([this.irbData], {type: 'application/pdf'})
+        let pdfFile = new File([pdfBlob], "IRB_approval_letter.pdf", {type: 'application/pdf'})
+        payload.append('pdf_file', pdfFile);
+      }
+      payload.append('project', this.project);
+      payload.append('project_description', this.project_description);
+      payload.append('project_justification', this.project_justification);
+      payload.append('researchers', researchersJSON);
+      payload.append('dataset', this.record.artifact.title)
+      payload.append('representative_researcher_email', this.representative_researcher['email']);
+      payload.append('public_key', this.representative_researcher['publicKey'])
+      payload.append('frgpData',JSON.stringify(this.frgpData));
+      let response = await this.$artifactRequestEndpoint.post(
+        [this.record.artifact.artifact_group_id, this.record.artifact.id],payload
+      );
+      if(response.status && response.status == 1) {
+        this.formSubmittedError = true;
+        this.formSubmittedErrorMessage = response.error;
+      }
+      else if (response.status && response.status == 500){
+        this.formSubmittedError = true;
+        this.formSubmittedErrorMessage = response.message;
+      }
+       else {
+        this.formSubmittedError = false;
+      }
+      this.formSubmitted = true;
+      this.requestMode = false;
+      this.closeModal();
+    },
+    async fetchDUA() {
+      // get representative from researchers
+let dua_payload = {
+          'researchers': JSON.stringify(this.researchers),
+          'project': this.project,
+          'project_description': this.project_description,
+          'dataset_name': this.record.artifact.title,
+          'representative_researcher': JSON.stringify(this.representative_researcher),
+          'frgpData':JSON.stringify(this.frgpData)
+        }
+      let response = await this.$duaEndpoint.show(
+        this.record.artifact.artifact_group_id,dua_payload
+      );
+      this.dua = response.dua;
+      this.duaHTML = marked(this.dua);
+      this.showModal();
+      //TODO: Sign DUA
+    },
   }
-  </script>
-  
-  <style scoped>
-  .hideoverflow {
-    max-height: 250px;
-    overflow: hidden;
+}
+</script>
+
+<style scoped>
+.hideoverflow {
+  max-height: 250px;
+  overflow: hidden;
+}
+</style>
+
+<style>
+  form {
+    padding: 10px;
+    border-radius: 5px;
   }
-  </style>
-  
-  <style>
-    form {
-      padding: 10px;
-      border-radius: 5px;
-    }
-  
-    input {
-      padding: 4px 8px;
-      margin: 4px;
-    }
-  
-    /* span {
-      font-size: 18px;
-      margin: 4px;
-      font-weight: 500;
-    } */
-  
-    .submit {
-      font-size: 15px;
-      color: #fff;
-      padding: 6px 12px;
-      border: none;
-      margin-top: 8px;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-  
-    .form-submit-error {
-      color: red;
-      padding: 10px;
-      font-size: 15px;
-    }
-  
-    .form-submit-success {
-      color: green;
-      padding: 10px;
-      font-size: 15px;
-    }
-  
-    .btn-submit {
-      background-color: #4CAF50;
-      color: white;
-      font-weight: bold;
-      border-radius: 4px;
-      padding: 8px;
-      width: 100px;
-    }
-  
-  
-  
-  </style>
-  
+
+  input {
+    padding: 4px 8px;
+    margin: 4px;
+  }
+
+  /* span {
+    font-size: 18px;
+    margin: 4px;
+    font-weight: 500;
+  } */
+
+  .submit {
+    font-size: 15px;
+    color: #fff;
+    padding: 6px 12px;
+    border: none;
+    margin-top: 8px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+
+  .form-submit-error {
+    color: red;
+    padding: 10px;
+    font-size: 15px;
+  }
+
+  .form-submit-success {
+    color: green;
+    padding: 10px;
+    font-size: 15px;
+  }
+
+  .btn-submit {
+    background-color: #4CAF50;
+    color: white;
+    font-weight: bold;
+    border-radius: 4px;
+    padding: 8px;
+    width: 100px;
+  }
+
+
+
+</style>
