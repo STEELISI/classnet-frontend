@@ -77,7 +77,7 @@
           name="project_description"
           v-model="project_description"
           type="text"
-          hint="Enter your research purpose"
+          hint="Please briefly describe the research you plan to do"
           auto-grow
           clearable
           required
@@ -88,7 +88,7 @@
           name="project_justification"
           v-model="project_justification"
           type="text"
-          hint="Enter your justification for using this dataset."
+          hint="Please describe why the dataset is needed to advance the research."
           auto-grow
           clearable
           required

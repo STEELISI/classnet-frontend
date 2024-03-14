@@ -77,7 +77,7 @@
         name="project_description"
         v-model="project_description"
         type="text"
-        hint="Please provide briefly describe the research you plan to do"
+        hint="Please briefly describe the research you plan to do"
         auto-grow
         clearable
         required
