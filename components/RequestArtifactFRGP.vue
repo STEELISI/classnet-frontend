@@ -1,301 +1,303 @@
 <template>
-  <div v-if="record.artifact">
-    <v-dialog
-      v-model="incompleteProfileDialog"
-      persistent
-      max-width="450"
-    >
-
-      <v-card>
-        <v-card-title class="text-h5">
-          Action Required!
-        </v-card-title>
-        <v-card-text>
-          <v-alert dense text type="warning">
-            Your profile must be complete before you can request access to datasets. Go to Manage account page to complete profile.<br><br>
-            
-            <span style="color: red;" v-html="incompleteProfileDialogMessage"></span>
-          </v-alert>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            color="green darken-1"
-            text
-            @click="navigateToProfile"
+    <div v-if="record.artifact">
+      <v-dialog
+        v-model="incompleteProfileDialog"
+        persistent
+        max-width="450"
+      >
+  
+        <v-card>
+          <v-card-title class="text-h5">
+            Action Required!
+          </v-card-title>
+          <v-card-text>
+            <v-alert dense text type="warning">
+              Your profile must be complete before you can request access to datasets. Go to Manage account page to complete profile.<br><br>
+              
+              <span style="color: red;" v-html="incompleteProfileDialogMessage"></span>
+            </v-alert>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+              color="green darken-1"
+              text
+              @click="navigateToProfile"
+            >
+              Go to Profile
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <v-card class="mx-auto my-2">
+        <v-card-title>{{ record.artifact.title }}</v-card-title>
+        <v-card-subtitle>
+          <div
+            v-if="record.artifact.artifact_group.publication != null &&
+                  record.artifact.artifact_group.publication.artifact_id != record.artifact.id"
+            align="left"
+            class="mx-0"
           >
-            Go to Profile
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-    <v-card class="mx-auto my-2">
-      <v-card-title>{{ record.artifact.title }}</v-card-title>
-      <v-card-subtitle>
-        <div
-          v-if="record.artifact.artifact_group.publication != null &&
-                record.artifact.artifact_group.publication.artifact_id != record.artifact.id"
-          align="left"
-          class="mx-0"
-        >
-          &nbsp;&nbsp;(<a :href="`/artifact/${record.artifact.artifact_group_id}`">newest version</a>)
-        </div>
-        <div>
-        </div>
-<!--
-     <span>Upload filled data use agreement here  <input type="file" @change="uploadFile" ref="file"></span><br>    -->
-
-      </v-card-subtitle>
-
-       </v-card>
-
-   <div>
-    <transition name="modal-fade">
-          <DUAReviewModal
-            v-show="isModalVisible"
-            @close="closeModal"
-            @submitRequest="submitRequest"
-            v-bind:duaHTML="duaHTML">
-          </DUAReviewModal>
-        </transition>
-     <form @submit.prevent="submitForm" ref="request_form">
-     <!-- <div style="margin-top: 20px; font-weight: bold;">Please download and fill out data use agreement from<a @click="fetchDUA"> this link</a></div>
-      <div style="margin-top: 20px; margin-bottom: 20px; font-weight: normal;">Upload filled data use agreement here (in PDF format) <input type="file" @change="uploadFile" ref="file" required accept="application/pdf"></div> -->
-
-      <div style="font-weight: bold;">Enter project name<span style='color: red;'><strong> *</strong></span></div>
-      <v-text-field
-        name="project"
-        v-model="project"
-        type="text"
-        hint="Enter your project name"
-        auto-grow
-        clearable
-        required
-      ></v-text-field>
-      <div style="margin-top: 20px; font-weight: bold;">What are you researching?<span style='color: red;'><strong> *</strong></span></div>
-      <v-textarea
-        name="project_description"
-        v-model="project_description"
-        type="text"
-        hint="Enter your research purpose"
-        auto-grow
-        clearable
-        required
-      ></v-textarea>
-      <div v-if="record.artifact.provider == 'USC'">
-      <div style="margin-top: 20px; font-weight: bold;">Briefly justify (a few sentences) about why the dataset is needed to advance that research.<span style='color: red;'><strong> *</strong></span></div>
-      <v-textarea
-        name="project_justification"
-        v-model="project_justification"
-        type="text"
-        hint="Enter your justification for using this dataset."
-        auto-grow
-        clearable
-        required
-      ></v-textarea>
-      </div>
-      <div style="margin-top: 20px; font-weight: bold;">Details of the researcher representative (Fetched from your profile)</div>
-      <v-container>
-        <v-row align="center">
-          <v-col md="4">
-            <v-text-field
-              v-model="requester.name"
-              type="text"
-              hint="Enter researcher name for FRGP"
-              disabled
-              required>
-              <template #label>
-                  <span>Name<span style='color: red;'> *</span></span>
-              </template>
-            </v-text-field>
-          </v-col>
-          <v-col md="3">
-            <v-text-field
-              v-model="requester.email"
-              label="Email"
-              type="email"
-              hint="Enter researcher email"
-              disabled
-              required>
-              <template #label>
-                  <span>Email<span style='color: red;'> *</span></span>
-              </template>
-            </v-text-field>
-          </v-col>
-          <v-col md="1">
-            <v-text-field
-            v-model="requester.countryCode"
-          label="Country Code"
-          type="number"
-          prefix="+"
-          hint="Enter country code"
-          min = "1"
-          pattern="^[0-9]+$"
+            &nbsp;&nbsp;(<a :href="`/artifact/${record.artifact.artifact_group_id}`">newest version</a>)
+          </div>
+          <div>
+          </div>
+  <!--
+       <span>Upload filled data use agreement here  <input type="file" @change="uploadFile" ref="file"></span><br>    -->
+  
+        </v-card-subtitle>
+  
+         </v-card>
+  
+     <div>
+      <transition name="modal-fade">
+            <DUAReviewModal
+              v-show="isModalVisible"
+              @close="closeModal"
+              @submitRequest="submitRequest"
+              v-bind:duaHTML="duaHTML">
+            </DUAReviewModal>
+          </transition>
+       <form @submit.prevent="submitForm" ref="request_form">
+       <!-- <div style="margin-top: 20px; font-weight: bold;">Please download and fill out data use agreement from<a @click="fetchDUA"> this link</a></div>
+        <div style="margin-top: 20px; margin-bottom: 20px; font-weight: normal;">Upload filled data use agreement here (in PDF format) <input type="file" @change="uploadFile" ref="file" required accept="application/pdf"></div> -->
+  
+        <div style="font-weight: bold;">Enter project name<span style='color: red;'><strong> *</strong></span></div>
+        <v-text-field
+          name="project"
+          v-model="project"
+          type="text"
+          hint="Please indiacate the name of research project (including funder, if any), project URL (if any) and supporting organization (school, business, etc.) where the work will be done."
+          auto-grow
+          clearable
           required
-          disabled
-          ></v-text-field>
-          </v-col>
-          <v-col md="3">
-            <v-text-field
-              v-model="requester.mobileNumber"
-              type="text"
-              hint="Enter researcher phone number"
-              required
-              min = "1"
-              pattern="^[0-9]+$"
-              disabled>
-              <template #label>
-                  <span>Phone Number (only digits)<span style='color: red;'> *</span></span>
-              </template>
-            </v-text-field>
-          </v-col>
-          <v-col md="5">
-            <v-combobox
-                      label="Affiliation"
-                      multiple
-                      small-chips
-                      deletable-chips
-                      persistent-hint
-                      :items="orgNames"
-                      v-model="requester_orgs"
-                      :search-input.sync="orgSearch"
-                      item-text="org.name"
-                      item-value="org.name"
-                      disabled
-                      return-object
-                    >
-                      <template v-slot:no-data>
-                        <v-list-item>
-                          <v-list-item-content>
-                            <v-list-item-title>
-                              No results matching "<strong>{{
-                                orgSearch
-                              }}</strong
-                              >". Press <kbd>tab</kbd> to create a new one
-                            </v-list-item-title>
-                          </v-list-item-content>
-                        </v-list-item>
-                      </template>
-                    </v-combobox>
-          </v-col>
-          <v-col md="5">
-            <v-text-field
-
-              v-model="requester.position"
-              type="text"
-              hint="Enter researcher title"
-              disabled
-              required>
-              <template #label>
-                  <span>Researcher Title<span style='color: red;'> *</span></span>
-              </template>
-            </v-text-field>
-          </v-col>
-        </v-row>
-      </v-container>
-
-      <div style="margin-top: 20px; font-weight: bold;">Enter details of Supervisor</div>
-      <v-container>
-          <v-row align="center">
-            <v-col md="5">
-              <v-text-field
-                v-model="frgpData.supervisor_researcher.name"
-                type="text"
-                hint="Enter supervisor name"
-                required>
-                <template #label>
-                  <span>Name<span style='color: red;'> *</span></span>
-                </template>
-              </v-text-field>
-            </v-col>
-            <v-col md="3">
-              <v-text-field
-                v-model="frgpData.supervisor_researcher.email"
-                type="email"
-                hint="Enter supervisor email"
-                required>
-                <template #label>
-                  <span>Email<span style='color: red;'> *</span></span>
-                </template>
-              </v-text-field>
-            </v-col>  
-            <v-col md="3">
-              <v-text-field
-                v-model="frgpData.supervisor_researcher.title"
-                type="text"
-                hint="Enter supervisor title"
-                required>
-                <template #label>
-                  <span>Title<span style='color: red;'> *</span></span>
-                </template>
-              </v-text-field>
-            </v-col>  
-          </v-row>
-        </v-container>
-
-      <div style="margin-top: 20px; font-weight: bold;">Enter details of all other researchers that will interact with the data:</div>
-      <div v-for="(researcher, index) in researchers_that_interact" :key="index">
+        ></v-text-field>
+        <div style="margin-top: 20px; font-weight: bold;">What are you researching?<span style='color: red;'><strong> *</strong></span></div>
+        <v-textarea
+          name="project_description"
+          v-model="project_description"
+          type="text"
+          hint="Please briefly describe the research you plan to do"
+          auto-grow
+          clearable
+          required
+        ></v-textarea>
+        <div v-if="record.artifact.provider == 'USC'">
+        <div style="margin-top: 20px; font-weight: bold;">Briefly justify (a few sentences) about why the dataset is needed to advance that research.<span style='color: red;'><strong> *</strong></span></div>
+        <v-textarea
+          name="project_justification"
+          v-model="project_justification"
+          type="text"
+          hint="Please describe why the dataset is needed to advance the research."
+          auto-grow
+          clearable
+          required
+        ></v-textarea>
+        </div>
+        <div style="margin-top: 20px; font-weight: bold;">Details of the researcher representative (Fetched from your profile)</div>
         <v-container>
           <v-row align="center">
-            <v-col md="5">
+            <v-col md="4">
               <v-text-field
-                v-model="researcher.name"
+                v-model="requester.name"
                 type="text"
-                hint="Enter researcher name"
+                hint="Enter researcher name for FRGP"
+                disabled
                 required>
                 <template #label>
-                  <span>Name<span style='color: red;'> *</span></span>
+                    <span>Name<span style='color: red;'> *</span></span>
                 </template>
               </v-text-field>
             </v-col>
             <v-col md="3">
               <v-text-field
-                v-model="researcher.email"
+                v-model="requester.email"
+                label="Email"
                 type="email"
                 hint="Enter researcher email"
+                disabled
                 required>
                 <template #label>
-                  <span>Email<span style='color: red;'> *</span></span>
+                    <span>Email<span style='color: red;'> *</span></span>
                 </template>
               </v-text-field>
             </v-col>
-
-
-
-            <v-col md="3">
-
-              <v-text-field
-                v-model="researcher.organization"
-                label="Affiliation"
-                type="text"
-                hint="Enter researcher affiliation"
-              ></v-text-field>
-            </v-col>
             <v-col md="1">
-              <div>
-                <v-icon
-                  v-if="researchers_that_interact.length > 0"
-                  color="error"
-                  @click="deleteResearcher(index)"
-                >
-                  mdi-delete
-                </v-icon>
-              </div>
+              <v-text-field
+              v-model="requester.countryCode"
+            label="Country Code"
+            type="number"
+            prefix="+"
+            hint="Enter country code"
+            min = "1"
+            pattern="^[0-9]+$"
+            required
+            disabled
+            ></v-text-field>
+            </v-col>
+            <v-col md="3">
+              <v-text-field
+                v-model="requester.mobileNumber"
+                type="text"
+                hint="Enter researcher phone number"
+                required
+                min = "1"
+                pattern="^[0-9]+$"
+                disabled>
+                <template #label>
+                    <span>Phone Number (only digits)<span style='color: red;'> *</span></span>
+                </template>
+              </v-text-field>
+            </v-col>
+            <v-col md="5">
+              <v-combobox
+                        label="Affiliation"
+                        multiple
+                        small-chips
+                        deletable-chips
+                        persistent-hint
+                        :items="orgNames"
+                        v-model="requester_orgs"
+                        :search-input.sync="orgSearch"
+                        item-text="org.name"
+                        item-value="org.name"
+                        disabled
+                        return-object
+                      >
+                        <template v-slot:no-data>
+                          <v-list-item>
+                            <v-list-item-content>
+                              <v-list-item-title>
+                                No results matching "<strong>{{
+                                  orgSearch
+                                }}</strong
+                                >". Press <kbd>tab</kbd> to create a new one
+                              </v-list-item-title>
+                            </v-list-item-content>
+                          </v-list-item>
+                        </template>
+                      </v-combobox>
+            </v-col>
+            <v-col md="5">
+              <v-text-field
+  
+                v-model="requester.position"
+                type="text"
+                hint="Enter researcher title"
+                disabled
+                required>
+                <template #label>
+                    <span>Researcher Title<span style='color: red;'> *</span></span>
+                </template>
+              </v-text-field>
             </v-col>
           </v-row>
         </v-container>
-      </div>
-      <div style="margin-top: 20px;">
-        <v-btn
-          class="success ml-2 mb-2"
-          fab
-          x-small
-          @click="addResearcher"
-        >
-          <v-icon>mdi-plus</v-icon>
-        </v-btn>
 
-      </div>
+        <div style="margin-top: 20px; font-weight: bold;">Enter details of Supervisor</div>
+        <v-container>
+            <v-row align="center">
+              <v-col md="5">
+                <v-text-field
+                  v-model="frgpData.supervisor_researcher.name"
+                  type="text"
+                  hint="Enter supervisor name"
+                  required>
+                  <template #label>
+                    <span>Name<span style='color: red;'> *</span></span>
+                  </template>
+                </v-text-field>
+              </v-col>
+              <v-col md="3">
+                <v-text-field
+                  v-model="frgpData.supervisor_researcher.email"
+                  type="email"
+                  hint="Enter supervisor email"
+                  required>
+                  <template #label>
+                    <span>Email<span style='color: red;'> *</span></span>
+                  </template>
+                </v-text-field>
+              </v-col>  
+              <v-col md="3">
+                <v-text-field
+                  v-model="frgpData.supervisor_researcher.title"
+                  type="text"
+                  hint="Enter supervisor title"
+                  required>
+                  <template #label>
+                    <span>Title<span style='color: red;'> *</span></span>
+                  </template>
+                </v-text-field>
+              </v-col>  
+            </v-row>
+          </v-container>
+  
+        <div style="margin-top: 20px; font-weight: bold;">Enter details of all other researchers that will interact with the data:
+          <div style="font-weight: normal; font-size: smaller; margin-top: 5px;">Please identify any researchers (in addition to the dataset requester) that will use the data. Please provide their name and e-mail address.</div>
+        </div>
+        <div v-for="(researcher, index) in researchers_that_interact" :key="index">
+          <v-container>
+            <v-row align="center">
+              <v-col md="5">
+                <v-text-field
+                  v-model="researcher.name"
+                  type="text"
+                  hint="Enter researcher name"
+                  required>
+                  <template #label>
+                    <span>Name<span style='color: red;'> *</span></span>
+                  </template>
+                </v-text-field>
+              </v-col>
+              <v-col md="3">
+                <v-text-field
+                  v-model="researcher.email"
+                  type="email"
+                  hint="Enter researcher email"
+                  required>
+                  <template #label>
+                    <span>Email<span style='color: red;'> *</span></span>
+                  </template>
+                </v-text-field>
+              </v-col>
+  
+  
+  
+              <v-col md="3">
+  
+                <v-text-field
+                  v-model="researcher.organization"
+                  label="Affiliation"
+                  type="text"
+                  hint="Enter researcher affiliation"
+                ></v-text-field>
+              </v-col>
+              <v-col md="1">
+                <div>
+                  <v-icon
+                    v-if="researchers_that_interact.length > 0"
+                    color="error"
+                    @click="deleteResearcher(index)"
+                  >
+                    mdi-delete
+                  </v-icon>
+                </div>
+              </v-col>
+            </v-row>
+          </v-container>
+        </div>
+        <div style="margin-top: 20px;">
+          <v-btn
+            class="success ml-2 mb-2"
+            fab
+            x-small
+            @click="addResearcher"
+          >
+            <v-icon>mdi-plus</v-icon>
+          </v-btn>
+  
+        </div>
 
       <div style="margin-top: 20px;font-weight: bold;">Enter nationality of researcher (for UCAR export restrictions):<span style='color: red;'><strong> *</strong></span></div>
       <v-text-field
@@ -377,129 +379,129 @@
         required
       ></v-text-field>
 
-      <div style="margin-top: 20px;font-weight: bold;">How will the data be disposed of once finished?<span style='color: red;'><strong> *</strong></span></div>
-      <div style="font-weight: normal; font-size: smaller; margin-top: 5px;">Once data has been safely disposed of, frgp-eng@ucar.edu must be notified.</div>
-      <v-text-field     
-        name="data_disposal"
-        v-model="frgpData.dataDisposal"
-        type="text"
-        auto-grow
-        clearable
-        required
-      ></v-text-field>
-
-      <div style="margin-top: 20px; font-weight: bold;">Enter your SSH public key for downloading datasets:</div>
-        <v-text-field
-            v-model="requester.publicKey"
-            :type=" 'text' "
-            name="input-10-1"
-            hint="Enter your SSH public key "
-            disabled
+        <div style="margin-top: 20px;font-weight: bold;">How will the data be disposed of once finished?<span style='color: red;'><strong> *</strong></span></div>
+        <div style="font-weight: normal; font-size: smaller; margin-top: 5px;">Once data has been safely disposed of, frgp-eng@ucar.edu must be notified.</div>
+        <v-text-field     
+          name="data_disposal"
+          v-model="frgpData.dataDisposal"
+          type="text"
+          auto-grow
+          clearable
+          required
         ></v-text-field>
-
-
-      <div v-if ="record.artifact.irb" style="margin-top: 20px; font-weight: bold;">Upload IRB approval Letter</div>
-      <v-file-input v-if ="record.artifact.irb" v-model = "irbContent" clearable label="Upload IRB approval letter" variant="underlined" @change ="getContent"></v-file-input>
-      <div>
-
-      <input type="submit" value="Review" class="btn-submit" style="margin-top: 20px;" :disabled="requestMode">
-      </div>
-    </form>
-
-    <v-dialog
-    v-model="formSubmitted"
-    width="auto "
-    >
-      <v-card>
-        <v-card-text>
-          <div v-if="formSubmittedError" class="form-submit-error">
-            <p>{{formSubmittedErrorMessage}}</p>
-          </div>
-          <div v-else class="form-submit-success">
-            <p>Request submitted successfully!</p>
-          </div>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn color="primary" block @click="$router.push('/');">Go to homepage</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </div>
-
-   </div>
-  <div v-else>
-    {{ loadingMessage }}
-  </div>
-</template>
-
-<script>
-import { mapState } from 'vuex'
-import { artifactIcon, artifactColor, bytesToSize } from '@/helpers'
-import { marked } from 'marked'
-
-export default {
-  name: 'KGArtifactLong',
-  props: {
-    record: {
-      type: Object,
-      required: true
-    }
-  },
-  components: {
-    ArtifactChips: () => import('@/components/ArtifactChips'),
-    ArtifactCurationList: () => import('@/components/ArtifactCurationList'),
-    JsonPrettyPrint: () => import('@/components/pretty-print'),
-    DUAReviewModal: () => import('@/components/DUAReviewModal')
-  },
-  data() {
-    return {
-      loading: true,
-      loaded: false,
-      expanded: false,
-      history_expanded: false,
-      diff_from: -1,
-      diff_to: -1,
-      diff_results: [],
-      diff_results_dialog: false,
-      diff_results_tab: "visual",
-      loadingMessage: 'Loading...',
-      incompleteProfileDialogMessage: "",
-      project: "",
-      project_description: "",
-      project_justification: "",
-      people: "",
-      Images: null,
-      formSubmitted: false,
-      formSubmittedError: false,
-      formSubmittedErrorMessage: "",
-      representative_researcher: {name: "", email: "", number: "", organization:"", title:""},
-      frgpData: {supervisor_researcher:{name:"", email:"",title:""},nationality:'',timeperiod:'',
-      storageLocation:'',numberOfResearchers:'',grants:"",dataUsage:'',resultSharing:'',targetAudience:'',dataDisposal:''},
-      researchers_that_interact: [],
-      researchers: [],
-      requestMode: false,
-      dua: null,
-      duaHTML: null,
-      isModalVisible: false,
-      irbContent : '',
-      irbData: '',
-      publicKey: '',
-      show1: false,
-      password: 'Password',
-      incompleteProfileDialog: false,
-      rules: {
-          required: value => !!value || 'Required.',
-          min: v => v.length >= 8 || 'Min 8 characters',
-
-        },
-    }
-  },
-  async mounted() {
-    setTimeout(() => {
-      this.loadingMessage = 'Error loading'
-    }, 5000)
-    await this.$store.dispatch('user/fetchUser').then(response => {
-    
+  
+        <div style="margin-top: 20px; font-weight: bold;">Enter your SSH public key for downloading datasets:</div>
+          <v-text-field
+              v-model="requester.publicKey"
+              :type=" 'text' "
+              name="input-10-1"
+              hint="We support dataset download by HTTPS with username and password, or via ssh+rsync. Please provide the public part of your ssh key if you want to use rsync"
+              disabled
+          ></v-text-field>
+  
+  
+        <div v-if ="record.artifact.irb" style="margin-top: 20px; font-weight: bold;">Upload IRB approval Letter</div>
+        <v-file-input v-if ="record.artifact.irb" v-model = "irbContent" clearable label="Upload IRB approval letter" variant="underlined" @change ="getContent"></v-file-input>
+        <div>
+  
+        <input type="submit" value="Review" class="btn-submit" style="margin-top: 20px;" :disabled="requestMode">
+        </div>
+      </form>
+  
+      <v-dialog
+      v-model="formSubmitted"
+      width="auto "
+      >
+        <v-card>
+          <v-card-text>
+            <div v-if="formSubmittedError" class="form-submit-error">
+              <p>{{formSubmittedErrorMessage}}</p>
+            </div>
+            <div v-else class="form-submit-success">
+              <p>Request submitted successfully!</p>
+            </div>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn color="primary" block @click="$router.push('/');">Go to homepage</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </div>
+  
+     </div>
+    <div v-else>
+      {{ loadingMessage }}
+    </div>
+  </template>
+  
+  <script>
+  import { mapState } from 'vuex'
+  import { artifactIcon, artifactColor, bytesToSize } from '@/helpers'
+  import { marked } from 'marked'
+  
+  export default {
+    name: 'KGArtifactLong',
+    props: {
+      record: {
+        type: Object,
+        required: true
+      }
+    },
+    components: {
+      ArtifactChips: () => import('@/components/ArtifactChips'),
+      ArtifactCurationList: () => import('@/components/ArtifactCurationList'),
+      JsonPrettyPrint: () => import('@/components/pretty-print'),
+      DUAReviewModal: () => import('@/components/DUAReviewModal')
+    },
+    data() {
+      return {
+        loading: true,
+        loaded: false,
+        expanded: false,
+        history_expanded: false,
+        diff_from: -1,
+        diff_to: -1,
+        diff_results: [],
+        diff_results_dialog: false,
+        diff_results_tab: "visual",
+        loadingMessage: 'Loading...',
+        incompleteProfileDialogMessage: "",
+        project: "",
+        project_description: "",
+        project_justification: "",
+        people: "",
+        Images: null,
+        formSubmitted: false,
+        formSubmittedError: false,
+        formSubmittedErrorMessage: "",
+        representative_researcher: {name: "", email: "", number: "", organization:"", title:""},
+        frgpData: {supervisor_researcher:{name:"", email:"",title:""},nationality:'',timeperiod:'',
+        storageLocation:'',numberOfResearchers:'',grants:"",dataUsage:'',resultSharing:'',targetAudience:'',dataDisposal:''},
+        researchers_that_interact: [],
+        researchers: [],
+        requestMode: false,
+        dua: null,
+        duaHTML: null,
+        isModalVisible: false,
+        irbContent : '',
+        irbData: '',
+        publicKey: '',
+        show1: false,
+        password: 'Password',
+        incompleteProfileDialog: false,
+        rules: {
+            required: value => !!value || 'Required.',
+            min: v => v.length >= 8 || 'Min 8 characters',
+  
+          },
+      }
+    },
+    async mounted() {
+      setTimeout(() => {
+        this.loadingMessage = 'Error loading'
+      }, 5000)
+      await this.$store.dispatch('user/fetchUser').then(response => {
+      
 
     if (!(this.userAffiliation.length > 0 && this.userDetails && this.userDetails.mobileNumber && this.userDetails.name && this.userDetails.email && this.userDetails.position)) {
       this.incompleteProfileDialogMessage = "Please fill the following:<br><ul>"
