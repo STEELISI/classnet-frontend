@@ -453,6 +453,7 @@ export default {
           'Fourth',
           'Fifth',
         ],
+        orgNames: [],
       }
     },
   components: {
@@ -466,14 +467,14 @@ export default {
       person:state =>state.user.user,
       organization: state => state.user.organization,
       userid: state => state.user.userid,
-      orgs: state => state.user.orgs,
+      // orgs: state => state.user.orgs,
     }),
-    orgNames: {
-      get: function() {
-        console.log("from here",this.orgs.map(m => m.name))
-        return this.orgs ? this.orgs.map(m => m.name) : []
-      }
-    },
+    // orgNames: {
+    //   get: function() {
+    //     console.log("from here",this.orgs.map(m => m.name))
+    //     return this.orgs ? this.orgs.map(m => m.name) : []
+    //   }
+    // },
   },
   watch:{
     person(val) {
