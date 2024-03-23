@@ -480,9 +480,9 @@ export default {
     person(val) {
       this.localuser = JSON.parse(JSON.stringify(val))
     },
-    organization(val) {
-      this.userAffiliation = val
-    },
+    // organization(val) {
+    //   this.userAffiliation = val
+    // },
     // userAffiliation(newValue, oldValue) {
     //   if(! this.$auth.loggedIn){
     //     return
