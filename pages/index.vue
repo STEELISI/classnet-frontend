@@ -483,24 +483,24 @@ export default {
     organization(val) {
       this.userAffiliation = val
     },
-    userAffiliation(newValue, oldValue) {
-      if(! this.$auth.loggedIn){
-        return
-      }
-      // delete case
-      let diff = oldValue.filter(
-        affil => newValue.findIndex(newAffil => newAffil.id == affil.id) == -1
-      )
-      if (diff.length > 0) {
-        diff.forEach(affil => {
-          if (typeof affil === 'object') {
-            // cannot use await here as this is inside a foreach loop
-            this.$userAffiliationEndpoint.delete(affil.id)
-          }
-        })
-        diff = []
-      }
-    },
+    // userAffiliation(newValue, oldValue) {
+    //   if(! this.$auth.loggedIn){
+    //     return
+    //   }
+    //   // delete case
+    //   let diff = oldValue.filter(
+    //     affil => newValue.findIndex(newAffil => newAffil.id == affil.id) == -1
+    //   )
+    //   if (diff.length > 0) {
+    //     diff.forEach(affil => {
+    //       if (typeof affil === 'object') {
+    //         // cannot use await here as this is inside a foreach loop
+    //         this.$userAffiliationEndpoint.delete(affil.id)
+    //       }
+    //     })
+    //     diff = []
+    //   }
+    // },
     userEmail(val) {
       console.log(val)
       if(this.localuser.email && this.localuser.email == val) { // If a user's email is already stored in the backend we do not need to verify it, thus we change the submitMessage from 'Verify email' to 'Submit'
