@@ -467,40 +467,43 @@ export default {
       person:state =>state.user.user,
       organization: state => state.user.organization,
       userid: state => state.user.userid,
-      // orgs: state => state.user.orgs,
+      orgs: state => state.user.orgs,
     }),
-    // orgNames: {
-    //   get: function() {
-    //     console.log("from here",this.orgs.map(m => m.name))
-    //     return this.orgs ? this.orgs.map(m => m.name) : []
-    //   }
-    // },
+    orgNames: {
+      get: function() {
+        console.log("from here",this.orgs.map(m => m.name))
+        return this.orgs ? this.orgs.map(m => m.name) : []
+      }
+    },
   },
+  beforeDestroy: function () {
+    this.LazyHydrate.destroy()
+  }, 
   watch:{
     person(val) {
       this.localuser = JSON.parse(JSON.stringify(val))
     },
-    // organization(val) {
-    //   this.userAffiliation = val
-    // },
-    // userAffiliation(newValue, oldValue) {
-    //   if(! this.$auth.loggedIn){
-    //     return
-    //   }
-    //   // delete case
-    //   let diff = oldValue.filter(
-    //     affil => newValue.findIndex(newAffil => newAffil.id == affil.id) == -1
-    //   )
-    //   if (diff.length > 0) {
-    //     diff.forEach(affil => {
-    //       if (typeof affil === 'object') {
-    //         // cannot use await here as this is inside a foreach loop
-    //         this.$userAffiliationEndpoint.delete(affil.id)
-    //       }
-    //     })
-    //     diff = []
-    //   }
-    // },
+    organization(val) {
+      this.userAffiliation = val
+    },
+    userAffiliation(newValue, oldValue) {
+      if(! this.$auth.loggedIn){
+        return
+      }
+      // delete case
+      let diff = oldValue.filter(
+        affil => newValue.findIndex(newAffil => newAffil.id == affil.id) == -1
+      )
+      if (diff.length > 0) {
+        diff.forEach(affil => {
+          if (typeof affil === 'object') {
+            // cannot use await here as this is inside a foreach loop
+            this.$userAffiliationEndpoint.delete(affil.id)
+          }
+        })
+        diff = []
+      }
+    },
     userEmail(val) {
       console.log(val)
       if(this.localuser.email && this.localuser.email == val) { // If a user's email is already stored in the backend we do not need to verify it, thus we change the submitMessage from 'Verify email' to 'Submit'
