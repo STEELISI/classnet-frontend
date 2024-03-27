@@ -453,7 +453,6 @@ export default {
           'Fourth',
           'Fifth',
         ],
-        orgNames: [],
       }
     },
   components: {
@@ -476,9 +475,6 @@ export default {
       }
     },
   },
-  beforeDestroy: function () {
-    this.LazyHydrate.destroy()
-  }, 
   watch:{
     person(val) {
       this.localuser = JSON.parse(JSON.stringify(val))

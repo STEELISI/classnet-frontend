@@ -25,7 +25,7 @@ services:
     restart: unless-stopped
     build:
       context: .
-      dockerfile: Dockerfile.debug
+      dockerfile: Dockerfile.f
     env_file:
       - env/searcch-frontend-local-dev.env
     ports:
