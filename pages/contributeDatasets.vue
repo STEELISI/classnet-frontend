@@ -608,6 +608,12 @@ export default {
       userid: state => state.user.userid
     })
   },
+  created() {
+    if (!this.$auth.loggedIn){
+      this.$router.push('/login')
+      return
+    }
+  },
   methods:{
     handleDateChange(value) {
       this.dateDialog = false;
