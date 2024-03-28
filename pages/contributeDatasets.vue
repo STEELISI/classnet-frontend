@@ -406,9 +406,23 @@
             auto-grow
             clearable
             ></v-select>
+
+            <div style="font-weight: bold; margin-top:20px;">Provide a README for the dataset</div>
+            <v-textarea
+            name="datasetReadme"
+            v-model="datasetReadme"
+            :rules="datasetReadmeRules"
+            type="text"
+            auto-grow
+            clearable
+            :maxlength="datasetReadmeCharLimit"
+            required></v-textarea>
+            <span>{{ datasetReadme.length }} / {{ datasetReadmeCharLimit }}</span>
+
             <v-card-actions>
               <v-btn color="primary" type="submit">Submit</v-btn>
             </v-card-actions>
+
           </v-form>
 
           </v-card-text>
@@ -565,6 +579,11 @@ export default {
       formatListOptions:[{text:'address-bitstring',value:'address-bitstring'},{text:'adjacency-list',value:'adjacency-list'},{text:'binary',value:'binary'},{text:'coral',value:'coral'},{text:'csv',value:'csv'},{text:'dag',value:'dag'},{text:'netflow-v5',value:'netflow-v5'},{text:'netflow-v8',value:'netflow-v8'},{text:'netflow-v9',value:'netflow-v9'},{text:'pcap',value:'pcap'},{text:'snort',value:'snort'},{text:'syslog',value:'syslog'},{text:'text',value:'text'},{text:'other',value:'other'}],
       anonymizationListOptions:[{text:'cryptopan/full', value:'cryptopan/full'},{text:'cryptopan/host', value:'cryptopan/host'},{text:'None', value:'none'},{text:'Other', value:"other"}],
       accessListOptions:[{text:'Google BigQuery', value:'Google BigQuery'},{text:'https', value:'https'},{text:'rsync', value:'rsync'},{text:'other', value:'other'}],
+      datasetReadme:'',
+      datasetReadmeRules: [
+        value => /^.{0}$|^.{20,10000}$/.test(value) || 'Dataset README must be between 20 and 10000 characters long',
+      ],
+      datasetReadmeCharLimit:10000, 
       submitCardMessage: '',
       formSubmitted: false,
       formSubmittedError: false,
@@ -638,7 +657,9 @@ export default {
                   "groupingId":this.groupingId,
                   "useAgreement":this.useAgreement,
                   "irbRequired":this.irbRequired,
-                  "retrievalInstructions":this.retrievalInstructions
+                  "retrievalInstructions":this.retrievalInstructions,
+                  "datasetReadme":this.datasetReadme
+
                 } 
       for (const key in metadata) {
         metadata[key] = this.$sanitize(metadata[key]);
