@@ -407,7 +407,7 @@
             clearable
             ></v-select>
 
-            <div style="font-weight: bold; margin-top:20px;">Provide a README for the dataset</div>
+            <div style="font-weight: bold; margin-top:20px;">Provide a README for the dataset<span style='color: red;'><strong> *</strong></span></div>
             <v-textarea
             name="datasetReadme"
             v-model="datasetReadme"
@@ -581,6 +581,7 @@ export default {
       accessListOptions:[{text:'Google BigQuery', value:'Google BigQuery'},{text:'https', value:'https'},{text:'rsync', value:'rsync'},{text:'other', value:'other'}],
       datasetReadme:'',
       datasetReadmeRules: [
+        value => !!value || 'Dataset README is required',
         value => /^.{0}$|^.{20,10000}$/.test(value) || 'Dataset README must be between 20 and 10000 characters long',
       ],
       datasetReadmeCharLimit:10000, 
