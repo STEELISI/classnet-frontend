@@ -341,6 +341,8 @@ export default {
         this.page = page
         this.isUpdatingPageInGetArtifacts = false
       }
+
+      // The code below is a copy of the artifacts/fetchArtifacts method but with an additional check to see if the search keyword has changed after the response
       this.$store.commit('artifacts/RESET_ARTIFACTS') // clear artifacts so the Searching... message is shown
       
       if (this.selectedCategories.indexOf(true) >= 0) {
