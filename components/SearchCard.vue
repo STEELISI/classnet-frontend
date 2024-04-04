@@ -11,7 +11,6 @@
         class="rounded-0"
         hide-details
         @keydown="onChange"
-        @change="onSubmit"
         solo
         dense
       >
@@ -216,7 +215,6 @@ export default {
       items: 5,
       categories: [],
       selectedCategories: [],
-      fetchingArtifacts: false,
       isUpdatingPageInGetArtifacts: false
     }
   },
@@ -297,6 +295,8 @@ export default {
       if (this.related && this.search.trim() === '') {
         this.$store.dispatch('artifacts/fetchRelatedArtifacts', this.artifact)
       } else {
+        let onSubmitKeyword = this.search
+
         let payload = {
           keywords: this.search,
           page: this.page,
@@ -311,16 +311,19 @@ export default {
         let response = await this.$artifactSearchCategoryEndpoint.index({
           ...payload
         })
-        console.log("category endpoint response", response)
-        let data = []
-        this.selectedCategories = []
-        this.categories = []
-        for (let i in response.categoryDict){
-          data.push([i, response.categoryDict [i].count])
+
+        // Only proceed if the keyword collected before artifactSearchCategoryEndpoint's call is the same as the current search keyword
+        if (onSubmitKeyword == this.search) {
+          let data = []
+          this.selectedCategories = []
+          this.categories = []
+          for (let i in response.categoryDict){
+            data.push([i, response.categoryDict [i].count])
+          }
+          this.categories = data
+          this.selectedCategories = new Array(this.categories.length).fill(true);
+          this.getArtifacts()
         }
-        this.categories = data
-        this.selectedCategories = new Array(this.categories.length).fill(true);
-        this.getArtifacts()
       }
       this.searchInterval = setTimeout(() => {
         if (!this.searchLoading) {
@@ -329,7 +332,8 @@ export default {
       }, 3000)
       this.submitted = false
     },
-    getArtifacts(page = 1) {
+    async getArtifacts(page = 1) {
+
       // By default the page is 1 since we want to show the first page of our new results
       // However we want topreserve page number when it is specifically clicked on
       if (page == 1) {
@@ -337,10 +341,13 @@ export default {
         this.page = page
         this.isUpdatingPageInGetArtifacts = false
       }
+
+      // The code below is a copy of the artifacts/fetchArtifacts method but with an additional check to see if the search keyword has changed after the response
       this.$store.commit('artifacts/RESET_ARTIFACTS') // clear artifacts so the Searching... message is shown
       
       if (this.selectedCategories.indexOf(true) >= 0) {
-        this.fetchingArtifacts = true
+        
+        let getArtifactsKeyword = this.search
         let payload = {
           keywords: this.search,
           page: page,
@@ -356,9 +363,22 @@ export default {
         const categoryNames = Object.values(this.categories).map(category => category[0]);
         const selectedCategoryNames = categoryNames.filter((category, index) => this.selectedCategories[index]);
         payload['category'] = selectedCategoryNames
+        this.$store.commit('artifacts/SET_LOADING', true)
+        this.$store.commit('artifacts/SET_SEARCH', payload.keywords)
+        let response = await this.$artifactSearchEndpoint.index({
+          ...payload
+        })
 
-        this.$store.dispatch('artifacts/fetchArtifacts', payload)
-        this.fetchingArtifacts = false
+        if (typeof response !== 'undefined') {
+          
+          // Only proceed if the keyword collected before artifactSearchEndpoint's call is the same as the current search keyword
+          if (getArtifactsKeyword == this.search) {
+            console.log("Setting artifacts", response)
+
+            this.$store.commit('artifacts/SET_ARTIFACTS', response)
+          }
+        }
+        this.$store.commit('artifacts/SET_LOADING', false)        
       }
     },
     onChange() {
