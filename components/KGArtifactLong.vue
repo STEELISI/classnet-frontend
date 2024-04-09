@@ -2,7 +2,40 @@
 
   <div v-if="record.artifact">
     <v-card class="mx-auto my-2">
-      <v-card-title>{{ record.artifact.title }}</v-card-title>
+      <v-card-title>{{ record.artifact.title }}
+        <v-spacer></v-spacer>
+        <v-btn
+          v-if="!(isOwner() || isAdmin()) && !artifactRequested && !isFetchingStatus"
+          color="primary"
+          @click="requestArtifact()"
+          nuxt
+        >
+          Request Access
+        </v-btn>
+        <v-btn
+          v-if="!(isOwner() || isAdmin()) && artifactRequested && !artifactReleased && !isFetchingStatus"
+          color="orange"
+          nuxt
+        >
+         Requested
+        </v-btn>
+
+        <v-tooltip top content-class="top"
+          v-if="!(isOwner() || isAdmin()) && artifactRequested && artifactReleased && !isFetchingStatus"
+        >
+          <template v-slot:activator="{ on }">
+            <v-btn
+
+              color="green"
+              v-on="on"
+            >
+            Access Granted
+            </v-btn>
+          </template>
+          <span>Your dataset request has been approved and released (check your mailbox)</span>
+        </v-tooltip>
+      
+      </v-card-title>
       <v-card-subtitle>
         <div v-if="labels && labels.length">
         <v-card-title class="py-0">Labels</v-card-title>
@@ -425,36 +458,6 @@
             Reimport New Version
           </v-btn>
         </span>
-        <v-btn
-          v-if="!(isOwner() || isAdmin()) && !artifactRequested && !isFetchingStatus"
-          color="primary"
-          @click="requestArtifact()"
-          nuxt
-        >
-          Request Access
-        </v-btn>
-        <v-btn
-          v-if="!(isOwner() || isAdmin()) && artifactRequested && !artifactReleased && !isFetchingStatus"
-          color="orange"
-          nuxt
-        >
-         Requested
-        </v-btn>
-
-        <v-tooltip top content-class="top"
-          v-if="!(isOwner() || isAdmin()) && artifactRequested && artifactReleased && !isFetchingStatus"
-        >
-          <template v-slot:activator="{ on }">
-            <v-btn
-
-              color="green"
-              v-on="on"
-            >
-            Access Granted
-            </v-btn>
-          </template>
-          <span>Your dataset request has been approved and released (check your mailbox)</span>
-        </v-tooltip>
 
       </v-card-actions>
 
