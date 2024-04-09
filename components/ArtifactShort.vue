@@ -1,40 +1,28 @@
 <template>
   <div>
     <v-card class="mx-auto overflow-hidden" elevation="3">
-      <v-container>
-        <v-row>
-          <v-col cols="9">
-            <v-card-title class="align-start">
+      <v-container fluid>
+        <v-row class="d-flex align-center justify-space-between">
+          <v-col class="d-flex align-center" cols="10">
+            <v-card-title class="align-start py-0 my-0">
               <router-link :to="`/artifact/view/${artifact.artifact_group_id}`" class="headline custom-link">{{ artifact.title | titlecase }}</router-link>
             </v-card-title>
-          </v-col>
-          <v-col cols="3">
-            <ArtifactChips
-              class="card-chip"
-              :field="[artifact.type]"
-              :type="artifact.type"
-            ></ArtifactChips>
-          </v-col>
-        </v-row>
-      </v-container>
-      <span class="ml-4 grey--text text--darken-2 font-weight-light caption">
-        {{ artifact.num_reviews }}
-        {{ artifact.num_reviews == 1 ? 'review' : 'reviews' }}
-      </span>
-      <v-rating
-        v-model="artifact.avg_rating"
-        color="amber"
-        dense
-        half-increments
-        readonly
-        size="18"
-        class="ml-3"
-      ></v-rating>
+          
+          <span class="grey--text text--darken-2 font-weight-light caption">
+            {{ artifact.num_reviews }}
+            {{ artifact.num_reviews == 1 ? 'review' : 'reviews' }}
+            <v-rating
+                  v-model="artifact.avg_rating"
+                  color="amber"
+                  dense
+                  half-increments
+                  readonly
+                  size="14" 
+                  class="ml-1"
+                ></v-rating>
+            </span>
 
-    <!--  <v-card-text v-html="sanitizedDescription"> </v-card-text> -->
-
-
-      <div v-if="comments">
+            <div v-if="comments">
         <v-row justify="center">
           <v-expansion-panels inset multiple focusable v-model="expanded">
             <v-expansion-panel v-for="(comment, i) in comments" :key="i">
@@ -60,7 +48,6 @@
           </v-expansion-panels>
         </v-row>
       </div>
-
       <v-card-actions>
         <v-btn
           icon
@@ -87,23 +74,7 @@
           v-model="relation"
         ></v-select>
         <v-btn
-          v-if="!related"
-          color="primary"
-          :to="`/artifact/view/${artifact.artifact_group_id}`"
-          nuxt
-        >
-          View
-        </v-btn>
-        <!-- <v-btn
-          v-if="!related"
-          color="primary"
-          :to="`/artifact/request/${artifact.artifact_group_id}`"
-          nuxt
-        >
-          Request
-        </v-btn> -->
-        <v-btn
-          v-else
+          v-if="related"
           color="success"
           @click="addRelated(artifact.artifact_group_id, relation)"
           :disabled="relation.length == 0"
@@ -119,6 +90,16 @@
           Edit
         </v-btn>
       </v-card-actions>
+          </v-col>
+          <v-col cols="2" class="d-flex justify-end">
+            <ArtifactChips
+              class="card-chip"
+              :field="[artifact.type]"
+              :type="artifact.type"
+            ></ArtifactChips>
+          </v-col>
+        </v-row>
+      </v-container>      
     </v-card>
   </div>
 </template>
@@ -231,9 +212,7 @@ export default {
 
 <style scoped>
 .card-chip {
-  position: absolute;
-  top: 0px;
-  right: 0px;
+  margin-left: auto;
 }
 
 .v-card__title {
@@ -242,5 +221,6 @@ export default {
 .custom-link {
   text-decoration: none; /* Remove underline */
   color: #000000; /* Customize hyperlink color */
+  font-size: 0.9rem; 
 }
 </style>
