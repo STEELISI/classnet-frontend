@@ -180,7 +180,7 @@ export default {
           primary: '#00476B',
           accent: '#6D6E71',
           secondary: '#395C23',
-          info:'#9090FF'
+          info:'#9E9E9E'
         }
       }
     }
