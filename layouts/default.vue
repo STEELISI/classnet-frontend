@@ -212,10 +212,10 @@ export default {
           title: 'Label Datasets',
           to: '/addLabels'
         })
-      items.push({
+        items.push({
           icon: 'mdi-share-all-outline',
           title: 'Contribute Datasets',
-          href: 'https://steelisi.github.io/CLASSNET-DOCS/contribute/'
+          to: '/contributeDatasets'
         })
         items.push({
           icon: 'mdi-account-cog',
