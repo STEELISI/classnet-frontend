@@ -222,6 +222,11 @@ export default {
           title: 'Manage Account',
           to: '/profile'
         })
+        items.push({
+          icon: 'mdi-database-outline',
+          title: 'My Datasets',
+          to: '/myDatasets'
+        })
       }
       return items
     },
