@@ -38,9 +38,9 @@ export const artifactIcon = type => {
 export const artifactColor = type => {
   switch (type) {
     case 'presentation':
-      return 'orange lighten-2 white--text'
+      return 'orange white--text'
     case 'publication':
-      return 'red lighten-2 white--text'
+      return 'red white--text'
     case 'code':
      return 'purple white--text'
     case 'pcap':
@@ -52,7 +52,7 @@ export const artifactColor = type => {
     case 'label':
       return 'green white--text'
     case 'netflow':
-      return 'orange lighten-2 white--text'
+      return 'orange white--text'
     case 'flowtools':
       return 'blue white--text'
     case 'flowride':
