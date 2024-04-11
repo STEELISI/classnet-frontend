@@ -62,7 +62,7 @@ export const artifactColor = type => {
     case 'csv':
       return 'cyan white--text'
     case 'custom':
-        return 'red white--text'
+        return 'blue lighten-2 white--text'
     case 'role':
       return 'primary'
     case 'relation':
