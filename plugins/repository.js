@@ -138,4 +138,5 @@ export default (ctx, inject) => {
 
   inject('adminStatisticsEndpoint', repositoryWithAxios('kg/' + 'adminStats'))
 
+  inject('providerPermissionsList', repositoryWithAxios('kg/' + 'provider_permissions_list'))
 }

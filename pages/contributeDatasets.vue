@@ -609,11 +609,13 @@ export default {
       userid: state => state.user.userid
     })
   },
-  created() {
+  async created() {
     if (!this.$auth.loggedIn){
       this.$router.push('/login')
       return
     }
+    let response = await this.$providerPermissionsList.index([])
+    console.log(response)
   },
   methods:{
     handleDateChange(value) {
