@@ -507,6 +507,10 @@ export default {
       } else {
           this.submitMessage = 'Verify Email'
       }
+    },
+    userid(val) {
+      console.log("user_id: ", val)
+      this.showUserInfoModal()
     }
   },
   async mounted() {
@@ -522,34 +526,6 @@ export default {
     //Set session id per user
     document.cookie = `session_id=${hash};expires=${expireTime.toUTCString()}`;
     console.log(this.user)
-    if (this.$auth.loggedIn){
-      await this.$store.dispatch('user/fetchOrgs')
-
-      await this.$store.dispatch('user/fetchUser').then(response => {
-
-        if(this.organization.length == 0 || !this.localuser.position || !this.localuser.email || !this.localuser.name || !this.localuser.countryCode || !this.localuser.mobileNumber  ){
-          this.dialog = true
-        }
-        this.localuser = JSON.parse(JSON.stringify(this.person))
-        this.userAffiliation = this.organization ? this.organization : []
-
-        this.localuser.position = this.localuser.position ? this.localuser.position : ''
-        this.localuser.countryCode = this.localuser.countryCode ? this.localuser.countryCode : ''
-        this.localuser.mobileNumber = this.localuser.mobileNumber ? this.localuser.mobileNumber : '' 
-        this.userPosition = this.localuser.position
-        this.user.countryCode = this.localuser.countryCode
-        this.user.mobileNumber = this.localuser.mobileNumber
-        if(this.localuser.email) { // If a user's email is already stored in the backend we do not need to verify it, thus we change the submitMessage from 'Verify email' to 'Submit'
-          this.submitMessage = 'Submit'
-        }
-        this.userName = this.localuser.name
-
-        this.localuser.email = this.localuser.email ? this.localuser.email : ''
-        this.userEmail = this.localuser.email
-        console.log(this.localuser)
-    })
-
-  }
   },
   methods:{
     async addFields(){
@@ -603,6 +579,36 @@ export default {
         this.$auth.logout()
       }
     },
+    async showUserInfoModal () {
+      if (this.$auth.loggedIn){
+        await this.$store.dispatch('user/fetchOrgs')
+
+        await this.$store.dispatch('user/fetchUser').then(response => {
+
+          if(this.organization.length == 0 || !this.localuser.position || !this.localuser.email || !this.localuser.name || !this.localuser.countryCode || !this.localuser.mobileNumber  ){
+            this.dialog = true
+          }
+          this.localuser = JSON.parse(JSON.stringify(this.person))
+          this.userAffiliation = this.organization ? this.organization : []
+
+          this.localuser.position = this.localuser.position ? this.localuser.position : ''
+          this.localuser.countryCode = this.localuser.countryCode ? this.localuser.countryCode : ''
+          this.localuser.mobileNumber = this.localuser.mobileNumber ? this.localuser.mobileNumber : '' 
+          this.userPosition = this.localuser.position
+          this.user.countryCode = this.localuser.countryCode
+          this.user.mobileNumber = this.localuser.mobileNumber
+          if(this.localuser.email) { // If a user's email is already stored in the backend we do not need to verify it, thus we change the submitMessage from 'Verify email' to 'Submit'
+            this.submitMessage = 'Submit'
+          }
+          this.userName = this.localuser.name
+
+          this.localuser.email = this.localuser.email ? this.localuser.email : ''
+          this.userEmail = this.localuser.email
+          console.log(this.localuser)
+        })
+
+      }
+    }
   }
   // async computed(){
 
