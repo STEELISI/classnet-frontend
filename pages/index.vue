@@ -381,20 +381,19 @@
             prefix="+"
             hint="Enter country code"
             min = "1"
-            pattern="^[0-9]+$"
             required
           ></v-text-field>
         </v-col>
         <v-col md="6" >
           <v-text-field
             v-model="userMobileNumber"
-            type="number"
+            type="text"
             hint="Enter researcher phone number"
             required
             min = "1"
-            pattern="^[0-9]+$">
+            >
             <template #label>
-                <span>Phone Number (only digits)<span style='color: red;'> *</span></span>
+                <span>Phone Number<span style='color: red;'> *</span></span>
             </template>
           </v-text-field>
         </v-col>
@@ -453,6 +452,8 @@ export default {
           'Fourth',
           'Fifth',
         ],
+        countryCodePattern: /\d+/g,
+        mobileNumberPattern: /\(?\d{1,3}\)?[- ]?\d{3}[- ]?\d{4}$/g
       }
     },
   components: {
@@ -528,14 +529,28 @@ export default {
     console.log(this.user)
   },
   methods:{
+    validateNumber() {
+      if (this.userCountryCode|| this.userMobileNumber) { // if countryCode or mobileNumber was entered ensure it matches the expected format
+        var match1 = this.userCountryCode.match(this.countryCodePattern)
+        var match2 = this.userMobileNumber.match(this.mobileNumberPattern)
+        return match1 && (this.userCountryCode === match1[0]) && match2 && (this.userMobileNumber === match2[0]);
+      }
+      return true// an empty countryCode and mobileNumber at the same time is allowed
+    },
     async addFields(){
       if (!this.$auth.loggedIn) {
         this.$router.push('/login')
       } else {
         this.dialogMessage = ''
         this.localuser.position = this.userPosition
-        this.localuser.countryCode = this.userCountryCode
-        this.localuser.mobileNumber = this.userMobileNumber
+        let isValidNumber = this.validateNumber()
+        if (!isValidNumber) {
+          this.dialogMessage = 'Please enter valid charaters for Mobile Number'
+        }
+        else{
+          this.localuser.countryCode = this.userCountryCode
+          this.localuser.mobileNumber = this.userMobileNumber.replace(/\D/g, '');
+        }
         this.localuser.name = this.userName
         this.localuser.email = this.userEmail
         this.localuser.userOTP = this.userOTP.length == 0 && this.otpSent ? 'undefined' : this.userOTP
@@ -554,7 +569,7 @@ export default {
           return
         }
 
-        if(this.localuser.position && this.userAffiliation.length && this.localuser.email && this.localuser.name && this.localuser.mobileNumber && this.localuser.countryCode){
+        if(this.localuser.position && this.userAffiliation.length && this.localuser.email && this.localuser.name && this.localuser.mobileNumber && this.localuser.countryCode && isValidNumber){
           this.dialog=false
         }
 
