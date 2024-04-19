@@ -74,12 +74,12 @@
                   <v-col cols="12" md="10">
                   <v-text-field
                     v-model="localuser.mobileNumber"
-                    type="number"
+                    type="text"
                     min = "1"
                     hint="Enter researcher phone number"
                   >
                     <template #label>
-                        <span>Phone Number (only digits)</span>
+                        <span>Phone Number</span>
                     </template>
                   </v-text-field>
                   </v-col>
@@ -283,7 +283,8 @@ export default {
       userUpdateIncomplete: false,
       emailOnPageLoad: '',
       publicKeyPatternRegex: /^(ssh-(ed25519|rsa|dss|ecdsa)) AAAA(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=|[A-Za-z0-9+\/]{4})( [^@]+@[^@]+)?$/,
-      numberPattern: /\d+/g
+      countryCodePattern: /\d+/g,
+      mobileNumberPattern: /\(?\d{1,3}\)?[- ]?\d{3}[- ]?\d{4}$/g
     }
   },
   computed: {
@@ -384,8 +385,8 @@ export default {
     },
     validateNumber() {
       if (this.localuser.countryCode || this.localuser.mobileNumber) { // if countryCode or mobileNumber was entered ensure it matches the expected format
-        var match1 = this.localuser.countryCode.match(this.numberPattern)
-        var match2 = this.localuser.mobileNumber.match(this.numberPattern)
+        var match1 = this.localuser.countryCode.match(this.countryCodePattern)
+        var match2 = this.localuser.mobileNumber.match(this.mobileNumberPattern)
         return match1 && (this.localuser.countryCode === match1[0]) && match2 && (this.localuser.mobileNumber === match2[0]);
       }
       return true // an empty countryCode and mobileNumber at the same time is allowed
@@ -413,6 +414,8 @@ export default {
           this.profileCardMessage = 'Both country code and mobile number must be a number.'
           return
         }
+        //removing spaces, parenthesis and other acceptable characters and sending only digits.
+        this.localuser.mobileNumber = this.localuser.mobileNumber.replace(/\D/g, '');
         
         this.userUpdateIncomplete = true
         this.localuser.email = this.userEmail
