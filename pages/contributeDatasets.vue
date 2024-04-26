@@ -13,8 +13,7 @@
       <h1>Contribute Dataset</h1>
       <v-divider></v-divider>
     </v-layout>
-
-    <v-container>
+    <v-container v-if="providerPermissionsReceived && isApprovedProvider">
       <v-row justify="center">
         <v-col cols="12" md="10">
           <!-- Card component to create the box effect -->
@@ -308,16 +307,18 @@
             </v-row>
 
             <div style="font-weight: bold; margin-top:20px;">Provider Name<span style='color: red;'><strong> *</strong></span></div>
-            <v-text-field
-            name="providerName"
-            v-model="providerName"
-            :rules="providerNameRules"
-            type="text"
-            auto-grow
-            clearable
-            required
-            ></v-text-field>
-
+            <v-col cols="12" sm="6" md="4">
+              <v-select
+              name="providerName"
+              v-model="providerName"
+              :rules="providerNameRules"
+              :items="providerNameOptions"
+              type="text"
+              auto-grow
+              clearable
+              required
+              ></v-select>
+            </v-col>
             <div style="font-weight: bold; margin-top:20px;">What is the uncompressed size of the dataset?</div>
             <v-row>
               <v-col cols="3" md="3">
@@ -433,8 +434,17 @@
       </v-col>
       
       </v-row>
-      </v-container>
-
+    </v-container>
+    <v-col cols="12" sm="8" md="8" v-if="providerPermissionsReceived && !isApprovedProvider">
+            <v-alert
+              icon="mdi-shield-lock-outline"
+              prominent
+              text
+              type="info"
+            >
+            You currently do not have access to this page as an approved provider.
+            </v-alert>
+    </v-col>
     <v-dialog
     v-model="formSubmitted"
     width="auto "
@@ -553,6 +563,7 @@ export default {
       providerNameRules: [
         value => !!value || 'Provider name is required',
       ],
+      providerNameOptions:[],
       uncompressedSize:'',
       uncompressedSizeUnit:0,
       uncompressedSizeRules: [
@@ -588,7 +599,9 @@ export default {
       submitCardMessage: '',
       formSubmitted: false,
       formSubmittedError: false,
-      formSubmittedErrorMessage: ''
+      formSubmittedErrorMessage: '',
+      isApprovedProvider: false,
+      providerPermissionsReceived:false
     }
   },
   watch: {
@@ -615,7 +628,11 @@ export default {
       return
     }
     let response = await this.$providerPermissionsList.index([])
-    console.log(response)
+    this.providerNameOptions = response.permissions_list
+    if (this.providerNameOptions.length > 0) {
+      this.isApprovedProvider = true
+    }
+    this.providerPermissionsReceived = true
   },
   methods:{
     handleDateChange(value) {
