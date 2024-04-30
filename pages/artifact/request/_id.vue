@@ -7,7 +7,7 @@
           <RequestArtifact :record="artifact"></RequestArtifact>
         </LazyHydrate>
     </div>
-    <div v-if="artifact.artifact && (artifact.artifact.collection.toLowerCase().includes('frgp-continuous') || artifact.artifact.collection.toLowerCase().includes('frgp-download') ) ">
+    <div v-else-if="artifact.artifact && (artifact.artifact.collection.toLowerCase().includes('frgp-continuous') || artifact.artifact.collection.toLowerCase().includes('frgp-download') ) ">
         <LazyHydrate when-visible>
           <RequestArtifactFRGP :record="artifact"></RequestArtifactFRGP>
         </LazyHydrate>
