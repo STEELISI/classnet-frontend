@@ -99,6 +99,9 @@
             ></ArtifactChips>
           </v-col>
         </v-row>
+        <v-row v-if="artifact && artifact.shortdesc" class="d-flex align-center justify-space-between shortdesc-align">
+          <span class="grey--text text--darken-2 ">{{artifact.shortdesc}}</span>
+        </v-row>
       </v-container>      
     </v-card>
   </div>
@@ -222,5 +225,9 @@ export default {
   text-decoration: none; /* Remove underline */
   color: #000000; /* Customize hyperlink color */
   font-size: 0.9rem; 
+}
+.shortdesc-align {
+  padding-left: 28px;
+  padding-bottom: 16px;
 }
 </style>
