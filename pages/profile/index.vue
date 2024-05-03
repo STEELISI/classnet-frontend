@@ -342,6 +342,7 @@ export default {
     },
     user(val) {
       this.localuser = JSON.parse(JSON.stringify(val))
+      this.userEmail = this.localuser.email
       if (!this.localuser.emailAuthenticated) {
         if (!this.otpSent) {
           this.dialogBtnMessage = 'Verify Email'
