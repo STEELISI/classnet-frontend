@@ -578,7 +578,7 @@ export default {
         value => /^.{0}$|^.{5,250}$/.test(value) || 'Grouping Id must be between 5 and 250 characters long',
       ],
       useAgreement:'',
-      useAgreementOptions:['dua-ni-160816','frgp-continuous','merit-dua-v1'] ,
+      useAgreementOptions:[] ,
       useAgreementRules: [
         value => (value!=undefined && value.length > 0)  || 'Use Agreement is required',
       ],
@@ -628,8 +628,10 @@ export default {
       return
     }
     let response = await this.$providerPermissionsList.index([])
-    this.providerNameOptions = response.permissions_list
-    if (this.providerNameOptions.length > 0) {
+    this.providerNameOptions = response.provider_list
+    this.useAgreementOptions = response.collection_list
+
+    if (this.providerNameOptions.length > 0 && this.useAgreementOptions.length > 0) {
       this.isApprovedProvider = true
     }
     this.providerPermissionsReceived = true
