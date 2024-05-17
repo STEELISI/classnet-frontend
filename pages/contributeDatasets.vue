@@ -14,6 +14,9 @@
       <v-divider></v-divider>
     </v-layout>
     <v-container v-if="providerPermissionsReceived && isApprovedProvider">
+      <v-row class="py-5">
+        <div>For help, please see the <a href="https://steelisi.github.io/CLASSNET-DOCS/contribute/">Contributing Datasets</a> documentation</div>
+      </v-row>
       <v-row justify="center">
         <v-col cols="12" md="10">
           <!-- Card component to create the box effect -->
