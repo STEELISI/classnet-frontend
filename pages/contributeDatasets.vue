@@ -723,13 +723,13 @@ export default {
 
       let metadata = {"datasetName":this.datasetName,
                   "shortDesc":this.shortDesc,
-                  "longDesc":this.longDesc,
+                  "longDesc":this.longDesc.replace(/[\r\n]+/g, ' '),
                   "datasetClass":this.datasetClass,
-                  "commercialAllowed":this.commercialAllowed,
+                  "commercialAllowed":this.commercialAllowed === '' ? false : this.commercialAllowed,
                   "productReviewRequired":this.productReviewRequired,
                   "availabilityStartDateTime":this.availabilityStartDateTime.val,
                   "availabilityEndDateTime":this.availabilityEndDateTime.val,
-                  "ongoingMeasurement":this.ongoingMeasurement,
+                  "ongoingMeasurement":this.ongoingMeasurement  === '' ? false : this.ongoingMeasurement,
                   "collectionStartDateTime":this.collectionStartDateTime.val,
                   "collectionEndDateTime":this.collectionEndDateTime.val,
                   "byteSize":this.byteSize*(1024**this.byteSizeUnit),
@@ -745,7 +745,7 @@ export default {
                   "useAgreement":this.useAgreement,
                   "irbRequired":this.irbRequired,
                   "retrievalInstructions":this.retrievalInstructions,
-                  "datasetReadme":this.datasetReadme
+                  "datasetReadme":this.datasetReadme.replace(/[\r\n]+/g, ' ')
 
                 } 
       for (const key in metadata) {
