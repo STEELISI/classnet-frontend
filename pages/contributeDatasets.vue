@@ -725,11 +725,11 @@ export default {
                   "shortDesc":this.shortDesc,
                   "longDesc":this.longDesc.replace(/[\r\n]+/g, ' '),
                   "datasetClass":this.datasetClass,
-                  "commercialAllowed":this.commercialAllowed === '' ? false : this.commercialAllowed,
+                  "commercialAllowed":this.commercialAllowed,
                   "productReviewRequired":this.productReviewRequired,
                   "availabilityStartDateTime":this.availabilityStartDateTime.val,
                   "availabilityEndDateTime":this.availabilityEndDateTime.val,
-                  "ongoingMeasurement":this.ongoingMeasurement  === '' ? false : this.ongoingMeasurement,
+                  "ongoingMeasurement":this.ongoingMeasurement,
                   "collectionStartDateTime":this.collectionStartDateTime.val,
                   "collectionEndDateTime":this.collectionEndDateTime.val,
                   "byteSize":this.byteSize*(1024**this.byteSizeUnit),
@@ -739,18 +739,22 @@ export default {
                   "anonymizationList":this.anonymizationList,
                   "accessList":this.accessList,
                   "providerName":this.providerName,
-                  "uncompressedSize": this.uncompressedSize == '' ? '' : this.uncompressedSize*(1024**this.uncompressedSizeUnit),
-                  "expirationDays":this.expirationDays==''?14:this.expirationDays,
+                  "uncompressedSize": (this.uncompressedSize === '')|| (this.uncompressedSize === null) ? '' : this.uncompressedSize*(1024**this.uncompressedSizeUnit),
+                  "expirationDays":(this.expirationDays === '') || (this.expirationDays === null) ?14:this.expirationDays,
                   "groupingId":this.groupingId,
                   "useAgreement":this.useAgreement,
                   "irbRequired":this.irbRequired,
                   "retrievalInstructions":this.retrievalInstructions,
                   "datasetReadme":this.datasetReadme.replace(/[\r\n]+/g, ' ')
-
                 } 
+      
       for (const key in metadata) {
+        if(metadata[key] === null){
+          metadata[key] = ''
+        }
         metadata[key] = this.$sanitize(metadata[key]);
       }
+      console.log(metadata)
       let response = await this.$artifactContributeEndpoint.create(metadata);
 
       this.formSubmitted = true
