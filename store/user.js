@@ -54,6 +54,7 @@ export const mutations = {
   },
   SET_NAME(state, name) {
     state.user.name = name
+    this.$auth.user.name = name
   },
   SET_WEBSITE(state, website) {
     state.user.website = website
@@ -121,6 +122,7 @@ export const actions = {
       commit('SET_USER_CAN_ADMIN', response.user.can_admin)
       commit('SET_USER_IS_ADMIN', response.user.is_admin)
       commit('SET_USER_ORGS', response.user.affiliations)
+      commit('SET_NAME', response.user.person.name)
     }
 
     if (response.user.person && !response.user.person.emailAuthenticated && response.user.person.email) {
