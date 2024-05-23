@@ -14,6 +14,9 @@
       <v-divider></v-divider>
     </v-layout>
     <v-container v-if="providerPermissionsReceived && isApprovedProvider">
+      <v-row class="py-5">
+        <div>For help, please see the <a href="https://steelisi.github.io/CLASSNET-DOCS/contribute/">Contributing Datasets</a> documentation</div>
+      </v-row>
       <v-row justify="center">
         <v-col cols="12" md="10">
           <!-- Card component to create the box effect -->
@@ -37,27 +40,35 @@
             <v-text-field
               name="shortDescription"
               v-model="shortDesc"
-              :rules="shortDescRules"
               type="text"
+              @blur="validateShortDesc"
+              @input="resetShortDescError"
               auto-grow
               clearable
               required
               :maxlength="shortDescCharLimit"
             ></v-text-field>
-            <span>{{ shortDesc.length }} / {{ shortDescCharLimit }}</span>
-
+            <p v-if="shortDescError" style="font-size:12px; color: red;">
+              {{ shortDescErrorMessage }}
+            </p>
+            <span>{{ shortDesc.trim().length }} / {{ shortDescCharLimit }}</span>
+            
             <div style="font-weight: bold; margin-top:20px;">Provide a detailed description of the dataset<span style='color: red;'><strong> *</strong></span></div>
             <v-textarea
             name="longDescription"
             v-model="longDesc"
-            :rules="longDescRules"
+            @blur="validateLongDesc"
+            @input="resetLongDescError"
             type="text"
             auto-grow
             clearable
             :maxlength="longDescCharLimit"
             required></v-textarea>
-            <span>{{ longDesc.length }} / {{ longDescCharLimit }}</span>
-
+            <p v-if="longDescError" style="font-size:12px; color: red;">
+              {{ longDescErrorMessage }}
+            </p>
+            <span>{{ longDesc.trim().length }} / {{ longDescCharLimit }}</span>
+        
             <div style="font-weight: bold; margin-top:20px;">Enter dataset class</div>
             <v-text-field
             name="datasetClass"
@@ -412,14 +423,15 @@
             <v-textarea
             name="datasetReadme"
             v-model="datasetReadme"
-            :rules="datasetReadmeRules"
+            @input="resetReadmeError"
+            @blur="validateReadme"
             type="text"
             auto-grow
             clearable
             :maxlength="datasetReadmeCharLimit"
             required></v-textarea>
-            <span>{{ datasetReadme.length }} / {{ datasetReadmeCharLimit }}</span>
-
+            <div v-if="datasetReadmeError" style="font-size:12px; color: red;">{{ datasetReadmeErrorMessage }}</div>
+            <span>{{ datasetReadme.trim().length }} / {{ datasetReadmeCharLimit }}</span>
             <v-card-actions>
               <v-btn color="primary" type="submit">Submit</v-btn>
             </v-card-actions>
@@ -497,16 +509,12 @@ export default {
           value => /^[A-Za-z0-9_.-]{5,250}$/.test(value) || 'Dataset name must only contain letters, numbers, underscores, hyphens, and dots, and be between 5 and 250 characters long',
       ],
       shortDesc:'',
-      shortDescRules: [
-        value => !!value || 'Short description is required',
-        value => /^.{10,350}$/.test(value) || 'Short description must be between 10 and 350 characters long',
-      ],
+      shortDescError:false,
+      shortDescErrorMessage:'',
       shortDescCharLimit:350,
       longDesc:'',
-      longDescRules: [
-        value => !!value || 'Long description is required',
-        value => /^.{20,10000}$/.test(value) || 'Long description must be between 20 and 10000 characters long',
-      ],
+      longDescError:false,
+      longDescErrorMessage:'',
       longDescCharLimit:10000, 
       datasetClass:'',
       datasetClassRules: [
@@ -591,10 +599,8 @@ export default {
       anonymizationListOptions:[{text:'cryptopan/full', value:'cryptopan/full'},{text:'cryptopan/host', value:'cryptopan/host'},{text:'None', value:'none'},{text:'Other', value:"other"}],
       accessListOptions:[{text:'Google BigQuery', value:'Google BigQuery'},{text:'https', value:'https'},{text:'rsync', value:'rsync'},{text:'other', value:'other'}],
       datasetReadme:'',
-      datasetReadmeRules: [
-        value => !!value || 'Dataset README is required',
-        value => /^.{0}$|^.{20,10000}$/.test(value) || 'Dataset README must be between 20 and 10000 characters long',
-      ],
+      datasetReadmeError: false,
+      datasetReadmeErrorMessage: '',
       datasetReadmeCharLimit:10000, 
       submitCardMessage: '',
       formSubmitted: false,
@@ -641,6 +647,59 @@ export default {
       this.dateDialog = false;
       this.availabilityStartDateTime = value;
     },
+    validateShortDesc(){
+      if(!this.shortDesc.trim().length){
+        this.shortDescError = true
+        this.shortDescErrorMessage = 'Description is required'
+      }
+      else if(this.shortDesc.trim().length < 10 || this.shortDesc.trim().length > 350){
+        this.shortDescError = true
+        this.shortDescErrorMessage = 'Description must be between 10 and 350 characters long'
+      }
+      else{
+        this.shortDescError = false
+        this.shortDescErrorMessage = ''
+      }
+    },
+    resetShortDescError(){
+      this.shortDescError = false
+    },
+    validateLongDesc(){
+      if(!this.longDesc.trim().length){
+        this.longDescError = true
+        this.longDescErrorMessage = 'Description is required'
+      }
+      else if(this.longDesc.trim().length < 20 || this.longDesc.trim().length > 10000){
+        this.longDescError = true
+        this.longDescErrorMessage = 'Description must be between 20 and 10000 characters long'
+      }
+      else{
+        this.longDescError = false
+        this.longDescErrorMessage = ''
+      }
+    },
+    resetLongDescError(){
+      this.longDescError = false
+    },
+    validateReadme(){
+      if(!this.datasetReadme.trim()){
+        this.datasetReadmeError = true
+        this.datasetReadmeErrorMessage = 'Dataset README is required'
+      }
+      else if(this.datasetReadme.trim().length < 20 || this.datasetReadme.trim().length > 10000){
+        this.datasetReadmeError = true
+        this.datasetReadmeErrorMessage = 'Dataset README must be between 20 and 10000 characters long'
+      }
+      else{
+        this.datasetReadmeError = false
+        this.datasetReadmeErrorMessage = ''
+      }
+    },
+
+    resetReadmeError(){
+      this.datasetReadmeError = false
+    },
+
     addWord() {
       if (this.keywordInput.trim().length < 2) {
         return;
@@ -664,7 +723,7 @@ export default {
 
       let metadata = {"datasetName":this.datasetName,
                   "shortDesc":this.shortDesc,
-                  "longDesc":this.longDesc,
+                  "longDesc":this.longDesc.replace(/[\r\n]+/g, ' '),
                   "datasetClass":this.datasetClass,
                   "commercialAllowed":this.commercialAllowed,
                   "productReviewRequired":this.productReviewRequired,
@@ -680,18 +739,22 @@ export default {
                   "anonymizationList":this.anonymizationList,
                   "accessList":this.accessList,
                   "providerName":this.providerName,
-                  "uncompressedSize": this.uncompressedSize == '' ? '' : this.uncompressedSize*(1024**this.uncompressedSizeUnit),
-                  "expirationDays":this.expirationDays==''?14:this.expirationDays,
+                  "uncompressedSize": (this.uncompressedSize === '')|| (this.uncompressedSize === null) ? '' : this.uncompressedSize*(1024**this.uncompressedSizeUnit),
+                  "expirationDays":(this.expirationDays === '') || (this.expirationDays === null) ?14:this.expirationDays,
                   "groupingId":this.groupingId,
                   "useAgreement":this.useAgreement,
                   "irbRequired":this.irbRequired,
                   "retrievalInstructions":this.retrievalInstructions,
-                  "datasetReadme":this.datasetReadme
-
+                  "datasetReadme":this.datasetReadme.replace(/[\r\n]+/g, ' ')
                 } 
+      
       for (const key in metadata) {
+        if(metadata[key] === null){
+          metadata[key] = ''
+        }
         metadata[key] = this.$sanitize(metadata[key]);
       }
+      console.log(metadata)
       let response = await this.$artifactContributeEndpoint.create(metadata);
 
       this.formSubmitted = true
