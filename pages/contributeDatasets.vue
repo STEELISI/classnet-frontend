@@ -457,6 +457,22 @@
             You currently do not have access to this page as an approved provider.
             </v-alert>
     </v-col>
+
+    <v-dialog v-model="isProcessing" persistent max-width="300">
+      <v-card>
+        <v-card-text>
+          <v-row justify="center">
+            <v-col cols="auto">
+              <v-progress-circular indeterminate color="primary"></v-progress-circular>
+            </v-col>
+          </v-row>
+          <v-row justify="center">
+            <v-col cols="auto">Processing...</v-col>
+          </v-row>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+
     <v-dialog
     v-model="formSubmitted"
     width="auto "
@@ -607,7 +623,8 @@ export default {
       formSubmittedError: false,
       formSubmittedErrorMessage: '',
       isApprovedProvider: false,
-      providerPermissionsReceived:false
+      providerPermissionsReceived:false,
+      isProcessing: false
     }
   },
   watch: {
@@ -719,6 +736,7 @@ export default {
         this.submitCardMessage = 'Please  fill in all required fields in the expected format.'
         return
       }
+      this.isProcessing = true
 
 
       let metadata = {"datasetName":this.datasetName,
@@ -756,6 +774,8 @@ export default {
       }
       console.log(metadata)
       let response = await this.$artifactContributeEndpoint.create(metadata);
+
+      this.isProcessing = false
 
       this.formSubmitted = true
       if (response.success == "true") {
