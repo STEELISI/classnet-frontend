@@ -103,9 +103,15 @@
 
     <v-container fluid>
       <v-card>
-        <v-card-title>
-          Categories
-        </v-card-title>
+        <v-row class="align-center justify-space-between">
+        <v-col cols="auto">
+          <v-card-title>Categories</v-card-title>
+        </v-col>
+        <v-col cols="auto" class="d-flex align-center">
+          <v-btn small text @click="setAll" class="clickable-text">Set All</v-btn>
+          <v-btn small text @click="clearAll" class="clickable-text ml-2">Clear All</v-btn>
+        </v-col>
+      </v-row>
         <v-card-text>
       <v-row>
 
@@ -331,6 +337,17 @@ export default {
         }
       }, 3000)
       this.submitted = false
+    },
+    setAll() {
+      if(this.selectedCategories.every(element => element)){
+        return; 
+      }
+      this.selectedCategories = this.selectedCategories.map(() => true);
+      this.getArtifacts();
+    },
+    clearAll() {
+      this.selectedCategories = this.selectedCategories.map(() => false);
+      this.getArtifacts();
     },
     async getArtifacts(page = 1) {
 
