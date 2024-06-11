@@ -69,15 +69,14 @@
             </p>
             <span>{{ longDesc.trim().length }} / {{ longDescCharLimit }}</span>
         
-            <div style="font-weight: bold; margin-top:20px;">Enter dataset class</div>
-            <v-text-field
-            name="datasetClass"
-            v-model="datasetClass"
-            :rules="datasetClassRules"
-            type="text"
-            auto-grow
-            clearable
-            ></v-text-field>
+            <div style="font-weight: bold; margin-top:20px;">Dataset Class </div>
+            <div style="font-size: 12px; color: grey; margin-top: 5px;">This field determines the restriction placed on access request to this dataset.</div>
+            <v-select
+              name="datasetClass"
+              v-model="datasetClass"
+              :items="classificationListOptions"
+              clearable
+            ></v-select>
 
             <div style="font-weight: bold; margin-top:20px;">Is commercial use of the dataset allowed?</div>
             <v-row>
@@ -419,19 +418,19 @@
             clearable
             ></v-select>
 
-            <div style="font-weight: bold; margin-top:20px;">Provide a README for the dataset<span style='color: red;'><strong> *</strong></span></div>
-            <v-textarea
-            name="datasetReadme"
-            v-model="datasetReadme"
-            @input="resetReadmeError"
-            @blur="validateReadme"
-            type="text"
-            auto-grow
-            clearable
-            :maxlength="datasetReadmeCharLimit"
-            required></v-textarea>
+            <div style="font-weight: bold; margin-top:20px;">Upload a README file for the dataset<span style='color: red;'><strong> *</strong></span></div>
+            <div style="font-size: 12px; color: grey; margin-top: 5px;">Supported format: .txt, .md, .wiki only</div>
+            <div style="margin-top: 10px; margin-bottom: 10px;"></div>
+            <input
+              type="file"
+              @input="resetReadmeError"
+              @change="handleFileUpload"
+              accept=".txt,.md, .wiki"
+              required
+            />
             <div v-if="datasetReadmeError" style="font-size:12px; color: red;">{{ datasetReadmeErrorMessage }}</div>
-            <span>{{ datasetReadme.trim().length }} / {{ datasetReadmeCharLimit }}</span>
+            <div v-if="!datasetReadmeError" style="font-size:12px; color: green;">{{ datasetReadmeSuccessMessage }}</div>
+
             <v-card-actions>
               <v-btn color="primary" type="submit">Submit</v-btn>
             </v-card-actions>
@@ -525,17 +524,15 @@ export default {
           value => /^[A-Za-z0-9_.-]{5,250}$/.test(value) || 'Dataset name must only contain letters, numbers, underscores, hyphens, and dots, and be between 5 and 250 characters long',
       ],
       shortDesc:'',
-      shortDescError:false,
+      shortDescError:true,
       shortDescErrorMessage:'',
       shortDescCharLimit:350,
       longDesc:'',
-      longDescError:false,
+      longDescError:true,
       longDescErrorMessage:'',
       longDescCharLimit:10000, 
       datasetClass:'',
-      datasetClassRules: [
-        value => /^.{0,30}$/.test(value) || 'Dataset class can be a maximum of 30 characters long',
-      ],
+      classificationListOptions:[{text:'Restricted', value:'restricted'},{text:'Quasi Restricted', value:'quasi-restricted'},{text:'Classified', value:'classified'},{text:'Unclassified (default)', value:"unclassified"}],
       commercialAllowed:'',
       productReviewRequired:'',
       availabilityStartDateTime:{dialog:false, val:null},
@@ -615,7 +612,7 @@ export default {
       anonymizationListOptions:[{text:'cryptopan/full', value:'cryptopan/full'},{text:'cryptopan/host', value:'cryptopan/host'},{text:'None', value:'none'},{text:'Other', value:"other"}],
       accessListOptions:[{text:'Google BigQuery', value:'Google BigQuery'},{text:'https', value:'https'},{text:'rsync', value:'rsync'},{text:'other', value:'other'}],
       datasetReadme:'',
-      datasetReadmeError: false,
+      datasetReadmeError: true,
       datasetReadmeErrorMessage: '',
       datasetReadmeCharLimit:10000, 
       submitCardMessage: '',
@@ -624,7 +621,10 @@ export default {
       formSubmittedErrorMessage: '',
       isApprovedProvider: false,
       providerPermissionsReceived:false,
-      isProcessing: false
+      isProcessing: false,
+      readmeFormat:'',
+      datasetReadmeSuccessMessage:'',
+      processedReadme:''
     }
   },
   watch: {
@@ -680,6 +680,7 @@ export default {
     },
     resetShortDescError(){
       this.shortDescError = false
+      this.shortDescErrorMessage = ''
     },
     validateLongDesc(){
       if(!this.longDesc.trim().length){
@@ -696,25 +697,68 @@ export default {
       }
     },
     resetLongDescError(){
-      this.longDescError = false
+      this.longDescError = true
+      this.longDescErrorMessage = ''
+    },
+    handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (file && (file.type === "text/plain" || file.name.endsWith(".md") || file.name.endsWith(".wiki"))) {
+        if(file.name.endsWith(".md")){
+          this.readmeFormat = 'md'
+        }
+        else if(file.name.endsWith(".wiki")){
+          this.readmeFormat = 'wiki'
+        }
+        else{
+          this.readmeFormat = 'txt'
+        }
+        this.readFile(file);
+      } else {
+        this.datasetReadmeError = true;
+        this.datasetReadmeErrorMessage = 'Unsupported file format. Please upload only .txt, .md or .wiki file'
+      }
+    },
+    readFile(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.datasetReadme = e.target.result;
+        this.validateReadme();
+      };
+      reader.readAsText(file);
     },
     validateReadme(){
       if(!this.datasetReadme.trim()){
         this.datasetReadmeError = true
-        this.datasetReadmeErrorMessage = 'Dataset README is required'
+        this.datasetReadmeErrorMessage = 'The file uploaded is empty'
       }
-      else if(this.datasetReadme.trim().length < 20 || this.datasetReadme.trim().length > 10000){
+      else if(this.datasetReadme.trim().length < 20 || this.datasetReadme.trim().length > 100000){
         this.datasetReadmeError = true
-        this.datasetReadmeErrorMessage = 'Dataset README must be between 20 and 10000 characters long'
+        this.datasetReadmeErrorMessage = 'Dataset README must be between 20 and 100,000 characters long'
       }
       else{
         this.datasetReadmeError = false
         this.datasetReadmeErrorMessage = ''
+        switch (this.readmeFormat) {
+        case 'txt':
+          this.processedReadme = `<pre> ${this.datasetReadme} </pre>`;
+          break;
+        case 'md':
+          this.processedReadme = `<markdown> ${this.datasetReadme} </markdown>`;
+          break;
+        case 'mediawiki':
+          this.processedReadme = this.datasetReadme;
+          break;
+        default:
+          this.processedReadme = this.datasetReadme;
+      }
+        this.datasetReadmeSuccessMessage = 'File uploaded successfully.'
       }
     },
 
     resetReadmeError(){
-      this.datasetReadmeError = false
+      this.datasetReadmeError = true
+      this.datasetReadmeErrorMessage = ''
+      this.datasetReadmeSuccessMessage = ''
     },
 
     addWord() {
@@ -732,7 +776,7 @@ export default {
     async submit(){
       this.submitCardMessage = '';
       const valid = await this.$refs.form.validate();
-      if (!valid){
+      if (!valid || this.datasetReadmeError || this.longDescError || this.shortDescError){
         this.submitCardMessage = 'Please  fill in all required fields in the expected format.'
         return
       }
@@ -741,8 +785,8 @@ export default {
 
       let metadata = {"datasetName":this.datasetName,
                   "shortDesc":this.shortDesc,
-                  "longDesc":this.longDesc.replace(/[\r\n]+/g, ' '),
-                  "datasetClass":this.datasetClass,
+                  "longDesc":this.longDesc,
+                  "datasetClass":(this.datasetClass === null)||(this.datasetClass === '')? 'unclassfied' : this.datasetClass,
                   "commercialAllowed":this.commercialAllowed,
                   "productReviewRequired":this.productReviewRequired,
                   "availabilityStartDateTime":this.availabilityStartDateTime.val,
@@ -763,14 +807,17 @@ export default {
                   "useAgreement":this.useAgreement,
                   "irbRequired":this.irbRequired,
                   "retrievalInstructions":this.retrievalInstructions,
-                  "datasetReadme":this.datasetReadme.replace(/[\r\n]+/g, ' ')
+                  "datasetReadme":this.processedReadme
                 } 
       
       for (const key in metadata) {
         if(metadata[key] === null){
           metadata[key] = ''
         }
-        metadata[key] = this.$sanitize(metadata[key]);
+        if(key !== 'datasetReadme'){
+          metadata[key] = this.$sanitize(metadata[key]);
+        }
+        
       }
       console.log(metadata)
       let response = await this.$artifactContributeEndpoint.create(metadata);
