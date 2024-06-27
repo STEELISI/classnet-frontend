@@ -148,7 +148,7 @@
       :limit="limit"
       v-bind:related="related"
     ></ArtifactList>
-    <span v-if="artifacts.total == 0 && search !== ''">{{
+    <span v-if="total === 0 && search !== ''">{{
       searchMessage
     }}</span>
     <span v-if="!searchLoading && artifacts.total == 0 && search === ''"
@@ -231,7 +231,6 @@ export default {
     window.removeEventListener('scroll', this.handleScroll)
   },
   mounted() {
-    console.log(this.$route)
     if (this.related) {
       this.$store.dispatch('artifacts/fetchRelatedArtifacts', this.artifact)
     } else if (this.$route.query.keywords) {
