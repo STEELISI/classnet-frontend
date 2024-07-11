@@ -108,7 +108,7 @@ export const actions = {
     })
     if (typeof response !== 'undefined') {
       console.log(response)
-      commit('SET_ARTIFACTS', response)
+      commit('SET_ARTIFACTS', response.artifact_dict)
     }
     commit('SET_LOADING', false)
   },
