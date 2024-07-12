@@ -300,16 +300,10 @@ export default {
       if (this.related && this.search.trim() === '') {
         this.$store.dispatch('artifacts/fetchRelatedArtifacts', this.artifact)
       } else {
-        let onSubmitKeyword = this.search
-
-        // Only proceed if the keyword collected before artifactSearchCategoryEndpoint's call is the same as the current search keyword
-        if (onSubmitKeyword == this.search) {
-
-          this.selectedCategories = []
-          this.categories = []
-          
-          this.getArtifacts()
-        }
+        // We reset selectedCategories and categories only when we do onSubmit (getArtifacts could be called even after a keyword submission (page change, category filtering))
+        this.selectedCategories = []
+        this.categories = []
+        this.getArtifacts()
       }
       this.searchInterval = setTimeout(() => {
         if (!this.searchLoading) {
@@ -355,6 +349,7 @@ export default {
       this.organization ? (payload['organization'] = this.organization) : false
       this.advanced.badge_ids ? (payload['badge_id'] = this.advanced.badge_ids) : false
 
+      // If we already have retrieved categories then we can check the list of switches to see the selectedCategoryNames upon calling getArtifacts
       if (this.categories.length > 0) {
         const categoryNames = Object.values(this.categories).map(category => category[0]);
         const selectedCategoryNames = categoryNames.filter((category, index) => this.selectedCategories[index]);
@@ -371,6 +366,7 @@ export default {
         ...payload
       })
 
+      // If categories is empty then we must populate it for the first time
       if (this.categories.length == 0) {
         let data = []
         for (let i in response.category_dict){
@@ -381,7 +377,6 @@ export default {
       } 
 
       if (typeof response !== 'undefined') {
-        
         // Only proceed if the keyword collected before artifactSearchEndpoint's call is the same as the current search keyword
         if (getArtifactsKeyword == this.search) {
           console.log("Setting artifacts", response.artifact_dict)
