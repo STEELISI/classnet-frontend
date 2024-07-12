@@ -107,7 +107,7 @@ export const actions = {
       ...payload
     })
     if (typeof response !== 'undefined') {
-      console.log(response)
+      console.log("Setting artifacts: ", response)
       commit('SET_ARTIFACTS', response.artifact_dict)
     }
     commit('SET_LOADING', false)
