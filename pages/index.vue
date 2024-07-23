@@ -352,10 +352,12 @@
             persistent-hint
             :items="orgNames"
             v-model="userAffiliation"
-            hint="Select applicable organization from the list or type in your own"
+            hint="Type your affiliation name and hit tab to enter (you can also select if present in the dropdown)"
             :search-input.sync="orgSearch"
             item-text="org.name"
             item-value="org.name"
+            :menu-props="menuProps"
+            @update:search-input="onAffiliationInput"
             return-object
             required
           >
@@ -453,7 +455,10 @@ export default {
           'Fifth',
         ],
         countryCodePattern: /\d+/g,
-        mobileNumberPattern: /\(?\d{1,3}\)?[- ]?\d{3}[- ]?\d{4}$/g
+        mobileNumberPattern: /\(?\d{1,3}\)?[- ]?\d{3}[- ]?\d{4}$/g,
+        menuProps: {
+        value: false, // Initially hide the menu
+        }
       }
     },
   components: {
@@ -623,7 +628,14 @@ export default {
         })
 
       }
-    }
+    },
+    onAffiliationInput(value) {
+      if (value.length > 0 || this.userAffiliation.length > 0) {
+        this.menuProps.value = true; // Show the menu if there's input
+      } else {
+        this.menuProps.value = false; // Hide the menu if input is cleared
+      }
+    },
   }
   // async computed(){
 
