@@ -251,6 +251,25 @@
               </v-col>
             </v-row>
 
+            <div style="font-weight: bold; margin-top:20px;">What is the uncompressed size of the dataset?</div>
+            <v-row>
+              <v-col cols="3" md="3">
+                <v-text-field
+                  name="uncompressedSize"
+                  v-model="uncompressedSize"
+                  :rules="uncompressedSizeRules"
+                  @input="handleNumericInput"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="2" md="2">
+                <v-select
+                  name="Unit"
+                  v-model="uncompressedSizeUnit"
+                  :items="byteSizeUnitOptions"
+                  placeholder="Select unit"
+                ></v-select>
+              </v-col>
+            </v-row>
 
             <div style="font-weight: bold; margin-top:20px;"> Once downloaded, can the contents be retained and used indefinitely?</div>
             <v-row>
@@ -316,40 +335,9 @@
               </v-col>
             </v-row>
 
-            <div style="font-weight: bold; margin-top:20px;">Provider Name<span style='color: red;'><strong> *</strong></span></div>
-            <v-col cols="12" sm="6" md="4">
-              <v-select
-              name="providerName"
-              v-model="providerName"
-              :rules="providerNameRules"
-              :items="providerNameOptions"
-              type="text"
-              auto-grow
-              clearable
-              required
-              ></v-select>
-            </v-col>
-            <div style="font-weight: bold; margin-top:20px;">What is the uncompressed size of the dataset?</div>
-            <v-row>
-              <v-col cols="3" md="3">
-                <v-text-field
-                  name="uncompressedSize"
-                  v-model="uncompressedSize"
-                  :rules="uncompressedSizeRules"
-                  @input="handleNumericInput"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="2" md="2">
-                <v-select
-                  name="Unit"
-                  v-model="uncompressedSizeUnit"
-                  :items="byteSizeUnitOptions"
-                  placeholder="Select unit"
-                ></v-select>
-              </v-col>
-            </v-row>
-
             <div style="font-weight: bold; margin-top:20px;">Duration of access (in days)</div>
+            <div style="font-size: 12px; color: grey; margin-top: 5px;">How many days will access be granted for?</div>
+
             <v-row>
               <v-col cols="12" sm="6" md="4">
                 <v-text-field
@@ -364,7 +352,7 @@
               </v-col>
             </v-row>
 
-            <div style="font-weight: bold; margin-top:20px;">Grouping ID</div>
+            <div style="font-weight: bold; margin-top:20px;">Grouping ID (A word or phrase that you want this dataset and other related datasets to be grouped under. Eg: 'internet address survey')</div>
             <v-row>
               <v-col cols="12" sm="6" md="4">
                 <v-text-field
@@ -378,6 +366,21 @@
               </v-col>
             </v-row>
 
+            <div style="font-weight: bold; margin-top:20px;">Provider Name<span style='color: red;'><strong> *</strong></span></div>
+            <v-col cols="12" sm="6" md="4">
+              <v-select
+              name="providerName"
+              v-model="providerName"
+              :rules="providerNameRules"
+              :items="filteredProviders"
+              @change="updateProviderUseAgreementDropdowns"
+
+              type="text"
+              auto-grow
+              clearable
+              required
+              ></v-select>
+            </v-col>
             <!-- USE DUA DROPDOWN -->
 
             <div style="font-weight: bold; margin-top:20px;">What User Agreement should be used?<span style='color: red;'><strong> *</strong></span></div>
@@ -387,7 +390,8 @@
                 name="useAgreement"
                 v-model="useAgreement"
                 :rules="useAgreementRules"
-                :items="useAgreementOptions"
+                :items="filteredUseAgreementList"
+                @change="updateProviderUseAgreementDropdowns"
                 auto-grow
                 clearable
                 required
@@ -409,7 +413,7 @@
               </v-col>
             </v-row>
 
-            <div style="font-weight: bold; margin-top:20px;"> Link to dataset</div>
+            <div style="font-weight: bold; margin-top:20px;"> Accessible for download or on-site?</div>
             <v-select
             name="retrievalInstructions"
             v-model="retrievalInstructions"
@@ -624,7 +628,10 @@ export default {
       isProcessing: false,
       readmeFormat:'',
       datasetReadmeSuccessMessage:'',
-      processedReadme:''
+      processedReadme:'',
+      pairs: [],
+      filteredProviders: [],
+      filteredUseAgreementList: []
     }
   },
   watch: {
@@ -651,15 +658,35 @@ export default {
       return
     }
     let response = await this.$providerPermissionsList.index([])
-    this.providerNameOptions = response.provider_list
-    this.useAgreementOptions = response.collection_list
-
-    if (this.providerNameOptions.length > 0 && this.useAgreementOptions.length > 0) {
+    this.pairs = response;
+    this.filteredProviders = [...new Set(this.pairs.map(pair => pair.provider))];
+    this.filteredUseAgreementList = [...new Set(this.pairs.map(pair => pair.collection))];
+    
+    if (this.filteredProviders.length > 0 && this.filteredUseAgreementList.length > 0) {
       this.isApprovedProvider = true
     }
     this.providerPermissionsReceived = true
   },
   methods:{
+    updateProviderUseAgreementDropdowns() {
+      if (this.providerName && !this.useAgreement) {
+        this.filteredUseAgreementList = [...new Set(this.pairs
+          .filter(pair => pair.provider === this.providerName)
+          .map(pair => pair.collection))]
+      } 
+      if (this.useAgreement && !this.providerName) {
+        this.filteredProviders = [...new Set(this.pairs
+          .filter(pair => pair.collection === this.useAgreement)
+          .map(pair => pair.provider))]
+      } 
+      if (!this.useAgreement && !this.providerName) {
+        this.filteredProviders = [...new Set(this.pairs.map(pair => pair.provider))];
+        this.filteredUseAgreementList = [...new Set(this.pairs.map(pair => pair.collection))];
+        this.useAgreement = ''
+        this.providerName = ''
+      }
+    }
+    ,
     handleDateChange(value) {
       this.dateDialog = false;
       this.availabilityStartDateTime = value;
