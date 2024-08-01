@@ -41,6 +41,7 @@
                 :items="providers"
                 label="Provider"
                 v-model = "organization"
+                multiple
                 dense
                 ></v-select>
                 
@@ -214,7 +215,7 @@ export default {
         badge_ids: []
       },
       types: [ 'dag', 'argus', 'pcap',  'netflow', 'flowtools', 'flowride', 'fsdb', 'csv', 'custom'],
-      providers: ['USC', 'MERIT', 'MEMPHIS'],
+      providers: [],
       filters: ['Name', 'Organization'],
       showScrollToTop: 0,
       panel: [],
@@ -231,6 +232,7 @@ export default {
     window.removeEventListener('scroll', this.handleScroll)
   },
   mounted() {
+    this.fetchProviders() 
     if (this.related) {
       this.$store.dispatch('artifacts/fetchRelatedArtifacts', this.artifact)
     } else if (this.$route.query.keywords) {
@@ -385,6 +387,15 @@ export default {
         }
       }
       this.$store.commit('artifacts/SET_LOADING', false)        
+    },
+    async fetchProviders() {
+      let response = await this.$providerEndpoint.index()
+      if(response === undefined || response.length == 0){
+        this.providers = ['USC', 'MERIT', 'FRGP']
+      }
+      else{
+        this.providers = response
+      } 
     },
     onChange() {
       this.searchMessage = ''
