@@ -284,7 +284,7 @@
               </v-col>
             </v-row>
 
-            <div style="font-weight: bold; margin-top:20px;"> Keywords to facilitate search (add tab after typing a keyword)?<span style='color: red;'><strong> *</strong></span> </div>
+            <div style="font-weight: bold; margin-top:20px;"> Keywords to facilitate search (Press space to add more)?<span style='color: red;'><strong> *</strong></span> </div>
               <div class="input-bubble-container">
                 <div class="bubbles">
                   <span class="bubble" v-for="(word, index) in keywordList" :key="index"
@@ -298,6 +298,7 @@
                     @keydown.space.prevent="addWord"
                     @blur="addWord"
                     class="bubble-input"
+                    ref="keywordInput"
                   ></v-text-field>
                 </div>
               </div>
@@ -366,39 +367,19 @@
               </v-col>
             </v-row>
 
-            <div style="font-weight: bold; margin-top:20px;">Provider Name<span style='color: red;'><strong> *</strong></span></div>
+            <div style="font-weight: bold; margin-top:20px;">Select Provider and User Agreement<span style='color: red;'><strong> *</strong></span></div>
             <v-col cols="12" sm="6" md="4">
               <v-select
               name="providerName"
-              v-model="providerName"
-              :rules="providerNameRules"
-              :items="filteredProviders"
-              @change="updateProviderUseAgreementDropdowns"
-
+              v-model="providerCollection"
+              :rules="providerCollectionRules"
+              :items="providerCollectionOptions"
               type="text"
               auto-grow
               clearable
               required
               ></v-select>
             </v-col>
-            <!-- USE DUA DROPDOWN -->
-
-            <div style="font-weight: bold; margin-top:20px;">What User Agreement should be used?<span style='color: red;'><strong> *</strong></span></div>
-            <v-row>
-              <v-col cols="12" sm="6" md="4">
-                <v-select
-                name="useAgreement"
-                v-model="useAgreement"
-                :rules="useAgreementRules"
-                :items="filteredUseAgreementList"
-                @change="updateProviderUseAgreementDropdowns"
-                auto-grow
-                clearable
-                required
-                ></v-select>
-              </v-col>
-            </v-row>
-
 
             <div style="font-weight: bold; margin-top:20px;"> Is IRB approval required for access?</div>
             <v-row>
@@ -584,11 +565,10 @@ export default {
         value => (value!=undefined && value.length > 0)  || 'Anonymization method is required',
       ],
       accessList:'',
-      providerName:'',
-      providerNameRules: [
+      providerCollection:'',
+      providerCollectionRules: [
         value => !!value || 'Provider name is required',
       ],
-      providerNameOptions:[],
       uncompressedSize:'',
       uncompressedSizeUnit:0,
       uncompressedSizeRules: [
@@ -600,12 +580,7 @@ export default {
       ],
       groupingId:'',
       groupingIdRules: [
-        value => /^.{0}$|^.{5,250}$/.test(value) || 'Grouping Id must be between 5 and 250 characters long',
-      ],
-      useAgreement:'',
-      useAgreementOptions:[] ,
-      useAgreementRules: [
-        value => (value!=undefined && value.length > 0)  || 'Use Agreement is required',
+        value => /^[A-Za-z0-9_.\- ]{5,250}$/.test(value) || 'Grouping Id must be between 5 and 250 characters long and can only contain underscore ("_"), hyphen ("-") or period (".") ',
       ],
       irbRequired:'',
       retrievalInstructions:'',
@@ -630,8 +605,7 @@ export default {
       datasetReadmeSuccessMessage:'',
       processedReadme:'',
       pairs: [],
-      filteredProviders: [],
-      filteredUseAgreementList: []
+      providerCollectionOptions:[],
     }
   },
   watch: {
@@ -659,34 +633,17 @@ export default {
     }
     let response = await this.$providerPermissionsList.index([])
     this.pairs = response;
-    this.filteredProviders = [...new Set(this.pairs.map(pair => pair.provider))];
-    this.filteredUseAgreementList = [...new Set(this.pairs.map(pair => pair.collection))];
+    this.providerCollectionOptions = this.pairs.map(pair => ({
+      text:`Provider: ${pair.provider} - Use Agreement: ${pair.collection}`,
+      value: [pair.provider, pair.collection]
+    }))
     
-    if (this.filteredProviders.length > 0 && this.filteredUseAgreementList.length > 0) {
+    if (this.providerCollectionOptions.length > 0) {
       this.isApprovedProvider = true
     }
     this.providerPermissionsReceived = true
   },
   methods:{
-    updateProviderUseAgreementDropdowns() {
-      if (this.providerName && !this.useAgreement) {
-        this.filteredUseAgreementList = [...new Set(this.pairs
-          .filter(pair => pair.provider === this.providerName)
-          .map(pair => pair.collection))]
-      } 
-      if (this.useAgreement && !this.providerName) {
-        this.filteredProviders = [...new Set(this.pairs
-          .filter(pair => pair.collection === this.useAgreement)
-          .map(pair => pair.provider))]
-      } 
-      if (!this.useAgreement && !this.providerName) {
-        this.filteredProviders = [...new Set(this.pairs.map(pair => pair.provider))];
-        this.filteredUseAgreementList = [...new Set(this.pairs.map(pair => pair.collection))];
-        this.useAgreement = ''
-        this.providerName = ''
-      }
-    }
-    ,
     handleDateChange(value) {
       this.dateDialog = false;
       this.availabilityStartDateTime = value;
@@ -809,7 +766,6 @@ export default {
       }
       this.isProcessing = true
 
-
       let metadata = {"datasetName":this.datasetName,
                   "shortDesc":this.shortDesc,
                   "longDesc":this.longDesc,
@@ -827,11 +783,11 @@ export default {
                   "formatList":this.formatList,
                   "anonymizationList":this.anonymizationList,
                   "accessList":this.accessList,
-                  "providerName":this.providerName,
+                  "providerName":this.providerCollection[0],
                   "uncompressedSize": (this.uncompressedSize === '')|| (this.uncompressedSize === null) ? '' : this.uncompressedSize*(1024**this.uncompressedSizeUnit),
                   "expirationDays":(this.expirationDays === '') || (this.expirationDays === null) ?14:this.expirationDays,
                   "groupingId":this.groupingId,
-                  "useAgreement":this.useAgreement,
+                  "useAgreement":this.providerCollection[1],
                   "irbRequired":this.irbRequired,
                   "retrievalInstructions":this.retrievalInstructions,
                   "datasetReadme":this.processedReadme
