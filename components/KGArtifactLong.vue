@@ -4,6 +4,24 @@
     <v-card class="mx-auto my-2">
       <v-card-title>{{ record.artifact.title }}
         <v-spacer></v-spacer>
+        <div v-if="!artifactRequested && !isFetchingStatus">
+          <v-btn
+            v-if="isInCart(record.artifact.artifact_group_id,record.artifact.id)" 
+            @click="removeArtifactFromCart()"
+            color="orange"
+            nuxt
+          >
+            Remove from Cart
+          </v-btn>
+          <v-btn
+            v-else
+            @click="addArtifactToCart()"
+            color="primary"
+            nuxt
+          >
+          Add to Cart
+          </v-btn>
+        </div>
         <v-btn
           v-if="!(isOwner() || isAdmin()) && !artifactRequested && !isFetchingStatus"
           color="primary"
@@ -552,10 +570,10 @@ export default {
     }
   },
   mounted() {
+    this.$store.dispatch('user/fetchUser')
     setTimeout(() => {
       this.loadingMessage = 'Error loading'
     }, 5000)
-
   },
   watch: {
     record: {
@@ -574,7 +592,8 @@ export default {
       user_is_admin: state => state.user.user_is_admin,
       userAffiliation: state => state.user.organization,
       user: state => state.user,
-      userDetails:state => state.user.user,
+      userDetails: state => state.user.user,
+      cart: state => state.user.cart
     }),
     sanitizedDescription: function() {
       var regexOld = /\+\-+\+.+?\+\-+\+/s; 
@@ -775,6 +794,36 @@ export default {
           await this.$favoritesEndpoint.delete(this.record.artifact.artifact_group_id)
         }
       }
+    },
+    isInCart(artifact_group_id,artifactId) {
+      console.log(this.cart)
+      if (this.cart){
+        return this.cart.some(item => item.artifact_id === artifactId && item.artifact_group_id === artifact_group_id)
+      }
+      return false;
+    },
+    async addArtifactToCart(){
+      let artifact = {
+        "artifact_group_id":this.record.artifact.artifact_group_id,
+        "artifact_id":this.record.artifact.id,
+        "collection": this.record.artifact.collection,
+        "provider": this.record.artifact.provider
+      }
+      
+      this.cart.push(artifact)   
+      this.userDetails.cart = JSON.stringify(this.cart)
+      
+      await this.$userEndpoint.update(this.userid, this.userDetails)
+    },
+    async removeArtifactFromCart() {
+      const index = this.cart.findIndex(item => item.artifact_group_id === this.record.artifact.artifact_group_id && item.artifact_id === this.record.artifact.id);
+      if (index !== -1) {
+        // Remove the item from the cart using splice
+        this.cart.splice(index, 1);
+      }
+      this.userDetails.cart = JSON.stringify(this.cart)
+
+      await this.$userEndpoint.update(this.userid, this.userDetails)
     },
     iconColor(type) {
       return artifactColor(type)

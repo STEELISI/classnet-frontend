@@ -67,7 +67,7 @@
           name="project"
           v-model="project"
           type="text"
-          hint="Please indiacate the name of research project (including funder, if any), project URL (if any) and supporting organization (school, business, etc.) where the work will be done."
+          hint="Please indicate the name of research project (including funder, if any), project URL (if any) and supporting organization (school, business, etc.) where the work will be done."
           auto-grow
           clearable
           required

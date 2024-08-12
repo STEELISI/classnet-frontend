@@ -141,3 +141,41 @@ export const isReleased = status =>{
 }
 
 export const EventBus = new Vue()
+
+export const getCartGroupedByProviderCollection = (cart) => {
+  let resultDict = {};
+  console.log('Initial cart:', cart);
+
+  if (!Array.isArray(cart)) {
+    console.error('Provided cart is not an array');
+    return {};
+  }
+
+  cart.forEach((obj) => {
+    const provider = obj.provider;
+    const collection = obj.collection;
+    const artifact_id = obj.artifact_id;
+    const artifact_group_id = obj.artifact_group_id;
+
+    const key = [provider, collection];
+
+    if (!resultDict[key]) {
+      resultDict[key] = [];
+    }
+
+    resultDict[key].push([artifact_group_id, artifact_id]);
+  });
+
+
+  // Convert resultDict to the required format
+  const cartGrouped = {};
+  Object.keys(resultDict).forEach((key) => {
+    // Convert key string back to array
+    const [provider, collection] = key.split(',');
+    cartGrouped[[provider, collection]] = {
+      artifact_ids: resultDict[key],
+      showDropdown: false
+    };
+  });
+  return cartGrouped;
+};
