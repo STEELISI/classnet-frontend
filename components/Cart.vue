@@ -1,13 +1,15 @@
 <template>
   <div v-if="cart && Object.keys(cartGroupedByProviderCollection).length">
-    <p>Cart Component Rendered</p>
+    <v-card-title class="text-h6 mb-4" style="margin-bottom: 30px;">
+      Artifacts grouped by artifact provider and use agreement
+    </v-card-title>
     <v-card v-for="(artifactGroup, key) in cartGroupedByProviderCollection" :key="key" class="mx-auto">
       <v-container fluid>
         <v-row class="d-flex align-center justify-space-between">
           <v-col class="d-flex align-center" cols="10">
             <v-card-title class="align-start py-0 my-0">
-              <v-btn @click="toggleDropdown(key)" text>
-                {{ key }}
+              <v-btn @click="toggleDropdown(key)" outlined text>
+                Provider: {{ key.split(',')[0] }}, Use Agreement: {{ key.split(',')[1] }}
               </v-btn>
             </v-card-title>
           </v-col>
@@ -26,7 +28,16 @@
     </v-card>
   </div>
   <div v-else>
-    <p>No record found</p>
+    <v-col cols="12" sm="8" md="8">
+            <v-alert
+              icon="mdi-shield-lock-outline"
+              prominent
+              text
+              type="info"
+            >
+              Your cart is currently empty. You can add an artifact to cart on the artifact view page.
+            </v-alert>
+    </v-col>
   </div>
 </template>
 

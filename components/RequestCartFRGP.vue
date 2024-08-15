@@ -44,8 +44,8 @@
         <div style="margin-top: 20px; margin-bottom: 20px; font-weight: normal;">Upload filled data use agreement here (in PDF format) <input type="file" @change="uploadFile" ref="file" required accept="application/pdf"></div> -->
         <div v-if="artifacts.length === 0">Loading...</div>
         <div v-else>
-          <div style="margin-top: 10px; margin-bottom: 20px; font-weight: bold;">Request the following artifacts:</div>
-          <div v-for="(artifact, index) in artifacts" :key="index"> 
+          <div class="text-h6" style="margin-top: 10px; font-weight: bold;">Request the following artifacts:</div>
+          <div style="margin-bottom: 30px;" v-for="(artifact, index) in artifacts" :key="index"> 
             <div style="margin-bottom: 10px;">{{artifact.artifact.title}}</div>
           </div>
         </div>
