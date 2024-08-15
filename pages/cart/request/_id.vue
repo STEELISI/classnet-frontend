@@ -6,7 +6,7 @@
           <RequestCart></RequestCart>
       </div>
       <div v-else-if="(collection.toLowerCase().includes('frgp-continuous') || collection.toLowerCase().includes('frgp-download') ) ">
-          
+        <RequestCartFRGP></RequestCartFRGP>
       </div>
       <div v-else>{{ loadingMessage }}</div>
     </div>
@@ -17,7 +17,7 @@
   export default {
     components: {
       RequestCart: () => import('@/components/RequestCart'),
-      RequestArtifactFRGP: () => import('@/components/RequestArtifactFRGP'),
+      RequestCartFRGP: () => import('@/components/RequestCartFRGP'),
       LazyHydrate: () => import('vue-lazy-hydration')
     },
     head() {

@@ -97,6 +97,14 @@
         {{title}}
       </v-toolbar-title>
       <v-spacer />
+      <v-btn
+        v-if="$auth.loggedIn"
+        icon
+        :to="{ path: '/cart' }"
+      >
+        <v-icon>mdi-cart</v-icon>
+      </v-btn>
+
       <span v-if="$auth.loggedIn" class="mr-2" v-text="$auth.user.name"></span>
       <v-btn
         v-if="$auth.loggedIn && this.user_can_admin && !this.user_is_admin"

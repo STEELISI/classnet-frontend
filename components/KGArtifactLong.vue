@@ -7,6 +7,7 @@
         <div v-if="!artifactRequested && !isFetchingStatus">
           <v-btn
             v-if="isInCart(record.artifact.artifact_group_id,record.artifact.id)" 
+            style="margin-right: 20px;"
             @click="removeArtifactFromCart()"
             color="orange"
             nuxt
@@ -14,6 +15,7 @@
             Remove from Cart
           </v-btn>
           <v-btn
+            style="margin-right: 20px;"
             v-else
             @click="addArtifactToCart()"
             color="primary"

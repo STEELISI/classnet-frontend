@@ -42,7 +42,13 @@
        <form @submit.prevent="submitForm" ref="request_form">
        <!-- <div style="margin-top: 20px; font-weight: bold;">Please download and fill out data use agreement from<a @click="fetchDUA"> this link</a></div>
         <div style="margin-top: 20px; margin-bottom: 20px; font-weight: normal;">Upload filled data use agreement here (in PDF format) <input type="file" @change="uploadFile" ref="file" required accept="application/pdf"></div> -->
-  
+        <div v-if="artifacts.length === 0">Loading...</div>
+        <div v-else>
+          <div style="margin-top: 10px; margin-bottom: 20px; font-weight: bold;">Request the following artifacts:</div>
+          <div v-for="(artifact, index) in artifacts" :key="index"> 
+            <div style="margin-bottom: 10px;">{{artifact.artifact.title}}</div>
+          </div>
+        </div>
         <div style="font-weight: bold;">Enter project name<span style='color: red;'><strong> *</strong></span></div>
         <v-text-field
           name="project"
@@ -377,15 +383,17 @@
               disabled
           ></v-text-field>
   
-  
-        <div v-for="(artifact, index) in artifacts" :key="index"> 
-          <div v-if ="artifact.irb" style="margin-top: 20px; font-weight: bold;">Upload IRB approval Letter</div>
-          <v-file-input v-if ="artifact.irb" v-model = "irbContentList[index]" clearable label="Upload IRB approval letter" variant="underlined" @change ="getContent(index)"></v-file-input>
-        </div>
+          <div v-if="artifacts.length === 0">Loading...</div>
+          <div v-else>
+            <div v-for="(artifact, index) in artifacts" :key="index"> 
+              <div v-if ="artifact.artifact.irb" style="margin-top: 20px; font-weight: bold;">Upload IRB approval Letter for {{artifact.artifact.title}}</div>
+              <v-file-input v-if ="artifact.artifact.irb" v-model = "irbContentList[index]" clearable label="Upload IRB approval letter" variant="underlined" @change ="getContent(index)"></v-file-input>
+            </div>
+          </div>
 
-        <div>
-            <input type="submit" value="Review" class="btn-submit" style="margin-top: 20px;" :disabled="requestMode">
-        </div>
+          <div>
+              <input type="submit" value="Review" class="btn-submit" style="margin-top: 20px;" :disabled="requestMode">
+          </div>
       </form>
   
       <v-dialog
@@ -672,9 +680,11 @@
             }
             return null; // Preserve the index with null
           });
-
-          // Convert the files array to a JSON string and append to FormData
-          payload.append('pdf_file_list', JSON.stringify(filesArray));
+          filesArray.forEach((file, index) => {
+              if (file !== null) {
+                  payload.append(`irb_file_${index}`, file);
+              }
+          });
         }
         payload.append('project', this.project);
         payload.append('project_description', this.project_description);
