@@ -34,12 +34,6 @@
                       </v-icon>
                       Available
                     </v-tab>
-                    <v-tab>
-                      <v-icon class="mr-2">
-                        mdi-heart
-                      </v-icon>
-                      Favorites
-                    </v-tab>
                     <v-tab class="mr-3">
                       <v-icon class="mr-2">
                         mdi-star
@@ -106,46 +100,6 @@
                       single-line
                       class="py-0"
                       v-for="(item, i) in released_artifacts"
-                      :key="i"
-                    >
-                      <v-list-item>
-                        <ArtifactChips
-                          :field="[item.type]"
-                          :type="item.type"
-                        ></ArtifactChips>
-                        <router-link :to="`/artifact/view/${item.artifact_group_id}`" class="custom-link"><v-list-item-title
-                          v-text="item.title"
-                        ></v-list-item-title></router-link>
-                        <div class="d-flex">
-                          <v-tooltip top content-class="top">
-                            <template v-slot:activator="{ attrs, on }">
-                              <v-btn
-                                class="v-btn--simple"
-                                color="primary"
-                                icon
-                                v-bind="attrs"
-                                v-on="on"
-                                :to="`/artifact/${item.artifact_group_id}`"
-                                nuxt
-                              >
-                                <v-icon color="primary">
-                                  mdi-arrow-top-right-thick
-                                </v-icon>
-                              </v-btn>
-                            </template>
-                            <span>Goto Artifact</span>
-                          </v-tooltip>
-                        </div>
-                      </v-list-item>
-                      <v-divider />
-                    </v-list>
-                  </v-tab-item>
-                  <v-tab-item>
-                    <!-- favorites -->
-                    <v-list
-                      single-line
-                      class="py-0"
-                      v-for="(item, i) in dashboard.favorite_artifacts"
                       :key="i"
                     >
                       <v-list-item>
