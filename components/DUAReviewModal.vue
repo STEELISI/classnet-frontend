@@ -78,6 +78,7 @@
           this.$emit('close');
         },
         submitRequest() {
+          this.isDisabled = true;  // Disable the button
           this.$emit('submitRequest');
         }
         // async claimRole() {
@@ -101,6 +102,7 @@
       },
       data() {
           return {
+              isDisabled: false,
               isError: false
           }
       }
