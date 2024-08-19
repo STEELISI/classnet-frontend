@@ -798,7 +798,6 @@ export default {
       }
     },
     isInCart(artifact_group_id,artifactId) {
-      console.log(this.cart)
       if (this.cart){
         return this.cart.some(item => item.artifact_id === artifactId && item.artifact_group_id === artifact_group_id)
       }

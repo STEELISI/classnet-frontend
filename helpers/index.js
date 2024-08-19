@@ -144,7 +144,6 @@ export const EventBus = new Vue()
 
 export const getCartGroupedByProviderCollection = (cart) => {
   let resultDict = {};
-  console.log('Initial cart:', cart);
 
   if (!Array.isArray(cart)) {
     console.error('Provided cart is not an array');
