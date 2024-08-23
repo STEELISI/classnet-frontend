@@ -8,7 +8,7 @@
         <v-row class="d-flex align-center justify-space-between">
           <v-col class="d-flex align-center" cols="10">
             <v-card-title class="align-start py-0 my-0">
-              <v-btn @click="toggleDropdown(key)" outlined text>
+              <v-btn @click="toggleDropdown(key)" outlined text :class="{ 'highlight-animation': key === `${highlightProvider},${highlightCollection}` }">
                 Provider: {{ key.split(',')[0] }}, Use Agreement: {{ key.split(',')[1] }}
               </v-btn>
             </v-card-title>
@@ -19,8 +19,8 @@
         </v-row>
         <v-expand-transition>
           <v-row v-if="artifactGroup.showDropdown" class="d-flex flex-column">
-            <v-col v-for="([artifact_group_id, artifact_id], index) in artifactGroup.artifact_ids" :key="index" class="d-flex align-center">
-              <v-card-subtitle class="py-0 my-0">Artifact ID: {{ artifact_id }}</v-card-subtitle>
+            <v-col v-for="(title, index) in artifactGroup.titles" :key="index" class="d-flex align-center">
+              <v-card-subtitle class="py-0 my-0">{{title}}</v-card-subtitle>
             </v-col>
           </v-row>
         </v-expand-transition>
@@ -57,6 +57,8 @@ export default {
   async mounted() {
     await this.$store.dispatch('user/fetchUser')
     this.cartGroupedByProviderCollection = getCartGroupedByProviderCollection(this.cart)
+    this.highlightProvider = this.$route.query.provider
+    this.highlightCollection = this.$route.query.collection
   },
 
   computed: {
@@ -80,3 +82,21 @@ export default {
   },
 }
 </script>
+<style scoped>
+.highlight-animation {
+  animation: pulsate 1s ease-in 3;
+}
+
+
+@keyframes pulsate {
+  0% {
+    background-color: #FFFDE7;;
+  }
+  50% {
+    background-color: white;
+  }
+  100% {
+    background-color: #FFFDE7;;
+  }
+}
+</style>

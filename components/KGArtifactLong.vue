@@ -27,10 +27,10 @@
         <v-btn
           v-if="!(isOwner() || isAdmin()) && !artifactRequested && !isFetchingStatus"
           color="primary"
-          @click="requestArtifact()"
+          @click="checkout()"
           nuxt
         >
-          Request Access
+          Checkout
         </v-btn>
         <v-btn
           v-if="!(isOwner() || isAdmin()) && artifactRequested && !artifactReleased && !isFetchingStatus"
@@ -807,10 +807,17 @@ export default {
       let artifact = {
         "artifact_group_id":this.record.artifact.artifact_group_id,
         "artifact_id":this.record.artifact.id,
+        "title": this.record.artifact.title,
         "collection": this.record.artifact.collection,
         "provider": this.record.artifact.provider
       }
-      
+      const artifactExists = this.cart.some(
+        item => item.artifact_group_id === artifact.artifact_group_id && item.artifact_id === artifact.artifact_id
+      ); 
+      if (artifactExists){
+        return;
+      }
+
       this.cart.push(artifact)   
       this.userDetails.cart = JSON.stringify(this.cart)
       
@@ -883,11 +890,15 @@ export default {
       }
       this.diff_results_dialog = true
     },
-    requestArtifact() {
+    async checkout() {
+      await this.addArtifactToCart()
       if (!this.$auth.loggedIn) {
         this.$router.push('/login')
       } else {
-        this.$router.push('/artifact/request/'+this.record.artifact.artifact_group_id)
+        const provider = this.record.artifact.provider
+        const collection = this.record.artifact.collection
+
+        this.$router.push({ path: '/cart/', query: { provider, collection } });
       }
     },
     navigate(){

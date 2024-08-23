@@ -279,7 +279,8 @@
             </div>
           </v-card-text>
           <v-card-actions>
-            <v-btn color="primary" block @click="$router.push('/');">Go to homepage</v-btn>
+            <v-btn v-if="cart.length>1" color="primary" block @click="$router.push('/cart');">Go to Cart</v-btn>
+            <v-btn v-else color="primary" block @click="$router.push('/');">Go to homepage</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -389,8 +390,22 @@
         this.incompleteProfileDialog = false
         }
       })
+
+      if (this.cart.length && this.cart.length == 0) {
+        this.$router.push('/')
+      }
       this.cartGroupedByProviderCollection = getCartGroupedByProviderCollection(this.cart)
-      this.listOfArtifactIDs = this.cartGroupedByProviderCollection[this.provider+","+this.collection]['artifact_ids']
+
+      // If there are no artifacts given the provider, collection pair then we redirect to the homepage
+      const key = `${this.provider},${this.collection}`;
+      if (this.cartGroupedByProviderCollection[key] && this.cartGroupedByProviderCollection[key]['artifact_ids']) {
+        this.listOfArtifactIDs = this.cartGroupedByProviderCollection[key]['artifact_ids'];
+      } else {
+        // If the key or artifact_ids does not exist, redirect to the homepage
+        this.$router.push('/');
+        return; // Stop further execution if redirection occurs
+      }
+
       // Map over listOfArtifactIDs to create an array of promises
       let promises = this.listOfArtifactIDs.map(async (ids) => {
         // Await the result of each asynchronous call to this.$artifactEndpoint.show(ids)
@@ -399,7 +414,7 @@
       });
 
       // Use Promise.all to wait for all promises to resolve
-      this.artifacts = await Promise.all(promises);
+      this.artifacts = await Promise.all(promises);      
       this.irbContentList =  Array(this.artifacts.length).fill(null);
       this.irbDataList =  Array(this.artifacts.length).fill(null);
 

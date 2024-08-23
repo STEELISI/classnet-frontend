@@ -143,7 +143,9 @@ export const isReleased = status =>{
 export const EventBus = new Vue()
 
 export const getCartGroupedByProviderCollection = (cart) => {
-  let resultDict = {};
+  let artifact_ids_result = {};
+  let artifact_titles_result = {};
+
 
   if (!Array.isArray(cart)) {
     console.error('Provided cart is not an array');
@@ -155,24 +157,31 @@ export const getCartGroupedByProviderCollection = (cart) => {
     const collection = obj.collection;
     const artifact_id = obj.artifact_id;
     const artifact_group_id = obj.artifact_group_id;
+    const title = obj.title;
+
 
     const key = [provider, collection];
 
-    if (!resultDict[key]) {
-      resultDict[key] = [];
+    if (!artifact_ids_result[key]) {
+      artifact_ids_result[key] = [];
+    }
+    if (!artifact_titles_result[key]) {
+      artifact_titles_result[key] = [];
     }
 
-    resultDict[key].push([artifact_group_id, artifact_id]);
+    artifact_ids_result[key].push([artifact_group_id, artifact_id]);
+    artifact_titles_result[key].push(title);
   });
 
 
-  // Convert resultDict to the required format
+  // Convert artifact_ids_result to the required format
   const cartGrouped = {};
-  Object.keys(resultDict).forEach((key) => {
+  Object.keys(artifact_ids_result).forEach((key) => {
     // Convert key string back to array
     const [provider, collection] = key.split(',');
     cartGrouped[[provider, collection]] = {
-      artifact_ids: resultDict[key],
+      artifact_ids: artifact_ids_result[key],
+      titles: artifact_titles_result[key],
       showDropdown: false
     };
   });
