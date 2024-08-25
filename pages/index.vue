@@ -630,7 +630,7 @@ export default {
       }
     },
     onAffiliationInput(value) {
-      if (value.length > 0 || this.userAffiliation.length > 0) {
+      if (value && value.length > 0) {
         this.menuProps.value = true; // Show the menu if there's input
       } else {
         this.menuProps.value = false; // Hide the menu if input is cleared
