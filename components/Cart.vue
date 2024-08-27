@@ -28,16 +28,30 @@
     </v-card>
   </div>
   <div v-else>
-    <v-col cols="12" sm="8" md="8">
-            <v-alert
-              icon="mdi-shield-lock-outline"
-              prominent
-              text
-              type="info"
-            >
-              Your cart is currently empty. You can add an artifact to cart on the artifact view page.
-            </v-alert>
-    </v-col>
+    <div v-if="!cartFetched">
+      <v-col cols="12" sm="8" md="8">
+        <v-alert
+          icon="mdi-loading"
+          prominent
+          text
+          type="info"
+        >
+          Loading...
+        </v-alert>
+      </v-col>
+    </div>
+    <div v-else>
+      <v-col cols="12" sm="8" md="8">
+        <v-alert
+          icon="mdi-shield-lock-outline"
+          prominent
+          text
+          type="info"
+        >
+          Your cart is currently empty. You can add an artifact to cart on the artifact view page.
+        </v-alert>
+      </v-col>
+    </div>
   </div>
 </template>
 
@@ -51,11 +65,13 @@ export default {
   data() {
     return {
       cartGroupedByProviderCollection: {},
+      cartFetched:false
     }
   },
 
   async mounted() {
     await this.$store.dispatch('user/fetchUser')
+    this.cartFetched = true;
     this.cartGroupedByProviderCollection = getCartGroupedByProviderCollection(this.cart)
     this.highlightProvider = this.$route.query.provider
     this.highlightCollection = this.$route.query.collection

@@ -279,7 +279,7 @@
             </div>
           </v-card-text>
           <v-card-actions>
-            <v-btn v-if="cart.length>1" color="primary" block @click="$router.push('/cart');">Go to Cart</v-btn>
+            <v-btn v-if="cartGroupedByProviderCollection.length>1" color="primary" block @click="$router.push('/cart');">Go to Cart</v-btn>
             <v-btn v-else color="primary" block @click="$router.push('/');">Go to homepage</v-btn>
           </v-card-actions>
         </v-card>

@@ -39,6 +39,13 @@
         >
          Requested
         </v-btn>
+        <v-btn
+          v-if="isFetchingStatus"
+          color="primary"
+          nuxt
+        >
+          Checking Access
+        </v-btn>
 
         <v-tooltip top content-class="top"
           v-if="!(isOwner() || isAdmin()) && artifactRequested && artifactReleased && !isFetchingStatus"
@@ -443,13 +450,6 @@
         </v-btn>
         <v-spacer></v-spacer>
 
-        <v-btn
-          v-if="isFetchingStatus"
-          color="primary"
-          nuxt
-        >
-          Checking Access
-        </v-btn>
         <span v-if="(isOwner() || isAdmin()) && !published">
           <v-btn
             color="success"
