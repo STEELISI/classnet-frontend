@@ -62,7 +62,12 @@
             aria-label="Close modal"
             :disabled="isDisabled"
           >
-            Sign and Submit DUA
+            <template v-if="isDisabled">
+              Processing...
+            </template>
+            <template v-else>
+              Sign and Submit DUA
+            </template>          
           </v-btn>
         </footer>
       </div>
