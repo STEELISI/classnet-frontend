@@ -9,10 +9,11 @@
         loading="true"
         clearable
         class="rounded-0"
-        hide-details
         @keydown="onChange"
         solo
         dense
+        :rules="searchRegexRule"
+        ref="searchField"
       >
       </v-text-field>
       <v-expansion-panels v-model="adopen" multiple>
@@ -222,7 +223,10 @@ export default {
       items: 5,
       categories: [],
       selectedCategories: [],
-      isUpdatingPageInGetArtifacts: false
+      isUpdatingPageInGetArtifacts: false,
+      searchRegexRule:  [
+        value => (value === '' || /^[a-zA-Z0-9][a-zA-Z0-9-_ ]*$/.test(value)) || 'Invalid input. Only letters, digits, dashes, underscores, and spaces are allowed, and it must start with a letter or digit.',
+      ],
     }
   },
   beforeMount() {
@@ -295,6 +299,9 @@ export default {
   },
   methods: {
     async onSubmit() {
+      if(!this.$refs.searchField.validate()) {
+        return
+      }
       this.submitted = true
       if (this.searchInterval != null) clearTimeout(this.searchInterval)
       this.searchMessage = 'Searching...'
