@@ -284,6 +284,21 @@
               </v-col>
             </v-row>
 
+             <!-- Dataset Category Field with v-combobox -->
+            <div style="font-weight: bold; margin-top:20px;">What is the dataset category?<span style='color: red;'><strong> *</strong></span></div>
+            <v-row>
+              <v-col cols="12" sm = "6" md="4">
+                <v-combobox
+                v-model="selectedCategory"
+                :items="categoryOptions"
+                label="Select or enter category"
+                clearable
+                placeholder="Choose or type a category"
+                allow-overflow
+                ></v-combobox>
+              </v-col>
+            </v-row>
+
             <div style="font-weight: bold; margin-top:20px;"> Keywords to facilitate search (Press space to add more)?<span style='color: red;'><strong> *</strong></span> </div>
               <div class="input-bubble-container">
                 <div class="bubbles">
@@ -606,6 +621,8 @@ export default {
       processedReadme:'',
       pairs: [],
       providerCollectionOptions:[],
+      selectedCategory: '',
+      categoryOptions: [],
     }
   },
   watch: {
@@ -631,6 +648,7 @@ export default {
       this.$router.push('/login')
       return
     }
+    await this.fetchCategoryOptions(); 
     let response = await this.$providerPermissionsList.index([])
     this.pairs = response;
     this.providerCollectionOptions = this.pairs.map(pair => ({
@@ -757,6 +775,21 @@ export default {
     deleteWord(index) {
       this.keywordList.splice(index, 1); // Remove the word at the specified index
     },
+    async fetchCategoryOptions() {
+      try {
+        const response = await this.$artifactCategoriesEndpoint.index();
+        console.log(response)
+        if (response) {
+          this.categoryOptions = response.categories
+        } else {
+          console.error('Failed to fetch category options:');
+        }
+      } 
+      catch (error) {
+        console.error('Error fetching category options:', error);
+      }
+    },
+
     async submit(){
       this.submitCardMessage = '';
       const valid = await this.$refs.form.validate();
@@ -790,7 +823,8 @@ export default {
                   "useAgreement":this.providerCollection[1],
                   "irbRequired":this.irbRequired,
                   "retrievalInstructions":this.retrievalInstructions,
-                  "datasetReadme":this.processedReadme
+                  "datasetReadme":this.processedReadme,
+                  "datasetCategory":this.selectedCategory
                 } 
       
       for (const key in metadata) {
