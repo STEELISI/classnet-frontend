@@ -369,7 +369,7 @@
               </v-col>
             </v-row>
 
-            <div style="font-weight: bold; margin-top:20px;">Grouping ID <span style='color: red;'><strong> *</strong></span></div>
+            <div style="font-weight: bold; margin-top:20px;">Grouping ID</div>
             <div style="font-size: 12px; color: grey; margin-top: 5px;">A word or phrase that you want this dataset and other related datasets to be grouped under. Eg: 'internet address survey'</div>
             <v-row>
               <v-col cols="12" sm="6" md="4">
@@ -597,7 +597,7 @@ export default {
       ],
       groupingId:'',
       groupingIdRules: [
-        value => /^[A-Za-z0-9_.\- ]{5,250}$/.test(value) || 'Grouping Id must be between 5 and 250 characters long and can only contain underscore ("_"), hyphen ("-") or period (".") ',
+        value => /^(^$|^[A-Za-z0-9_.\- ]{5,250})$/.test(value) || 'Grouping Id must be between 5 and 250 characters long, and can only contain alphanumeric characters, underscores ("_"), hyphens ("-"), periods (".") or spaces (" ")',
       ],
       datasetCategoryRules : [
         value => /^[A-Za-z0-9_\- ]{0,50}$/.test(value) || 'Category can have a maximum of 50 characters and can only contain , hyphen ("-") or underscore ("_") ',
