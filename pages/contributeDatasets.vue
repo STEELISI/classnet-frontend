@@ -284,13 +284,14 @@
               </v-col>
             </v-row>
 
-             <!-- Dataset Category Field with v-combobox -->
+            
             <div style="font-weight: bold; margin-top:20px;">What is the dataset category?<span style='color: red;'><strong> *</strong></span></div>
             <v-row>
               <v-col cols="12" sm = "6" md="4">
                 <v-combobox
                 v-model="selectedCategory"
                 :items="categoryOptions"
+                :rules="datasetCategoryRules"
                 label="Select or enter category"
                 clearable
                 placeholder="Choose or type a category"
@@ -368,7 +369,8 @@
               </v-col>
             </v-row>
 
-            <div style="font-weight: bold; margin-top:20px;">Grouping ID (A word or phrase that you want this dataset and other related datasets to be grouped under. Eg: 'internet address survey')</div>
+            <div style="font-weight: bold; margin-top:20px;">Grouping ID <span style='color: red;'><strong> *</strong></span></div>
+            <div style="font-size: 12px; color: grey; margin-top: 5px;">A word or phrase that you want this dataset and other related datasets to be grouped under. Eg: 'internet address survey'</div>
             <v-row>
               <v-col cols="12" sm="6" md="4">
                 <v-text-field
@@ -596,6 +598,9 @@ export default {
       groupingId:'',
       groupingIdRules: [
         value => /^[A-Za-z0-9_.\- ]{5,250}$/.test(value) || 'Grouping Id must be between 5 and 250 characters long and can only contain underscore ("_"), hyphen ("-") or period (".") ',
+      ],
+      datasetCategoryRules : [
+        value => /^[A-Za-z0-9_\- ]{0,50}$/.test(value) || 'Category can have a maximum of 50 characters and can only contain , hyphen ("-") or underscore ("_") ',
       ],
       irbRequired:'',
       retrievalInstructions:'',
