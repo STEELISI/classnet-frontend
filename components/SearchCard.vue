@@ -9,10 +9,11 @@
         loading="true"
         clearable
         class="rounded-0"
-        hide-details
         @keydown="onChange"
         solo
         dense
+        :rules="searchRegexRule"
+        ref="searchField"
       >
       </v-text-field>
       <v-expansion-panels v-model="adopen" multiple>
@@ -144,6 +145,34 @@
     </v-card>
 
     </v-container>
+
+    <v-container fluid>
+
+    </v-container>
+    <v-container class="d-flex align-items-center">
+      <span class="sort-by-label mr-3">Order by:</span>
+
+      <div v-for="option in sortOptions" :key="option.key" class="sort-option mr-4 d-flex align-items-center">
+        <span class="option-label">{{ option.label }}</span>
+        <div class="arrows-container ml-2">
+          <v-icon
+          class="arrow up-arrow"
+          :class="{ highlighted: isActive(option.key, 'asc') }"
+          @click.stop="setSort(option.key, 'asc')"
+        >
+          mdi-arrow-up-thin
+        </v-icon>
+          <v-icon
+          class="arrow down-arrow"
+          :class="{ highlighted: isActive(option.key, 'desc') }"
+          @click.stop="setSort(option.key, 'desc')"
+        >
+          mdi-arrow-down-thin
+        </v-icon>
+      </div>
+    </div>
+  </v-container>
+
     <ArtifactList
       :artifacts="artifacts"
       :limit="limit"
@@ -222,7 +251,19 @@ export default {
       items: 5,
       categories: [],
       selectedCategories: [],
-      isUpdatingPageInGetArtifacts: false
+      isUpdatingPageInGetArtifacts: false,
+      sortOptions: [
+        { key: 'collection_date', label: 'Published Date' },
+        { key: 'provider', label: 'Provider' },
+        { key: 'rating', label: 'Average Rating' },
+        { key: 'reviews', label: 'Reviews' },
+      ],
+      sortBy: 'default',
+      sortOrder: '',
+      currentSort: null,
+      searchRegexRule:  [
+        value => (value === '' || /^[a-zA-Z0-9][a-zA-Z0-9-_ ]*$/.test(value)) || 'Invalid input. Only letters, digits, dashes, underscores, and spaces are allowed, and it must start with a letter or digit.',
+      ],
     }
   },
   beforeMount() {
@@ -295,6 +336,9 @@ export default {
   },
   methods: {
     async onSubmit() {
+      if(!this.$refs.searchField.validate()) {
+        return
+      }
       this.submitted = true
       if (this.searchInterval != null) clearTimeout(this.searchInterval)
       this.searchMessage = 'Searching...'
@@ -325,6 +369,28 @@ export default {
       this.selectedCategories = this.selectedCategories.map(() => false);
       this.getArtifacts();
     },
+
+    setSort(key = 'default', order) {
+      if (this.currentSort === key && this.sortOrder === order) {
+        // Toggle off if the same sort is clicked again
+        this.currentSort = null;
+        this.sortOrder = null;
+      } else {
+        this.currentSort = key;
+        this.sortOrder = order;
+      }
+
+      this.getArtifacts();
+    },
+    isActive(key, order) {
+      return this.currentSort === key && this.sortOrder === order;
+    },
+    getSortIcon(sortKey) {
+      if (this.sortBy === sortKey) {
+        return this.sortOrder === 'asc' ? 'fas fa-sort-down' : 'fas fa-sort-up';
+      }
+      return 'fas fa-sort';
+    },
     async getArtifacts(page = 1) {
 
       // By default the page is 1 since we want to show the first page of our new results
@@ -343,7 +409,10 @@ export default {
         keywords: this.search,
         page: page,
         items_per_page: this.limit,
-        type: this.advanced.types
+        type: this.advanced.types,
+        orderkey : this.currentSort,
+        order:this.sortOrder
+
       }
 
       this.author ? (payload['author'] = this.author) : false
@@ -459,4 +528,40 @@ export default {
   right: 0px;
   scroll-margin-bottom: 5rem;
 }
+.v-icon {
+  margin: 0 !important;
+  padding: 0 !important;
+  vertical-align: middle;
+}
+
+.sort-option {
+  display: flex;
+  align-items: center;
+}
+
+.arrows-container {
+  display: flex;
+  align-items: center; /* Ensure icons are centered */
+  justify-content: center;
+  gap: 0px; 
+}
+
+.arrow {
+  margin: 0;
+  padding: 0;
+}
+
+.arrow + .arrow {
+  margin-left: 0px;        /* Space between up and down arrows */
+}
+
+.arrow.highlighted {
+  color: blue;            /* Highlight color */
+}
+
+/* Optional: Change color on hover */
+.arrow:hover {
+  color: darkblue;
+}
+
 </style>
