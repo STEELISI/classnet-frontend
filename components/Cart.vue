@@ -14,7 +14,7 @@
             </v-card-title>
           </v-col>
           <v-col cols="2">
-            <v-btn @click="navigateToRequestPage(key)" text>Request</v-btn>
+            <v-btn class="primary" @click="navigateToRequestPage(key)" text>Request</v-btn>
           </v-col>
         </v-row>
         <v-expand-transition>

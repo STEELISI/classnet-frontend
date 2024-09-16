@@ -279,7 +279,7 @@
             </div>
           </v-card-text>
           <v-card-actions>
-            <v-btn v-if="cartGroupedByProviderCollection.length>1" color="primary" block @click="$router.push('/cart');">Go to Cart</v-btn>
+            <v-btn v-if="cart.length>0" color="primary" block @click="$router.push('/cart');">Go to Cart</v-btn>
             <v-btn v-else color="primary" block @click="$router.push('/');">Go to homepage</v-btn>
           </v-card-actions>
         </v-card>
@@ -350,7 +350,6 @@
         },
         provider:'',
         collection:'',
-        cartGroupedByProviderCollection:[],
         artifacts:[],
         listOfArtifactIDs:[]
 
@@ -391,15 +390,15 @@
         }
       })
 
-      if (this.cart.length && this.cart.length == 0) {
+      if ((this.cart.length && this.cart.length == 0) || !this.cart) {
         this.$router.push('/')
       }
-      this.cartGroupedByProviderCollection = getCartGroupedByProviderCollection(this.cart)
+      let cartGroupedByProviderCollection = getCartGroupedByProviderCollection(this.cart)
 
       // If there are no artifacts given the provider, collection pair then we redirect to the homepage
       const key = `${this.provider},${this.collection}`;
-      if (this.cartGroupedByProviderCollection[key] && this.cartGroupedByProviderCollection[key]['artifact_ids']) {
-        this.listOfArtifactIDs = this.cartGroupedByProviderCollection[key]['artifact_ids'];
+      if (cartGroupedByProviderCollection[key] && cartGroupedByProviderCollection[key]['artifact_ids']) {
+        this.listOfArtifactIDs = cartGroupedByProviderCollection[key]['artifact_ids'];
       } else {
         // If the key or artifact_ids does not exist, redirect to the homepage
         this.$router.push('/');
@@ -583,6 +582,7 @@
           this.formSubmittedErrorMessage = response.message;
         }
          else {
+          this.$store.commit('user/SET_CART', response.newCart)
           this.formSubmittedError = false;
         }
         this.formSubmitted = true;

@@ -98,7 +98,14 @@
       </v-toolbar-title>
       <v-spacer />
       <v-btn
-        v-if="$auth.loggedIn"
+        v-if="$auth.loggedIn && !this.cart.length"
+        icon
+        :to="{ path: '/cart' }"
+      >
+        <v-icon>mdi-cart-outline</v-icon>
+      </v-btn>
+      <v-btn
+        v-if="$auth.loggedIn && this.cart.length && this.cart.length > 0"
         icon
         :to="{ path: '/cart' }"
       >
@@ -199,7 +206,8 @@ export default {
     ...mapState({
       userid: state => state.user.userid,
       user_is_admin: state => state.user.user_is_admin,
-      user_can_admin: state => state.user.user_can_admin
+      user_can_admin: state => state.user.user_can_admin,
+      cart: state => state.user.cart
     }),
     items() {
       let items = [
