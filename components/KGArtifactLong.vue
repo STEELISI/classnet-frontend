@@ -4,13 +4,33 @@
     <v-card class="mx-auto my-2">
       <v-card-title>{{ record.artifact.title }}
         <v-spacer></v-spacer>
+        <div v-if="!artifactRequested && !isFetchingStatus">
+          <v-btn
+            v-if="isInCart(record.artifact.artifact_group_id,record.artifact.id)" 
+            style="margin-right: 20px;"
+            @click="removeArtifactFromCart()"
+            color="orange"
+            nuxt
+          >
+            Remove from Cart
+          </v-btn>
+          <v-btn
+            style="margin-right: 20px;"
+            v-else
+            @click="addArtifactToCart()"
+            color="primary"
+            nuxt
+          >
+          Add to Cart
+          </v-btn>
+        </div>
         <v-btn
           v-if="!(isOwner() || isAdmin()) && !artifactRequested && !isFetchingStatus"
           color="primary"
-          @click="requestArtifact()"
+          @click="checkout()"
           nuxt
         >
-          Request Access
+          Checkout
         </v-btn>
         <v-btn
           v-if="!(isOwner() || isAdmin()) && artifactRequested && !artifactReleased && !isFetchingStatus"
@@ -18,6 +38,13 @@
           nuxt
         >
          Requested
+        </v-btn>
+        <v-btn
+          v-if="isFetchingStatus"
+          color="primary"
+          nuxt
+        >
+          Checking Access
         </v-btn>
 
         <v-tooltip top content-class="top"
@@ -423,13 +450,6 @@
         </v-btn>
         <v-spacer></v-spacer>
 
-        <v-btn
-          v-if="isFetchingStatus"
-          color="primary"
-          nuxt
-        >
-          Checking Access
-        </v-btn>
         <span v-if="(isOwner() || isAdmin()) && !published">
           <v-btn
             color="success"
@@ -552,10 +572,10 @@ export default {
     }
   },
   mounted() {
+    this.$store.dispatch('user/fetchUser')
     setTimeout(() => {
       this.loadingMessage = 'Error loading'
     }, 5000)
-
   },
   watch: {
     record: {
@@ -574,7 +594,8 @@ export default {
       user_is_admin: state => state.user.user_is_admin,
       userAffiliation: state => state.user.organization,
       user: state => state.user,
-      userDetails:state => state.user.user,
+      userDetails: state => state.user.user,
+      cart: state => state.user.cart
     }),
     sanitizedDescription: function() {
       var regexOld = /\+\-+\+.+?\+\-+\+/s; 
@@ -776,6 +797,42 @@ export default {
         }
       }
     },
+    isInCart(artifact_group_id,artifactId) {
+      if (this.cart){
+        return this.cart.some(item => item.artifact_id === artifactId && item.artifact_group_id === artifact_group_id)
+      }
+      return false;
+    },
+    async addArtifactToCart(){
+      let artifact = {
+        "artifact_group_id":this.record.artifact.artifact_group_id,
+        "artifact_id":this.record.artifact.id,
+        "title": this.record.artifact.title,
+        "collection": this.record.artifact.collection,
+        "provider": this.record.artifact.provider
+      }
+      const artifactExists = this.cart.some(
+        item => item.artifact_group_id === artifact.artifact_group_id && item.artifact_id === artifact.artifact_id
+      ); 
+      if (artifactExists){
+        return;
+      }
+
+      this.cart.push(artifact)   
+      this.userDetails.cart = JSON.stringify(this.cart)
+      
+      await this.$userEndpoint.update(this.userid, this.userDetails)
+    },
+    async removeArtifactFromCart() {
+      const index = this.cart.findIndex(item => item.artifact_group_id === this.record.artifact.artifact_group_id && item.artifact_id === this.record.artifact.id);
+      if (index !== -1) {
+        // Remove the item from the cart using splice
+        this.cart.splice(index, 1);
+      }
+      this.userDetails.cart = JSON.stringify(this.cart)
+
+      await this.$userEndpoint.update(this.userid, this.userDetails)
+    },
     iconColor(type) {
       return artifactColor(type)
     },
@@ -833,11 +890,15 @@ export default {
       }
       this.diff_results_dialog = true
     },
-    requestArtifact() {
+    async checkout() {
+      await this.addArtifactToCart()
       if (!this.$auth.loggedIn) {
         this.$router.push('/login')
       } else {
-        this.$router.push('/artifact/request/'+this.record.artifact.artifact_group_id)
+        const provider = this.record.artifact.provider
+        const collection = this.record.artifact.collection
+
+        this.$router.push({ path: '/cart/', query: { provider, collection } });
       }
     },
     navigate(){

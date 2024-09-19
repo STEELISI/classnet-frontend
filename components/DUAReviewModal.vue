@@ -62,7 +62,12 @@
             aria-label="Close modal"
             :disabled="isDisabled"
           >
-            Sign and Submit DUA
+            <template v-if="isDisabled">
+              Processing...
+            </template>
+            <template v-else>
+              Sign and Submit DUA
+            </template>          
           </v-btn>
         </footer>
       </div>
@@ -78,6 +83,7 @@
           this.$emit('close');
         },
         submitRequest() {
+          this.isDisabled = true;  // Disable the button
           this.$emit('submitRequest');
         }
         // async claimRole() {
@@ -101,6 +107,7 @@
       },
       data() {
           return {
+              isDisabled: false,
               isError: false
           }
       }

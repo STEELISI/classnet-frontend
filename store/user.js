@@ -9,7 +9,8 @@ export const state = () => ({
   orgs: [],
   badges: [],
   user_token: null,
-  interests: null
+  interests: null,
+  cart: []
 })
 
 export const getters = {
@@ -45,6 +46,9 @@ export const getters = {
   },
   interests: state => {
     return state.interests
+  }, 
+  cart: state => {
+    return state.cart
   }
 }
 
@@ -107,7 +111,10 @@ export const mutations = {
     state.user_can_admin = false
     
   },
-  ADMIN_OFF(state) {}
+  ADMIN_OFF(state) {},
+  SET_CART(state, cart) {
+    state.cart = cart ? JSON.parse((cart)):[];
+  }
 }
 
 export const actions = {
@@ -115,7 +122,7 @@ export const actions = {
     let response = {}
     console.log('fetching user')
     response = await this.$userEndpoint.index()
-    console.log(response)
+    // console.log('User fetched:',response)
     if (typeof response !== 'undefined' && response.user) {
       commit('SET_USER', response.user.person)
       commit('SET_USERID', response.user.id)
@@ -123,6 +130,7 @@ export const actions = {
       commit('SET_USER_IS_ADMIN', response.user.is_admin)
       commit('SET_USER_ORGS', response.user.affiliations)
       commit('SET_NAME', response.user.person.name)
+      commit('SET_CART', response.user.person.cart)
     }
 
     if (response.user.person && !response.user.person.emailAuthenticated && response.user.person.email) {

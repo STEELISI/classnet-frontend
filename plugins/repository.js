@@ -13,6 +13,8 @@ export default (ctx, inject) => {
   // artifact request
   inject('artifactRequestEndpoint', repositoryWithAxios('kg/' + 'artifact/request'))
 
+  inject('artifactRequestCartEndpoint', repositoryWithAxios('kg/' + 'artifact/requestCart'))
+
   inject('artifactRequestStatusEndpoint', repositoryWithAxios('kg/' + 'artifact/status'))
 
   inject('artifactRequestListEndpoint', repositoryWithAxios('kg/' + 'artifact/requestList'))
