@@ -1,9 +1,3 @@
-FROM caddy:2-builder AS builder
-
-# Add the rate limit plugin to Caddy
-RUN xcaddy build \
-    --with github.com/mholt/caddy-ratelimit
-    
 FROM caddy:latest
 
 # set the above directory as working directory for the process
