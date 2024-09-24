@@ -284,8 +284,7 @@
               </v-col>
             </v-row>
 
-            
-            <div style="font-weight: bold; margin-top:20px;">What is the dataset category?<span style='color: red;'><strong> *</strong></span></div>
+            <div style="font-weight: bold; margin-top:20px;">What is the dataset category?</div>
             <v-row>
               <v-col cols="12" sm = "6" md="4">
                 <v-combobox
@@ -316,8 +315,8 @@
                     class="bubble-input"
                     ref="keywordInput"
                   ></v-text-field>
-                </div>
               </div>
+            </div>
             <div style="margin-top: 20px; font-weight: bold;">What format was used if any?<span style='color: red;'><strong> *</strong></span></div>
             <v-select
               name="formatList"
@@ -397,6 +396,13 @@
               required
               ></v-select>
             </v-col>
+
+            <div>
+              <label>
+                <input type="checkbox" v-model="autoApproveDataset">
+                Auto-approve dataset
+              </label>
+            </div>
 
             <div style="font-weight: bold; margin-top:20px;"> Is IRB approval required for access?</div>
             <v-row>
@@ -628,6 +634,7 @@ export default {
       providerCollectionOptions:[],
       selectedCategory: '',
       categoryOptions: [],
+      autoApproveDataset: false,
     }
   },
   watch: {
@@ -804,6 +811,16 @@ export default {
       }
       this.isProcessing = true
 
+      let uniqueKeywords = [...new Set(this.keywordList)]
+
+      if(this.autoApproveDataset){
+        uniqueKeywords.push('action:autoapprove');
+      }
+
+      if(this.selectedCategory){
+        uniqueKeywords.push('category:'+this.selectedCategory)
+      }
+      
       let metadata = {"datasetName":this.datasetName,
                   "shortDesc":this.shortDesc,
                   "longDesc":this.longDesc,
@@ -817,7 +834,7 @@ export default {
                   "collectionEndDateTime":this.collectionEndDateTime.val,
                   "byteSize":this.byteSize*(1024**this.byteSizeUnit),
                   "archivingAllowed":this.archivingAllowed,
-                  "keywordList":this.keywordList.join(','),
+                  "keywordList":uniqueKeywords.join(','),
                   "formatList":this.formatList,
                   "anonymizationList":this.anonymizationList,
                   "accessList":this.accessList,
@@ -829,7 +846,6 @@ export default {
                   "irbRequired":this.irbRequired,
                   "retrievalInstructions":this.retrievalInstructions,
                   "datasetReadme":this.processedReadme,
-                  "datasetCategory":this.selectedCategory
                 } 
       
       for (const key in metadata) {
