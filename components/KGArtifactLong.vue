@@ -572,7 +572,9 @@ export default {
     }
   },
   mounted() {
-    this.$store.dispatch('user/fetchUser')
+    if (this.$auth.loggedIn) {
+      this.$store.dispatch('user/fetchUser')
+    }
     setTimeout(() => {
       this.loadingMessage = 'Error loading'
     }, 5000)
@@ -798,12 +800,16 @@ export default {
       }
     },
     isInCart(artifact_group_id,artifactId) {
-      if (this.cart){
+      if (this.$auth.loggedIn && this.cart){
         return this.cart.some(item => item.artifact_id === artifactId && item.artifact_group_id === artifact_group_id)
       }
       return false;
     },
     async addArtifactToCart(){
+      if (!this.$auth.loggedIn) {
+        this.$router.push('/login')
+        return
+      }
       let artifact = {
         "artifact_group_id":this.record.artifact.artifact_group_id,
         "artifact_id":this.record.artifact.id,
