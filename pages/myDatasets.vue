@@ -88,6 +88,18 @@
                             </template>
                             <span>Goto Artifact</span>
                           </v-tooltip>
+                          <v-btn color="secondary" @click="setModal(item.agreement_file)">
+                            View Signed DUA
+                          </v-btn>
+                          <transition name="modal-fade">
+                            <DUAReviewModal
+                              v-show="isModal"
+                              @close="closeModal"
+                              @submitRequest="closeModal"
+                              v-bind:duaHTML="duaHTML"
+                              :isViewOnly=true>
+                            </DUAReviewModal>
+                          </transition>
                         </div>
                       </v-list-item>
                       <v-divider />
@@ -129,6 +141,18 @@
                             </template>
                             <span>Goto Artifact</span>
                           </v-tooltip>
+                          <v-btn color="secondary" @click="setModal(item.agreement_file)">
+                            View Signed DUA
+                          </v-btn>
+                          <transition name="modal-fade">
+                            <DUAReviewModal
+                              v-show="isModal"
+                              @close="closeModal"
+                              @submitRequest="closeModal"
+                              v-bind:duaHTML="duaHTML"
+                              :isViewOnly=true>
+                            </DUAReviewModal>
+                          </transition>
                         </div>
                       </v-list-item>
                       <v-divider />
@@ -227,7 +251,8 @@
     components: {
       Logo: () => import('@/components/Logo'),
       LazyHydrate: () => import('vue-lazy-hydration'),
-      ArtifactChips: () => import('@/components/ArtifactChips')
+      ArtifactChips: () => import('@/components/ArtifactChips'),
+      DUAReviewModal: () => import('@/components/DUAReviewModal')
     },
     head() {
       return {
@@ -253,6 +278,8 @@
         requested_artifacts: [],
         released_artifacts: [],
         owned_artifacts:[],
+        isModal: false,
+        duaHTML: "",
       }
     },
     computed: {
@@ -315,6 +342,13 @@
       iconImage(type) {
         return artifactIcon(type)
       },
+      setModal(duaData){
+        this.isModal = true
+        this.duaHTML = atob(duaData)
+      },
+      closeModal(){
+        this.isModal = false
+      }
     }
   }
   </script>
