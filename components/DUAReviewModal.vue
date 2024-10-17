@@ -56,18 +56,23 @@
              Review the DUA and click the below button to sign and submit the DUA
           </div>
           <v-btn
-            color="secondary"
+            :color="isViewOnly ? 'red' : 'secondary'"
             class="claim-btn"
-            @click="submitRequest"
+            @click="isViewMode ? close() : submitRequest()"
             aria-label="Close modal"
-            :disabled="isDisabled"
+            :disabled="isDisabled && !isViewOnly" 
           >
-            <template v-if="isDisabled">
-              Processing...
+            <template v-if="isViewOnly">
+              Close  <!-- Show "Close" if isViewOnly is true -->
             </template>
             <template v-else>
-              Sign and Submit DUA
-            </template>          
+              <template v-if="isDisabled">
+                Processing...  <!-- Show "Processing" when disabled -->
+              </template>
+              <template v-else>
+                Sign and Submit DUA  <!-- Show "Sign and Submit DUA" when not disabled and not in view mode -->
+            </template>
+          </template>
           </v-btn>
         </footer>
       </div>
@@ -77,7 +82,13 @@
   <script>
     export default {
       name: 'DUAReviewModal',
-      props: ['duaHTML'],
+      props: {
+      duaHTML: String,
+      isViewOnly: {      // Prop for determining whether it's view-only mode
+        type: Boolean,
+        default: false
+       }
+      },
       methods: {
         close() {
           this.$emit('close');
@@ -108,7 +119,8 @@
       data() {
           return {
               isDisabled: false,
-              isError: false
+              isError: false,
+              isViewOnly : false,
           }
       }
     };
