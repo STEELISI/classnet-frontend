@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-container
-      v-if="!isStatusUnchecked && !artifactReleased"
+      v-if="!isStatusUnchecked && !artifactReleased && !isAdmin"
       fill-height
       fluid
       grid-list-xl
@@ -173,7 +173,8 @@ export default {
   computed: {
     ...mapState({
       userid: state => state.user.userid,
-      favorites: state => state.artifacts.favoritesIDs
+      favorites: state => state.artifacts.favoritesIDs,
+      isAdmin : state => state.user.user_is_admin
     }),
     sanitizedDescription: function() {
       let description = ''

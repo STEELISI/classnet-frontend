@@ -7,7 +7,7 @@
     ></ArtifactCommentView>
 
     <v-container
-      v-if="$auth.loggedIn && !alreadyCommented && artifactReleased"
+      v-if="$auth.loggedIn && !alreadyCommented && artifactReleased || isAdmin"
       fill-height
       fluid
       grid-list-xl
@@ -122,7 +122,8 @@ export default {
     ...mapState({
       artifact: state => state.artifacts.artifact,
       comments: state => state.artifacts.artifact.rating_review,
-      userid: state => state.user.userid
+      userid: state => state.user.userid,
+      isAdmin : state => state.user.user_is_admin
     }),
     formCheck() {
       if (this.rating == 0 && this.comment === '') {
