@@ -112,7 +112,7 @@
             <v-row class="d-flex align-center justify-space-between">
               <v-col class="d-flex align-center" cols="12">
                 <v-card-title class="align-start py-0 my-0">
-                  <span class="headline custom-link">{{ group[0] }} ({{ group[1] }})</span>
+                  <span class="headline custom-link">{{ capitalizeFirstLetter(group[0]) }} ({{ group[1] }})</span>
                 </v-card-title>
               </v-col>
             </v-row>
@@ -404,7 +404,7 @@ export default {
         let data = []
         for (let i in response.groupingId_dict){
           if (i.trim()!=='') {
-            data.push([this.capitalizeFirstLetter(i), response.groupingId_dict[i].count])
+            data.push([i, response.groupingId_dict[i].count])
           }
         }
         // Sort the groups array by the group name (first element in each sub-array)
