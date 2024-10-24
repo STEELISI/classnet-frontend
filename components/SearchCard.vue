@@ -100,96 +100,69 @@
       </v-expansion-panels>
     </v-form>
     <br />
+    <v-switch
+      v-model="showGroups"
+      label="Show Groups"
+    ></v-switch>
     <v-divider></v-divider>
-
-
-    <v-container fluid>
-      <v-card>
-        <v-row class="align-center justify-space-between">
-        <v-col cols="auto">
-          <v-card-title>Categories</v-card-title>
-        </v-col>
-        <v-col cols="auto" class="d-flex align-center">
-          <v-btn small text @click="setAll" class="clickable-text">Set All</v-btn>
-          <v-btn small text @click="clearAll" class="clickable-text ml-2">Clear All</v-btn>
-        </v-col>
-      </v-row>
-        <v-card-text>
-      <v-row>
-
-        <v-col v-for="(category, index) in categories.slice(0, 5)" :key="index" >
-            <v-switch
-              v-model="selectedCategories[index]"
-              :label="category[0] + '(' + category[1] + ')'"
-              color="success"
-              @change="getArtifacts()"
-              hide-details
-            ></v-switch>
-          </v-col>
-
-
-      </v-row>
-      <v-row>
-          <!-- Display the remaining switches in the second row -->
-          <v-col v-for="(category, index) in categories.slice(5)" :key="index">
-            <v-switch
-              v-model="selectedCategories[index + 5]"
-              :label="category[0] + '(' + category[1] + ')'"
-              color="success"
-              @change="getArtifacts()"
-              hide-details
-            ></v-switch>
-          </v-col>
-        </v-row>
-    </v-card-text>
-    </v-card>
-
-    </v-container>
-
-    <v-container fluid>
-
-    </v-container>
-    <v-container class="d-flex align-items-center">
-      <span class="sort-by-label mr-3">Order by:</span>
-
-      <div v-for="option in sortOptions" :key="option.key" class="sort-option mr-4 d-flex align-items-center">
-        <span class="option-label">{{ option.label }}</span>
-        <div class="arrows-container ml-2">
-          <v-icon
-          class="arrow up-arrow"
-          :class="{ highlighted: isActive(option.key, 'asc') }"
-          @click.stop="setSort(option.key, 'asc')"
-        >
-          mdi-arrow-up-thin
-        </v-icon>
-          <v-icon
-          class="arrow down-arrow"
-          :class="{ highlighted: isActive(option.key, 'desc') }"
-          @click.stop="setSort(option.key, 'desc')"
-        >
-          mdi-arrow-down-thin
-        </v-icon>
-      </div>
+    <div v-if="showGroups">
+      <v-container fluid>
+        <v-card v-for="(group, index) in groups" :key="index" class="mx-auto mt-2 mb-2 overflow-hidden" elevation="3" @click="selectGroup(index)">
+          <v-container fluid>
+            <v-row class="d-flex align-center justify-space-between">
+              <v-col class="d-flex align-center" cols="12">
+                <v-card-title class="align-start py-0 my-0">
+                  <span class="headline custom-link">{{ group[0] }} ({{ group[1] }})</span>
+                </v-card-title>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card>
+      </v-container>
     </div>
-  </v-container>
+    <div v-else>
+      <v-container class="d-flex align-items-center">
+        <span class="sort-by-label mr-3">Order by:</span>
 
-    <ArtifactList
-      :artifacts="artifacts"
-      :limit="limit"
-      v-bind:related="related"
-    ></ArtifactList>
-    <span v-if="total === 0 && search !== ''">{{
-      searchMessage
-    }}</span>
-    <span v-if="!searchLoading && artifacts.total == 0 && search === ''"
-      ><h3>Type a search term into the input above and press Enter</h3></span
-    >
-    <v-pagination
-      v-if="artifacts"
-      v-model="page"
-      :length="pages"
-      circle
-    ></v-pagination>
+        <div v-for="option in sortOptions" :key="option.key" class="sort-option mr-4 d-flex align-items-center">
+          <span class="option-label">{{ option.label }}</span>
+          <div class="arrows-container ml-2">
+            <v-icon
+            class="arrow up-arrow"
+            :class="{ highlighted: isActive(option.key, 'asc') }"
+            @click.stop="setSort(option.key, 'asc')"
+            >
+              mdi-arrow-up-thin
+            </v-icon>
+            <v-icon
+            class="arrow down-arrow"
+            :class="{ highlighted: isActive(option.key, 'desc') }"
+            @click.stop="setSort(option.key, 'desc')"
+            >
+            mdi-arrow-down-thin
+            </v-icon>
+          </div>
+        </div>
+      </v-container>
+
+      <ArtifactList
+        :artifacts="artifacts"
+        :limit="limit"
+        v-bind:related="related"
+      ></ArtifactList>
+      <span v-if="total === 0 && search !== ''">{{
+        searchMessage
+      }}</span>
+      <span v-if="!searchLoading && artifacts.total == 0 && search === ''"
+        ><h3>Type a search term into the input above and press Enter</h3></span
+      >
+      <v-pagination
+        v-if="artifacts"
+        v-model="page"
+        :length="pages"
+        circle
+      ></v-pagination>
+    </div>
   </div>
 </template>
 
@@ -249,8 +222,9 @@ export default {
       showScrollToTop: 0,
       panel: [],
       items: 5,
-      categories: [],
-      selectedCategories: [],
+      groups: [],
+      showGroups:true,
+      selectedGroups: [],
       isUpdatingPageInGetArtifacts: false,
       sortOptions: [
         { key: 'collection_date', label: 'Published Date' },
@@ -332,7 +306,7 @@ export default {
     advancedPlaceholder() {
       if (this.advanced.filter === 'Name') return 'First or Last name'
       if (this.advanced.filter === 'Organization') return 'Organization name'
-    }
+    },
   },
   methods: {
     async onSubmit() {
@@ -346,9 +320,9 @@ export default {
       if (this.related && this.search.trim() === '') {
         this.$store.dispatch('artifacts/fetchRelatedArtifacts', this.artifact)
       } else {
-        // We reset selectedCategories and categories only when we do onSubmit (getArtifacts could be called even after a keyword submission (page change, category filtering))
-        this.selectedCategories = []
-        this.categories = []
+        // We reset selectedGroups and groups only when we do onSubmit (getArtifacts could be called even after a keyword submission (page change, group filtering))
+        this.selectedGroups = []
+        this.groups = []
         this.getArtifacts()
       }
       this.searchInterval = setTimeout(() => {
@@ -357,17 +331,6 @@ export default {
         }
       }, 3000)
       this.submitted = false
-    },
-    setAll() {
-      if(this.selectedCategories.every(element => element)){
-        return; 
-      }
-      this.selectedCategories = this.selectedCategories.map(() => true);
-      this.getArtifacts();
-    },
-    clearAll() {
-      this.selectedCategories = this.selectedCategories.map(() => false);
-      this.getArtifacts();
     },
 
     setSort(key = 'default', order) {
@@ -412,7 +375,6 @@ export default {
         type: this.advanced.types,
         orderkey : this.currentSort,
         order:this.sortOrder
-
       }
 
       this.author ? (payload['author'] = this.author) : false
@@ -420,15 +382,15 @@ export default {
       this.organization ? (payload['organization'] = this.organization) : false
       this.advanced.badge_ids ? (payload['badge_id'] = this.advanced.badge_ids) : false
 
-      // If we already have retrieved categories then we can check the list of switches to see the selectedCategoryNames upon calling getArtifacts
-      if (this.categories.length > 0) {
-        const categoryNames = Object.values(this.categories).map(category => category[0]);
-        const selectedCategoryNames = categoryNames.filter((category, index) => this.selectedCategories[index]);
-        if (selectedCategoryNames.length == 0) {
+      // If we already have retrieved groups then we can check the list of switches to see the selectedGroupNames upon calling getArtifacts
+      if (this.groups.length > 0) {
+        const groupNames = Object.values(this.groups).map(group => group[0]);
+        const selectedGroupNames = groupNames.filter((group, index) => this.selectedGroups[index]);
+        if (selectedGroupNames.length == 0) {
           this.$store.commit('artifacts/RESET_ARTIFACTS')
           return
         }
-        payload['category'] = selectedCategoryNames
+        payload['groupingId'] = selectedGroupNames
       }
 
       this.$store.commit('artifacts/SET_LOADING', true)
@@ -437,14 +399,18 @@ export default {
         ...payload
       })
 
-      // If categories is empty then we must populate it for the first time
-      if (this.categories.length == 0) {
+      // If groups is empty then we must populate it for the first time
+      if (this.groups.length == 0) {
         let data = []
-        for (let i in response.category_dict){
-          data.push([i, response.category_dict [i].count])
+        for (let i in response.groupingId_dict){
+          if (i.trim()!=='') {
+            data.push([this.capitalizeFirstLetter(i), response.groupingId_dict[i].count])
+          }
         }
-        this.categories = data
-        this.selectedCategories = new Array(this.categories.length).fill(true);
+        // Sort the groups array by the group name (first element in each sub-array)
+        data.sort((a, b) => a[0].localeCompare(b[0]))
+        this.groups = data
+        this.selectedGroups = new Array(this.groups.length).fill(true);
       } 
 
       if (typeof response !== 'undefined') {
@@ -456,6 +422,12 @@ export default {
         }
       }
       this.$store.commit('artifacts/SET_LOADING', false)        
+    },
+    selectGroup(index) {
+      this.selectedGroups = new Array(this.groups.length).fill(false);
+      this.selectedGroups[index] = true;
+      this.showGroups = false;
+      this.getArtifacts();
     },
     async fetchProviders() {
       let response = await this.$providerEndpoint.index()
@@ -492,6 +464,9 @@ export default {
     },
     handleScroll() {
       this.showScrollToTop = window.scrollY
+    },
+    capitalizeFirstLetter(val) {
+      return String(val).charAt(0).toUpperCase() + String(val).slice(1);
     }
   },
   watch: {
