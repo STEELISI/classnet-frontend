@@ -13,7 +13,7 @@
       <h1>Contribute Dataset</h1>
       <v-divider></v-divider>
     </v-layout>
-    <v-container v-if="providerPermissionsReceived && isApprovedProvider">
+    <v-container v-if="providerPermissionsReceived && isApprovedProvider || isAdmin">
       <v-row class="py-5">
         <div>For help, please see the <a href="https://steelisi.github.io/CLASSNET-DOCS/contribute/">Contributing Datasets</a> documentation</div>
       </v-row>
@@ -454,7 +454,7 @@
       
       </v-row>
     </v-container>
-    <v-col cols="12" sm="8" md="8" v-if="providerPermissionsReceived && !isApprovedProvider">
+    <v-col cols="12" sm="8" md="8" v-if="providerPermissionsReceived && !isApprovedProvider  && !isAdmin">
             <v-alert
               icon="mdi-shield-lock-outline"
               prominent
@@ -647,12 +647,18 @@ export default {
       if(newVal.length > this.shortDescCharLimit){
         this.shortDesc = newVal.slice(0, this.shortDescCharLimit);
       }
-    }
+    },
+    isAdmin(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.loadProviderOptions();
+      }
+    },
   },
   computed: {
     ...mapState({
       artifacts: state => state.artifacts.favorites,
-      userid: state => state.user.userid
+      userid: state => state.user.userid,
+      isAdmin: state => state.user.user_is_admin
     })
   },
   async created() {
@@ -661,17 +667,7 @@ export default {
       return
     }
     await this.fetchCategoryOptions(); 
-    let response = await this.$providerPermissionsList.index([])
-    this.pairs = response;
-    this.providerCollectionOptions = this.pairs.map(pair => ({
-      text:`Provider: ${pair.provider} - Use Agreement: ${pair.collection}`,
-      value: [pair.provider, pair.collection]
-    }))
-    
-    if (this.providerCollectionOptions.length > 0) {
-      this.isApprovedProvider = true
-    }
-    this.providerPermissionsReceived = true
+    await this.loadProviderOptions();
   },
   methods:{
     handleDateChange(value) {
@@ -800,6 +796,32 @@ export default {
       catch (error) {
         console.error('Error fetching category options:', error);
       }
+    },
+
+    async loadProviderOptions() {
+      let response;
+
+      if (this.isAdmin) {
+        response = await this.$providerCollectionEndpoint.index();
+      } else {
+        response = await this.$providerPermissionsList.index([]);
+      }
+
+      this.pairs = response;
+
+      this.providerCollectionOptions = this.pairs.map((pair) => ({
+        text: `Provider: ${pair.provider} - Use Agreement: ${pair.collection}`,
+        value: [pair.provider, pair.collection],
+      }));
+
+      if (this.providerCollectionOptions.length > 0) {
+        this.isApprovedProvider = true;
+      }
+      else{
+        this.isApprovedProvider = false;
+      }
+
+      this.providerPermissionsReceived = true;
     },
 
     async submit(){

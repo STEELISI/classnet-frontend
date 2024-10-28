@@ -135,6 +135,8 @@ export default (ctx, inject) => {
 
   //provider API
   inject('providerEndpoint', repositoryWithAxios('kg/' + 'provider'))
+
+  inject('providerCollectionEndpoint', repositoryWithAxios('kg/' + 'provider_collection'))
   // labels API
   inject('labelEndpoint', repositoryWithAxios('kg/' + 'labels'))
 
