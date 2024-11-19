@@ -635,6 +635,8 @@ export default {
       selectedCategory: '',
       categoryOptions: [],
       autoApproveDataset: false,
+      isEdit:false,
+      artifactId: ''
     }
   },
   watch: {
@@ -661,6 +663,13 @@ export default {
       isAdmin: state => state.user.user_is_admin
     })
   },
+  async mounted(){
+    this.isEdit = this.$route.query.isEdit === 'true';
+    this.artifactId = this.$route.query.artifactId;
+    if (this.isEdit && this.artifactId) {
+      await this.getData()
+    }
+  },
   async created() {
     if (!this.$auth.loggedIn){
       this.$router.push('/login')
@@ -670,6 +679,77 @@ export default {
     await this.loadProviderOptions();
   },
   methods:{
+    async getData(){
+      try {
+          const response = await this.$artifactContributeEndpoint.index({'artifactId':this.artifactId})
+          console.log(response)
+          // Call setFormData to populate the form fields
+          this.setFormData(response);
+      } 
+      catch (error) {
+          console.error("Error fetching data", error);
+      }
+    },
+    normalizeBooleanString(value) {
+      if (value) {
+        return value.toLowerCase() === 'true' ? 'True' : 'False'; // Normalize 'true'/'false' to 'True'/'False'
+      }
+      return ''; // Return empty if the value is undefined, null, or empty
+    },
+    parseKeywords(keywords) {
+      // Split the keywords by commas
+      const keywordArray = keywords.split(',');
+
+      // Initialize the variables
+      const regularKeywords = [];
+      let actionValue = null;
+      let categoryValue = null;
+
+      // Iterate over each keyword
+      keywordArray.forEach((keyword) => {
+        const parts = keyword.split(':'); // Check for ':' delimiter
+
+        if (parts.length === 2) {
+          const [key, value] = parts;
+          // Check for magic words 'action' and 'category'
+          if (key === 'action') {
+            this.autoApproveDataset = value === 'autoapprove' ? true : false;
+          } else if (key === 'category') {
+            this.selectedCategory = value;
+          }
+        } else {
+          // Regular keyword (no ':' found)
+          regularKeywords.push(keyword.trim());
+        }
+      });
+      // Set the keyword list to the regular keywords array
+      this.keywordList = regularKeywords;
+    },
+    setFormData(data){
+    this.datasetName = data.dataSetName || ''
+    this.shortDesc = data.shortDesc || ''
+    this.longDesc = data.longDesc || ''
+    this.datasetClass = data.datasetClass || ''
+    this.commercialAllowed = this.normalizeBooleanString(data.commercialAllowed) 
+    this.productReviewRequired = this.normalizeBooleanString(data.productReviewRequired)
+    this.availabilityStartDateTime.val = data.availabilityStartDate || ''
+    this.availabilityEndDateTime.val = data.availabilityEndDate  || ''
+    this.ongoingMeasurement = this.normalizeBooleanString(data.ongoingMeasurement)
+    this.collectionStartDateTime.val = data.collectionStartDate || ''
+    this.collectionEndDateTime.val = data.collectionEndDate || ''
+    this.byteSize = data.byteSize ||'' 
+    this.uncompressedSize = this.normalizeBooleanString(data.uncompressedSize)
+    this.archivingAllowed = this.normalizeBooleanString(data.archivingAllowed)
+    this.selectedCategory = ''
+    this.parseKeywords(data.keywords)
+    this.formatList = data.format || ''
+    this.anonymizationList = data.anonymization || ''
+    this.accessList = data.access || ''
+    this.expirationDays = data.expirationDays
+    this.groupingId = data.groupingId || ''
+    // this.providerCollection = 
+    this.irbRequired = this.normalizeBooleanString(data.irbRequired)
+    },
     handleDateChange(value) {
       this.dateDialog = false;
       this.availabilityStartDateTime = value;
@@ -786,7 +866,6 @@ export default {
     async fetchCategoryOptions() {
       try {
         const response = await this.$artifactCategoriesEndpoint.index();
-        console.log(response)
         if (response) {
           this.categoryOptions = response.categories
         } else {
