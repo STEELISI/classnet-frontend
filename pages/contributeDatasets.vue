@@ -663,13 +663,6 @@ export default {
       isAdmin: state => state.user.user_is_admin
     })
   },
-  async mounted(){
-    this.isEdit = this.$route.query.isEdit === 'true';
-    this.artifactId = this.$route.query.artifactId;
-    if (this.isEdit && this.artifactId) {
-      await this.getData()
-    }
-  },
   async created() {
     if (!this.$auth.loggedIn){
       this.$router.push('/login')
@@ -677,6 +670,11 @@ export default {
     }
     await this.fetchCategoryOptions(); 
     await this.loadProviderOptions();
+    this.isEdit = this.$route.query.isEdit === 'true';
+    this.artifactId = this.$route.query.artifactId;
+    if (this.isEdit && this.artifactId) {
+      await this.getData()
+    }
   },
   methods:{
     async getData(){
@@ -725,10 +723,24 @@ export default {
       // Set the keyword list to the regular keywords array
       this.keywordList = regularKeywords;
     },
+    parseProvider(providerName, useAgreement){
+      providerName = providerName.trim();
+      useAgreement = useAgreement.trim();
+      const matchingOption = this.providerCollectionOptions.find(option => 
+        option.value[0] === providerName && option.value[1] === useAgreement
+      );
+      if (matchingOption) {
+        this.providerCollection = matchingOption.value;
+      } else {
+        this.providerCollection = ''; // Or handle if no match is found
+      }
+    },
     setFormData(data){
     this.datasetName = data.dataSetName || ''
     this.shortDesc = data.shortDesc || ''
     this.longDesc = data.longDesc || ''
+    this.validateLongDesc()
+    this.validateShortDesc()
     this.datasetClass = data.datasetClass || ''
     this.commercialAllowed = this.normalizeBooleanString(data.commercialAllowed) 
     this.productReviewRequired = this.normalizeBooleanString(data.productReviewRequired)
@@ -740,14 +752,13 @@ export default {
     this.byteSize = data.byteSize ||'' 
     this.uncompressedSize = this.normalizeBooleanString(data.uncompressedSize)
     this.archivingAllowed = this.normalizeBooleanString(data.archivingAllowed)
-    this.selectedCategory = ''
     this.parseKeywords(data.keywords)
     this.formatList = data.format || ''
     this.anonymizationList = data.anonymization || ''
     this.accessList = data.access || ''
     this.expirationDays = data.expirationDays
     this.groupingId = data.groupingId || ''
-    // this.providerCollection = 
+    this.parseProvider(data.providerName, data.useAgreement)
     this.irbRequired = this.normalizeBooleanString(data.irbRequired)
     },
     handleDateChange(value) {
@@ -907,6 +918,7 @@ export default {
       this.submitCardMessage = '';
       const valid = await this.$refs.form.validate();
       if (!valid || this.datasetReadmeError || this.longDescError || this.shortDescError){
+        console.log(valid , this.datasetReadmeError, this.longDescError, this.shortDescError)
         this.submitCardMessage = 'Please  fill in all required fields in the expected format.'
         return
       }
