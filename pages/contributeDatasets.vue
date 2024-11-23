@@ -10,7 +10,7 @@
 
 
     <v-layout column justify-left align-top>
-      <h1>Contribute Dataset</h1>
+      <h1>Contribute / Update Dataset</h1>
       <v-divider></v-divider>
     </v-layout>
     <v-container v-if="providerPermissionsReceived && isApprovedProvider || isAdmin">
@@ -426,16 +426,27 @@
             clearable
             ></v-select>
 
-            <div style="font-weight: bold; margin-top:20px;">Upload a README file for the dataset<span style='color: red;'><strong> *</strong></span></div>
+            <div style="font-weight: bold; margin-top:20px;">Upload / Edit  README for the dataset<span style='color: red;'><strong> *</strong></span></div>
             <div style="font-size: 12px; color: grey; margin-top: 5px;">Supported format: .txt, .md, .wiki only</div>
             <div style="margin-top: 10px; margin-bottom: 10px;"></div>
             <input
               type="file"
               @input="resetReadmeError"
               @change="handleFileUpload"
-              accept=".txt,.md, .wiki"
-              required
+              accept=".txt,.md,.wiki"
+              :rules="[fileRequired]"
+              style="margin-top: 10px;"
             />
+            <div v-if="isEdit">
+              <div style="font-size: 12px; color: grey; margin-top: 5px;">You can edit the README content directly here.</div>
+              <textarea
+                v-model="datasetReadme"
+                @input="resetReadmeError"
+                rows="10"
+                style="width: 100%; font-size: 12px; margin-top: 10px;"
+              ></textarea>
+            </div>
+
             <div v-if="datasetReadmeError" style="font-size:12px; color: red;">{{ datasetReadmeErrorMessage }}</div>
             <div v-if="!datasetReadmeError" style="font-size:12px; color: green;">{{ datasetReadmeSuccessMessage }}</div>
 
@@ -700,8 +711,6 @@ export default {
 
       // Initialize the variables
       const regularKeywords = [];
-      let actionValue = null;
-      let categoryValue = null;
 
       // Iterate over each keyword
       keywordArray.forEach((keyword) => {
@@ -760,6 +769,7 @@ export default {
     this.groupingId = data.groupingId || ''
     this.parseProvider(data.providerName, data.useAgreement)
     this.irbRequired = this.normalizeBooleanString(data.irbRequired)
+    this.datasetReadme = data.datasetReadme || ''
     },
     handleDateChange(value) {
       this.dateDialog = false;
@@ -861,6 +871,13 @@ export default {
       this.datasetReadmeErrorMessage = ''
       this.datasetReadmeSuccessMessage = ''
     },
+    fileRequired(value) {
+      // Only make the file required when isEdit is false
+      if (!this.isEdit) {
+        return !!value || "File is required.";
+      }
+      return true; // No validation error if isEdit is true
+    },
 
     addWord() {
       if (this.keywordInput.trim().length < 2) {
@@ -917,6 +934,9 @@ export default {
     async submit(){
       this.submitCardMessage = '';
       const valid = await this.$refs.form.validate();
+      if(this.isEdit){
+        this.validateReadme()
+      }
       if (!valid || this.datasetReadmeError || this.longDescError || this.shortDescError){
         console.log(valid , this.datasetReadmeError, this.longDescError, this.shortDescError)
         this.submitCardMessage = 'Please  fill in all required fields in the expected format.'
