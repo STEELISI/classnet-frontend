@@ -34,6 +34,7 @@
             type="text"
             auto-grow
             clearable
+            :disabled="isEdit"
             required></v-text-field>
 
             <div style="margin-top: 20px; font-weight: bold;">Briefly describe the dataset<span style='color: red;'><strong> *</strong></span></div>
@@ -691,7 +692,6 @@ export default {
     async getData(){
       try {
           const response = await this.$artifactContributeEndpoint.index({'artifactId':this.artifactId})
-          console.log(response)
           // Call setFormData to populate the form fields
           this.setFormData(response);
       } 
@@ -938,7 +938,6 @@ export default {
         this.validateReadme()
       }
       if (!valid || this.datasetReadmeError || this.longDescError || this.shortDescError){
-        console.log(valid , this.datasetReadmeError, this.longDescError, this.shortDescError)
         this.submitCardMessage = 'Please  fill in all required fields in the expected format.'
         return
       }
@@ -979,6 +978,7 @@ export default {
                   "irbRequired":this.irbRequired,
                   "retrievalInstructions":this.retrievalInstructions,
                   "datasetReadme":this.processedReadme,
+                  "isEdit":this.isEdit
                 } 
       
       for (const key in metadata) {
