@@ -226,6 +226,17 @@
                                 mdi-arrow-top-right-thick
                               </v-icon>
                             </v-btn>
+
+                            <v-btn
+                              class="v-btn--simple"
+                              color="secondary"
+                              icon
+                              :to="`/contributeDatasets?isEdit=true&artifactId=${item.id}`"
+                            >
+                              <v-icon color="secondary">
+                                mdi-pencil
+                              </v-icon>
+                            </v-btn>
                           </div>
                         </div>
                       </v-timeline-item>

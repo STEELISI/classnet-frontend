@@ -10,7 +10,7 @@
 
 
     <v-layout column justify-left align-top>
-      <h1>Contribute Dataset</h1>
+      <h1>Contribute / Update Dataset</h1>
       <v-divider></v-divider>
     </v-layout>
     <v-container v-if="providerPermissionsReceived && isApprovedProvider || isAdmin">
@@ -34,6 +34,7 @@
             type="text"
             auto-grow
             clearable
+            :disabled="isEdit"
             required></v-text-field>
 
             <div style="margin-top: 20px; font-weight: bold;">Briefly describe the dataset<span style='color: red;'><strong> *</strong></span></div>
@@ -426,16 +427,27 @@
             clearable
             ></v-select>
 
-            <div style="font-weight: bold; margin-top:20px;">Upload a README file for the dataset<span style='color: red;'><strong> *</strong></span></div>
+            <div style="font-weight: bold; margin-top:20px;">Upload / Edit  README for the dataset<span style='color: red;'><strong> *</strong></span></div>
             <div style="font-size: 12px; color: grey; margin-top: 5px;">Supported format: .txt, .md, .wiki only</div>
             <div style="margin-top: 10px; margin-bottom: 10px;"></div>
             <input
               type="file"
               @input="resetReadmeError"
               @change="handleFileUpload"
-              accept=".txt,.md, .wiki"
-              required
+              accept=".txt,.md,.wiki"
+              :rules="[fileRequired]"
+              style="margin-top: 10px;"
             />
+            <div v-if="isEdit">
+              <div style="font-size: 12px; color: grey; margin-top: 5px;">You can edit the README content directly here.</div>
+              <textarea
+                v-model="datasetReadme"
+                @input="resetReadmeError"
+                rows="10"
+                style="width: 100%; font-size: 12px; margin-top: 10px;"
+              ></textarea>
+            </div>
+
             <div v-if="datasetReadmeError" style="font-size:12px; color: red;">{{ datasetReadmeErrorMessage }}</div>
             <div v-if="!datasetReadmeError" style="font-size:12px; color: green;">{{ datasetReadmeSuccessMessage }}</div>
 
@@ -635,6 +647,8 @@ export default {
       selectedCategory: '',
       categoryOptions: [],
       autoApproveDataset: false,
+      isEdit:false,
+      artifactId: ''
     }
   },
   watch: {
@@ -668,8 +682,95 @@ export default {
     }
     await this.fetchCategoryOptions(); 
     await this.loadProviderOptions();
+    this.isEdit = this.$route.query.isEdit === 'true';
+    this.artifactId = this.$route.query.artifactId;
+    if (this.isEdit && this.artifactId) {
+      await this.getData()
+    }
   },
   methods:{
+    async getData(){
+      try {
+          const response = await this.$artifactContributeEndpoint.index({'artifactId':this.artifactId})
+          // Call setFormData to populate the form fields
+          this.setFormData(response);
+      } 
+      catch (error) {
+          console.error("Error fetching data", error);
+      }
+    },
+    normalizeBooleanString(value) {
+      if (value) {
+        return value.toLowerCase() === 'true' ? 'True' : 'False'; // Normalize 'true'/'false' to 'True'/'False'
+      }
+      return ''; // Return empty if the value is undefined, null, or empty
+    },
+    parseKeywords(keywords) {
+      // Split the keywords by commas
+      const keywordArray = keywords.split(',');
+
+      // Initialize the variables
+      const regularKeywords = [];
+
+      // Iterate over each keyword
+      keywordArray.forEach((keyword) => {
+        const parts = keyword.split(':'); // Check for ':' delimiter
+
+        if (parts.length === 2) {
+          const [key, value] = parts;
+          // Check for magic words 'action' and 'category'
+          if (key === 'action') {
+            this.autoApproveDataset = value === 'autoapprove' ? true : false;
+          } else if (key === 'category') {
+            this.selectedCategory = value;
+          }
+        } else {
+          // Regular keyword (no ':' found)
+          regularKeywords.push(keyword.trim());
+        }
+      });
+      // Set the keyword list to the regular keywords array
+      this.keywordList = regularKeywords;
+    },
+    parseProvider(providerName, useAgreement){
+      providerName = providerName.trim();
+      useAgreement = useAgreement.trim();
+      const matchingOption = this.providerCollectionOptions.find(option => 
+        option.value[0] === providerName && option.value[1] === useAgreement
+      );
+      if (matchingOption) {
+        this.providerCollection = matchingOption.value;
+      } else {
+        this.providerCollection = ''; // Or handle if no match is found
+      }
+    },
+    setFormData(data){
+    this.datasetName = data.dataSetName || ''
+    this.shortDesc = data.shortDesc || ''
+    this.longDesc = data.longDesc || ''
+    this.validateLongDesc()
+    this.validateShortDesc()
+    this.datasetClass = data.datasetClass || ''
+    this.commercialAllowed = this.normalizeBooleanString(data.commercialAllowed) 
+    this.productReviewRequired = this.normalizeBooleanString(data.productReviewRequired)
+    this.availabilityStartDateTime.val = data.availabilityStartDate || ''
+    this.availabilityEndDateTime.val = data.availabilityEndDate  || ''
+    this.ongoingMeasurement = this.normalizeBooleanString(data.ongoingMeasurement)
+    this.collectionStartDateTime.val = data.collectionStartDate || ''
+    this.collectionEndDateTime.val = data.collectionEndDate || ''
+    this.byteSize = data.byteSize ||'' 
+    this.uncompressedSize = this.normalizeBooleanString(data.uncompressedSize)
+    this.archivingAllowed = this.normalizeBooleanString(data.archivingAllowed)
+    this.parseKeywords(data.keywords)
+    this.formatList = data.format || ''
+    this.anonymizationList = data.anonymization || ''
+    this.accessList = data.access || ''
+    this.expirationDays = data.expirationDays
+    this.groupingId = data.groupingId || ''
+    this.parseProvider(data.providerName, data.useAgreement)
+    this.irbRequired = this.normalizeBooleanString(data.irbRequired)
+    this.datasetReadme = data.datasetReadme || ''
+    },
     handleDateChange(value) {
       this.dateDialog = false;
       this.availabilityStartDateTime = value;
@@ -770,6 +871,13 @@ export default {
       this.datasetReadmeErrorMessage = ''
       this.datasetReadmeSuccessMessage = ''
     },
+    fileRequired(value) {
+      // Only make the file required when isEdit is false
+      if (!this.isEdit) {
+        return !!value || "File is required.";
+      }
+      return true; // No validation error if isEdit is true
+    },
 
     addWord() {
       if (this.keywordInput.trim().length < 2) {
@@ -786,7 +894,6 @@ export default {
     async fetchCategoryOptions() {
       try {
         const response = await this.$artifactCategoriesEndpoint.index();
-        console.log(response)
         if (response) {
           this.categoryOptions = response.categories
         } else {
@@ -827,6 +934,9 @@ export default {
     async submit(){
       this.submitCardMessage = '';
       const valid = await this.$refs.form.validate();
+      if(this.isEdit){
+        this.validateReadme()
+      }
       if (!valid || this.datasetReadmeError || this.longDescError || this.shortDescError){
         this.submitCardMessage = 'Please  fill in all required fields in the expected format.'
         return
@@ -868,6 +978,7 @@ export default {
                   "irbRequired":this.irbRequired,
                   "retrievalInstructions":this.retrievalInstructions,
                   "datasetReadme":this.processedReadme,
+                  "isEdit":this.isEdit
                 } 
       
       for (const key in metadata) {
