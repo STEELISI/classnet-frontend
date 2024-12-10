@@ -501,8 +501,13 @@
           <div v-if="formSubmittedError" class="form-submit-error">
             <p>{{formSubmittedErrorMessage}}</p>
           </div>
-          <div v-else class="form-submit-success">
-            <p>Dataset contributed successfully!</p>
+          <div v-else>
+            <div v-if="isEdit" class="form-submit-success">
+              <p>Changes submitted successfully! It could take up to 24h for changes to reflect.</p>
+            </div>
+            <div v-else class="form-submit-success">
+              <p>Dataset contributed successfully!</p>
+            </div>
           </div>
         </v-card-text>
         <v-card-actions>
@@ -648,7 +653,8 @@ export default {
       categoryOptions: [],
       autoApproveDataset: false,
       isEdit:false,
-      artifactId: ''
+      artifactId: '',
+      previousFormData:{}
     }
   },
   watch: {
@@ -691,9 +697,10 @@ export default {
   methods:{
     async getData(){
       try {
-          const response = await this.$artifactContributeEndpoint.index({'artifactId':this.artifactId})
+          const response = await this.$artifactContributeEndpoint.index({'artifactId':this.artifactId})          
           // Call setFormData to populate the form fields
           this.setFormData(response);
+          this.setPreviousFormData(response)
       } 
       catch (error) {
           console.error("Error fetching data", error);
@@ -759,7 +766,7 @@ export default {
     this.collectionStartDateTime.val = data.collectionStartDate || ''
     this.collectionEndDateTime.val = data.collectionEndDate || ''
     this.byteSize = data.byteSize ||'' 
-    this.uncompressedSize = this.normalizeBooleanString(data.uncompressedSize)
+    this.uncompressedSize = data.uncompressedSize || ''
     this.archivingAllowed = this.normalizeBooleanString(data.archivingAllowed)
     this.parseKeywords(data.keywords)
     this.formatList = data.format || ''
@@ -769,7 +776,60 @@ export default {
     this.groupingId = data.groupingId || ''
     this.parseProvider(data.providerName, data.useAgreement)
     this.irbRequired = this.normalizeBooleanString(data.irbRequired)
+    this.retrievalInstructions = data.retrievalInstructions || ''
     this.datasetReadme = data.datasetReadme || ''
+    },
+    setPreviousFormData(data){
+      this.previousFormData = {"datasetName":data.dataSetName,
+                  "shortDesc":data.shortDesc,
+                  "longDesc":data.longDesc,
+                  "datasetClass": data.datasetClass,
+                  "commercialAllowed":this.normalizeBooleanString(data.commercialAllowed),
+                  "productReviewRequired":this.normalizeBooleanString(data.productReviewRequired),
+                  "availabilityStartDateTime":data.availabilityStartDate,
+                  "availabilityEndDateTime":data.availabilityEndDate,
+                  "ongoingMeasurement": this.normalizeBooleanString(data.ongoingMeasurement),
+                  "collectionStartDateTime":data.collectionStartDate,
+                  "collectionEndDateTime":data.collectionEndDate,
+                  "byteSize":parseInt(data.byteSize),
+                  "archivingAllowed":this.normalizeBooleanString(data.archivingAllowed),
+                  "formatList":data.format,
+                  "anonymizationList":data.anonymization,
+                  "keywordList":data.keywords,
+                  "accessList":data.access,
+                  "providerName":data.providerName,
+                  "uncompressedSize": (data.uncompressedSize === '') ? data.uncompressedSize : parseInt(data.uncompressedSize) ,
+                  "expirationDays": data.expirationDays,
+                  "groupingId":data.groupingId,
+                  "useAgreement":data.useAgreement,
+                  "irbRequired":this.normalizeBooleanString(data.irbRequired),
+                  "retrievalInstructions":data.retrievalInstructions,
+                  "datasetReadme":data.datasetReadme,
+                  "isEdit":this.isEdit
+                } 
+
+    },
+    compareJsons(obj1,obj2){
+      const obj1keys = Object.keys(obj1);
+      const obj2keys = Object.keys(obj2);
+
+      // Check if the keys are the same
+      if (obj1keys.length !== obj2keys.length) {
+        console.log("Unequal keys");
+        return false
+      } else {
+        const unmatchedKeys = obj1keys.filter((key) => !(key in obj2));
+        if (unmatchedKeys.length > 0) {
+          return false
+        }
+        // Compare values
+        for (const key of obj1keys) {
+          if (obj1[key] !== obj2[key]) {
+            return false
+          }
+        }
+      }
+      return true
     },
     handleDateChange(value) {
       this.dateDialog = false;
@@ -981,6 +1041,14 @@ export default {
                   "isEdit":this.isEdit
                 } 
       
+      let isDataChanged = this.compareJsons(this.previousFormData, metadata)
+      if(this.isEdit && isDataChanged){
+        this.isProcessing = false
+        this.formSubmitted = true
+        this.formSubmittedErrorMessage = "No changes were made. Nothing Submitted"
+        this.formSubmittedError = true
+        return 
+      }
       for (const key in metadata) {
         if(metadata[key] === null){
           metadata[key] = ''
@@ -999,10 +1067,9 @@ export default {
       if (response.success == "true") {
         this.formSubmittedError = false
       } else {
-        this.formSubmittedError = true
         this.formSubmittedErrorMessage = response.message
+        this.formSubmittedError = true
       }
-
     },
     handleNumericInput() {
       // Remove any non-numeric characters from the input
