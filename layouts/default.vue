@@ -171,7 +171,7 @@
     <v-footer app>
       <span
         >&copy; {{ new Date().getFullYear() }} - COMUNDA is supported by the
-        National Science Foundation under grant number 8115780 and 1823192.
+        National Science Foundation under grant number 2120400.
 	</span
       ><v-spacer></v-spacer>
       <v-btn
