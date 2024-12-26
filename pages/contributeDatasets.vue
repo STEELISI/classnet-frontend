@@ -594,6 +594,7 @@ export default {
       keywordList:[],
       keywordListRules: [
         value => (value == '' || value.length > 1) || 'Keyword length must be greater than 1',
+        value => (!value.includes(',')) || 'Keywords cannot contain commas',
         value => (value!=undefined  && this.keywordList.length > 0)  || 'You must enter at least one keyword',
       ],
       formatList:'',
@@ -940,7 +941,7 @@ export default {
     },
 
     addWord() {
-      if (this.keywordInput.trim().length < 2) {
+      if (this.keywordInput.trim().length < 2 || this.keywordInput.includes(',')) {
         return;
       }
       if (this.keywordInput.trim() !== '') {

@@ -943,5 +943,7 @@ export default {
 
 .artifactDescription >>> pre{
   font-family: 'Roboto', sans-serif;
+  white-space: pre-wrap; /* Preserve whitespace but allow wrapping */
+  word-wrap: break-word; /* Break long words to prevent overflow */
 }
 </style>
