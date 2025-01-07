@@ -355,7 +355,10 @@
       },
       setModal(duaData){
         this.isModal = true
-        this.duaHTML = atob(duaData)
+        // 1. atob(b64) - Decodes base64 string to binary
+        // 2. Uint8Array.from(..., c => c.charCodeAt(0)) - Converts binary to UTF-8 byte array
+        // 3. TextDecoder().decode() - Converts UTF-8 bytes to proper Unicode string
+        this.duaHTML = new TextDecoder().decode(Uint8Array.from(atob(duaData), c => c.charCodeAt(0)));
       },
       closeModal(){
         this.isModal = false
