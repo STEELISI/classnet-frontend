@@ -102,12 +102,30 @@
     </v-form>
     <br />
     <v-row align="center" class="py-1">
-      <v-col cols="auto">
+      <v-col cols="auto" class="d-flex align-center">
         <v-switch
           v-model="showGroups"
           label="Show Groups"
-          class="ma-0"
         ></v-switch>
+      </v-col>
+
+      <v-col cols="auto" class="d-flex align-center">
+        <v-tooltip top>
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon
+              v-bind="attrs"
+              v-on="on"
+              color="primary"
+              small
+            >
+              mdi-information-outline
+            </v-icon>
+          </template>
+          <span>Show Groups will combine and display artifacts by their group . Switch off to view artifacts individually</span>
+        </v-tooltip>
+      </v-col>
+    </v-row>
+
     <v-divider></v-divider>
     <div v-if="showGroups">
       <v-container fluid>
