@@ -10,6 +10,7 @@
         clearable
         class="rounded-0"
         @keydown="onChange"
+        @click:append="onSubmit"
         solo
         dense
         :rules="searchRegexRule"
@@ -100,10 +101,13 @@
       </v-expansion-panels>
     </v-form>
     <br />
-    <v-switch
-      v-model="showGroups"
-      label="Show Groups"
-    ></v-switch>
+    <v-row align="center" class="py-1">
+      <v-col cols="auto">
+        <v-switch
+          v-model="showGroups"
+          label="Show Groups"
+          class="ma-0"
+        ></v-switch>
     <v-divider></v-divider>
     <div v-if="showGroups">
       <v-container fluid>
@@ -118,6 +122,12 @@
             </v-row>
           </v-container>
         </v-card>
+        <span v-if="groups.length === 0 && search !== ''">{{
+        searchMessage
+      }}</span>
+      <span v-if="!searchLoading && artifacts.total == 0 && search === ''"
+        ><h3>Type a search term into the input above and press Enter</h3></span
+      >
       </v-container>
     </div>
     <div v-else>
@@ -326,7 +336,7 @@ export default {
         this.getArtifacts()
       }
       this.searchInterval = setTimeout(() => {
-        if (!this.searchLoading) {
+        if (!this.searchLoading && this.artifacts.total === 0) {
           this.searchMessage = 'No results found'
         }
       }, 3000)
