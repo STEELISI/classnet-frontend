@@ -204,23 +204,35 @@ import axios from 'axios'
           items_per_page: this.limit,
           type: this.types
         }
+    
+    let dashboardResponse = await this.$dashboardEndpoint.index()
 
-    let response = await this.$artifactRequestListEndpoint.show([])
-
-    let requestedArtifactIDs = response.requestedArtifactIDs
+    // Allow artifact owners to submit labels for their own artifacts
+    let owned_artifacts = dashboardResponse.owned_artifacts
+    for (const obj of owned_artifacts) {
+      this.titles.push(obj.title)
+      this.artifact_ids.push(obj.artifact_group_id)
+      this.nameToID[obj.title] = obj.artifact_group_id
+    }
+  
+    // Allow admins to submit labels for artifacts they have requested
+    let requestedArtifacts = dashboardResponse.requested_artifacts
     if (this.user_can_admin && this.user_is_admin) {
-      for (const [key, value] of Object.entries(requestedArtifactIDs)) {
-        this.titles.push(value)
-        this.artifact_ids.push(key)
-        this.nameToID[value] = key
+      for (const obj of requestedArtifacts) {
+        this.titles.push(obj.title)
+        this.artifact_ids.push(obj.artifact_group_id)
+        this.nameToID[obj.title] = obj.artifact_group_id
       }
-    } else {
-      for (const [key, value] of Object.entries(requestedArtifactIDs)) {
-        let status = await this.$artifactRequestStatusEndpoint.show(key)
+    } 
+    
+    // Allow regular users to submit labels for artifacts that are released to them
+    else {
+      for (const obj of requestedArtifacts) {
+        let status = await this.$artifactRequestStatusEndpoint.show(obj.artifact_group_id)
         if (isReleased(status.ticket_status)) {
-          this.titles.push(value)
-          this.artifact_ids.push(key)
-          this.nameToID[value] = key
+          this.titles.push(obj.title)
+          this.artifact_ids.push(obj.artifact_group_id)
+          this.nameToID[obj.title] = obj.artifact_group_id
         }
       }
     }
