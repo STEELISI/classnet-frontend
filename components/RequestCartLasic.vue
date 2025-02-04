@@ -260,9 +260,9 @@
         <v-row align="center" justify="start">
           <!-- Start Date -->
           <v-col cols="12" sm="5" md="4" class="pr-5">
-            <div style="font-weight: bold; margin-bottom: 5px;">When is the project expected to start?<span style='color: red;'><strong> *</strong></span></div>
+            <div style="font-weight: bold; margin-bottom: 5px;">Dataset request start date?<span style='color: red;'><strong> *</strong></span></div>
             <v-menu
-              v-model="lasicData.projectStartDateTime.dialog"
+              v-model="lasicData.requestStartDateTime.dialog"
               :close-on-content-click="false"
               :nudge-right="40"
               transition="scale-transition"
@@ -271,8 +271,8 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-text-field
-                  v-model="lasicData.projectStartDateTime.val"
-                  :rules="projectStartDateTimeRules"
+                  v-model="lasicData.requestStartDateTime.val"
+                  :rules="requestStartDateTimeRules"
                   prepend-icon="mdi-calendar"
                   readonly
                   v-bind="attrs"
@@ -281,17 +281,18 @@
                 ></v-text-field>
               </template>
               <v-date-picker 
-                v-model="lasicData.projectStartDateTime.val" 
-                @input="lasicData.projectStartDateTime.dialog = false">
+                v-model="lasicData.requestStartDateTime.val" 
+                :min="today"
+                @input="lasicData.requestStartDateTime.dialog = false">
               </v-date-picker>
             </v-menu>
           </v-col>
 
           <!-- End Date -->
           <v-col cols="12" sm="5" md="4" class="pl-5">
-            <div style="font-weight: bold; margin-bottom: 5px;">When is the project expected to end?<span style='color: red;'><strong> *</strong></span></div>
+            <div style="font-weight: bold; margin-bottom: 5px;">Dataset request end date?<span style='color: red;'><strong> *</strong></span></div>
             <v-menu
-              v-model="lasicData.projectEndDateTime.dialog"
+              v-model="lasicData.requestEndDateTime.dialog"
               :close-on-content-click="false"
               :nudge-right="40"
               transition="scale-transition"
@@ -300,8 +301,8 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-text-field
-                  v-model="lasicData.projectEndDateTime.val"
-                  :rules="projectEndDateTimeRules"
+                  v-model="lasicData.requestEndDateTime.val"
+                  :rules="requestEndDateTimeRules"
                   prepend-icon="mdi-calendar"
                   readonly
                   v-bind="attrs"
@@ -310,8 +311,9 @@
                 ></v-text-field>
               </template>
               <v-date-picker 
-                v-model="lasicData.projectEndDateTime.val" 
-                @input="lasicData.projectEndDateTime.dialog = false">
+                v-model="lasicData.requestEndDateTime.val" 
+                :min="today"
+                @input="lasicData.requestEndDateTime.dialog = false">
               </v-date-picker>
             </v-menu>
           </v-col>
@@ -418,15 +420,15 @@
         formSubmittedErrorMessage: "",
         representative_researcher: {name: "", email: "", number: "", organization:"", title:""},
         researchers_that_interact: [],
-        lasicData: {outsideWork:'', address:'',projectStartDateTime:{dialog:false, val:null},projectEndDateTime:{dialog:false, val:null},},
+        lasicData: {outsideWork:'', address:'',requestStartDateTime:{dialog:false, val: new Date().toISOString().split('T')[0]},requestEndDateTime:{dialog:false, val:null},},
         trueFalseOptions:[{text:'Yes',value:"Yes"},{text:'No',value:"No"}],
-        projectStartDateTimeRules: [
-        value => (value!=undefined && value.length > 0)  || 'Project Start Date Time is required',
+        requestStartDateTimeRules: [
+        value => (value!=undefined && value.length > 0)  || 'Request Start Date Time is required',
         ],
-        projectEndDateTime:{dialog:false, val:null},
-        projectEndDateTimeRules: [
-          value => (value!=undefined && value.length > 0)  || 'Project End Date Time is required',
-          value => (value>= this.lasicData.projectStartDateTime.val)  || 'Project End Date Time must be the on or after Start time',
+        requestEndDateTime:{dialog:false, val:null},
+        requestEndDateTimeRules: [
+          value => (value!=undefined && value.length > 0)  || 'Request End Date Time is required',
+          value => (value>= this.lasicData.requestStartDateTime.val)  || 'Request End Date Time must be the on or after Start time',
         ],
         researchers: [],
         requestMode: false,
@@ -446,7 +448,8 @@
         provider:'',
         collection:'',
         artifacts:[],
-        listOfArtifactIDs:[]
+        listOfArtifactIDs:[],
+        today: new Date().toISOString().split('T')[0]
       }
     },
     async mounted() {
