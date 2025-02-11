@@ -234,6 +234,7 @@ export default {
       author: '',
       owner: '',
       organization: '',
+      selectedGroupNames: [],
       searchMessage: '',
       searchInterval: null,
       submitted: false,
@@ -278,15 +279,14 @@ export default {
     this.fetchProviders() 
     if (this.related) {
       this.$store.dispatch('artifacts/fetchRelatedArtifacts', this.artifact)
-    } else if (this.$route.query.keywords) {
-      this.search = this.$route.query.keywords
-      console.log('keywords: ', this.search)
-      this.onSubmit()
-    } else if (this.$route.query.author_keywords) {
+    } else if (this.$route.query) {
+      this.search = this.$route.query.keywords || this.search
+      this.organization = this.$route.query.organization || this.organization
+      this.selectedGroupNames = this.$route.query.groupingId?.split(',') || this.selectedGroupNames
+      this.advanced.types = this.$route.query.types?.split(',').slice() || this.advanced.types
       this.author = this.$route.query.author_keywords
-      console.log('author_keywords: ', this.author)
+      console.log('keywords: ', this.search, this.organization, this.selectedGroupNames, this.types, this.author)
       this.onSubmit()
-      this.adopen = [0]
     } else{
       this.search = this.search_init;
       this.onSubmit();
@@ -411,15 +411,17 @@ export default {
       this.advanced.badge_ids ? (payload['badge_id'] = this.advanced.badge_ids) : false
 
       // If we already have retrieved groups then we can check the list of switches to see the selectedGroupNames upon calling getArtifacts
+      console.log(this.groups, this.selectedGroups)
       if (this.groups.length > 0) {
         const groupNames = Object.values(this.groups).map(group => group[0]);
-        const selectedGroupNames = groupNames.filter((group, index) => this.selectedGroups[index]);
-        if (selectedGroupNames.length == 0) {
+        this.selectedGroupNames = groupNames.filter((group, index) => this.selectedGroups[index]);
+        if (this.selectedGroupNames.length == 0) {
           this.$store.commit('artifacts/RESET_ARTIFACTS')
           return
         }
-        payload['groupingId'] = selectedGroupNames
       }
+      payload['groupingId'] = this.selectedGroupNames
+      
 
       this.$store.commit('artifacts/SET_LOADING', true)
       this.$store.commit('artifacts/SET_SEARCH', payload.keywords)
