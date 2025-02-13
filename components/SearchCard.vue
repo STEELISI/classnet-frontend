@@ -282,6 +282,7 @@ export default {
     } else if (this.$route.query) {
       this.search = this.$route.query.keywords || this.search
       this.organization = this.$route.query.organization || this.organization
+      this.showGroups = this.$route.query.showGroups ? this.$route.query.showGroups!='0' : this.showGroups
       this.selectedGroupNames = this.$route.query.groupingId?.split(',') || this.selectedGroupNames
       this.advanced.types = this.$route.query.types?.split(',').slice() || this.advanced.types
       this.author = this.$route.query.author_keywords
