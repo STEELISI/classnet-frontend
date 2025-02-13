@@ -283,7 +283,6 @@ export default {
       this.search = this.$route.query.keywords || this.search
       this.organization = this.$route.query.organization || this.organization
       this.showGroups = this.$route.query.showGroups ? this.$route.query.showGroups!='0' : this.showGroups
-      this.selectedGroupNames = this.$route.query.groupingId?.split(',') || this.selectedGroupNames
       this.advanced.types = this.$route.query.types?.split(',').slice() || this.advanced.types
       this.author = this.$route.query.author_keywords
       console.log('keywords: ', this.search, this.organization, this.selectedGroupNames, this.types, this.author)
@@ -410,6 +409,7 @@ export default {
       this.owner ? (payload['owner'] = this.owner) : false
       this.organization ? (payload['organization'] = this.organization) : false
       this.advanced.badge_ids ? (payload['badge_id'] = this.advanced.badge_ids) : false
+      this.selectedGroupNames = this.$route.query?.groupingId?.split(',') || []
 
       // If we already have retrieved groups then we can check the list of switches to see the selectedGroupNames upon calling getArtifacts
       console.log(this.groups, this.selectedGroups)
