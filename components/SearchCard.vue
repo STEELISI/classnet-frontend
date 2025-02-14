@@ -11,6 +11,7 @@
         class="rounded-0"
         @keydown="onChange"
         @click:append="onSubmit"
+        @keydown.enter="onSubmit"
         solo
         dense
         :rules="searchRegexRule"
@@ -279,18 +280,14 @@ export default {
     this.fetchProviders() 
     if (this.related) {
       this.$store.dispatch('artifacts/fetchRelatedArtifacts', this.artifact)
-    } else if (this.$route.query) {
-      this.search = this.$route.query.keywords || this.search
+    } else {
+      this.search = this.$route.query.keywords || this.search_init || this.search
       this.organization = this.$route.query.organization || this.organization
       this.showGroups = this.$route.query.showGroups ? this.$route.query.showGroups!='0' : this.showGroups
       this.advanced.types = this.$route.query.types?.split(',').slice() || this.advanced.types
-      this.author = this.$route.query.author_keywords
-      console.log('keywords: ', this.search, this.organization, this.selectedGroupNames, this.types, this.author)
+      this.author = this.$route.query.author_keywords || this.author
       this.onSubmit()
-    } else{
-      this.search = this.search_init;
-      this.onSubmit();
-    }
+    } 
     if (this.all) {
       this.advanced.types = this.types
     }
