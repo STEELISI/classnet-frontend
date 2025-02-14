@@ -411,7 +411,6 @@ export default {
       this.selectedGroupNames = this.$route.query?.groupingId?.split(',') || []
 
       // If we already have retrieved groups then we can check the list of switches to see the selectedGroupNames upon calling getArtifacts
-      console.log(this.groups, this.selectedGroups)
       if (this.groups.length > 0) {
         const groupNames = Object.values(this.groups).map(group => group[0]);
         this.selectedGroupNames = groupNames.filter((group, index) => this.selectedGroups[index]);
