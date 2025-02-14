@@ -409,6 +409,8 @@ export default {
       this.owner ? (payload['owner'] = this.owner) : false
       this.organization ? (payload['organization'] = this.organization) : false
       this.advanced.badge_ids ? (payload['badge_id'] = this.advanced.badge_ids) : false
+      
+      // First read selectedGroupNames from the URL param - but if groups have been assigned already then it will be overridden by the code in the next block
       this.selectedGroupNames = this.$route.query?.groupingId?.split(',') || []
 
       // If we already have retrieved groups then we can check the list of switches to see the selectedGroupNames upon calling getArtifacts
