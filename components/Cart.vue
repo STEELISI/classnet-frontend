@@ -6,15 +6,25 @@
     <v-card v-for="(artifactGroup, key) in cartGroupedByProviderCollection" :key="key" class="mx-auto">
       <v-container fluid>
         <v-row class="d-flex align-center justify-space-between">
-          <v-col class="d-flex align-center" cols="10">
+          <v-col class="d-flex align-center" cols="8">
             <v-card-title class="align-start py-0 my-0">
               <v-btn @click="toggleDropdown(key)" outlined text :class="{ 'highlight-animation': key === `${highlightProvider},${highlightCollection}` }">
                 Provider: {{ key.split(',')[0] }}, Use Agreement: {{ key.split(',')[1] }}
               </v-btn>
             </v-card-title>
           </v-col>
-          <v-col cols="2">
-            <v-btn class="primary" @click="navigateToRequestPage(key)" text>Request</v-btn>
+          <v-col cols="4" class="d-flex justify-end">
+            <v-btn class="secondary " @click="viewDUA(key)" text>View DUA</v-btn>
+            <v-btn class="primary ml-2" @click="navigateToRequestPage(key)" text>Request</v-btn>
+            <transition name="modal-fade">
+              <DUAReviewModal
+                v-show="isModal"
+                @close="closeModal"
+                @submitRequest="closeModal"
+                v-bind:duaHTML="duaHTML"
+                :isViewOnly=true>
+              </DUAReviewModal>
+          </transition>
           </v-col>
         </v-row>
         <v-expand-transition>
@@ -58,14 +68,21 @@
 <script>
 import { mapState } from 'vuex'
 import { getCartGroupedByProviderCollection } from '@/helpers'
+import { marked } from 'marked'
 
 export default {
+  components: {
+      DUAReviewModal: () => import('@/components/DUAReviewModal')
+    },
   name: 'Cart',
 
   data() {
     return {
       cartGroupedByProviderCollection: {},
-      cartFetched:false
+      cartFetched:false,
+      isModal:false,
+      duaHTML: '',
+      
     }
   },
 
@@ -94,6 +111,23 @@ export default {
     navigateToRequestPage(providerCollection) {
       const [provider, collection] = providerCollection.split(',');
       this.$router.push({ path: '/cart/request', query: { provider, collection } });
+    },
+    async fetchDUA(providerCollection) {
+        const [provider, collection] = providerCollection.split(',');
+        let payload = {
+            'provider': provider,
+            'collection': collection
+          }
+        let response = await this.$duaPreviewEndpoint.index(payload);
+        this.dua = response.dua;
+        this.duaHTML = marked(this.dua);
+        this.isModal = true
+      },
+    async viewDUA(providerCollection) {
+      await this.fetchDUA(providerCollection)
+    },
+    closeModal(){
+        this.isModal = false
     }
   },
 }
