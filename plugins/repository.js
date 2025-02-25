@@ -132,6 +132,7 @@ export default (ctx, inject) => {
 
   // dua API
   inject('duaEndpoint', repositoryWithAxios('kg/' + 'dua'))
+  inject('duaPreviewEndpoint', repositoryWithAxios('kg/'+'dua_preview'))
 
   //provider API
   inject('providerEndpoint', repositoryWithAxios('kg/' + 'provider'))
