@@ -304,7 +304,6 @@
                   v-model="lasicData.requestEndDateTime.val"
                   :rules="requestEndDateTimeRules"
                   prepend-icon="mdi-calendar"
-                  readonly
                   v-bind="attrs"
                   v-on="on"
                   required
