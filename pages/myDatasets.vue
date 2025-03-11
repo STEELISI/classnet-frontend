@@ -202,6 +202,14 @@
                   <v-tab-item v-if="owned_artifacts.length > 0">
                     <!-- artifacts -->
                     <v-timeline align-top dense v-if="dashboard.owned_artifacts">
+                      <div class="d-flex justify-end mb-2">
+                        <v-btn class="v-btn--simple mr-4" color="primary" :href="embedLink" target="_blank">
+                          <v-icon left>mdi-open-in-new</v-icon> Visit Embed Link
+                        </v-btn>
+                        <v-btn class="v-btn--simple" color="success" @click="copyEmbedLink">
+                          <v-icon left>mdi-content-copy</v-icon> Copy Embed Link
+                        </v-btn>
+                      </div>
                       <v-timeline-item
                         v-for="item in sortedArtifacts"
                         :key="item.id"
@@ -291,6 +299,7 @@
         owned_artifacts:[],
         isModal: false,
         duaHTML: "",
+        embedLink: "",
       }
     },
     computed: {
@@ -320,6 +329,7 @@
       this.localuser = JSON.parse(JSON.stringify(this.user))
       let response = await this.$dashboardEndpoint.index()
       this.dashboard = response
+      this.embedLink = `${window.location.origin}/search?contributor_id=${this.dashboard.contributor_id}`;
       this.owned_artifacts = this.dashboard.owned_artifacts
       for (let index in this.dashboard.requested_artifacts) {
         let requested_artifact = this.dashboard.requested_artifacts[index]
@@ -362,6 +372,9 @@
       },
       closeModal(){
         this.isModal = false
+      },
+      copyEmbedLink() {
+        navigator.clipboard.writeText(this.embedLink)
       }
     }
   }

@@ -234,6 +234,7 @@ export default {
       search: '',
       author: '',
       owner: '',
+      contributor_id: null,
       organization: '',
       selectedGroupNames: [],
       searchMessage: '',
@@ -286,6 +287,7 @@ export default {
       this.showGroups = this.$route.query.showGroups ? this.$route.query.showGroups!='0' : this.showGroups
       this.advanced.types = this.$route.query.types?.split(',').slice() || this.advanced.types
       this.author = this.$route.query.author_keywords || this.author
+      this.contributor_id = this.$route.query.contributor_id || this.contributor_id
       this.onSubmit()
     } 
     if (this.all) {
@@ -404,6 +406,7 @@ export default {
 
       this.author ? (payload['author'] = this.author) : false
       this.owner ? (payload['owner'] = this.owner) : false
+      this.contributor_id ? (payload['contributor_id'] = this.contributor_id) : false;
       this.organization ? (payload['organization'] = this.organization) : false
       this.advanced.badge_ids ? (payload['badge_id'] = this.advanced.badge_ids) : false
       
