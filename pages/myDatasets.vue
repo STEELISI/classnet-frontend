@@ -40,11 +40,11 @@
                       </v-icon>
                       Ratings
                     </v-tab>
-                    <v-tab class="mr-3" v-if="owned_artifacts.length > 0">
+                    <v-tab class="mr-3" v-if="contributed_artifacts.length > 0">
                       <v-icon class="mr-2">
                         mdi-database
                       </v-icon>
-                      Owned Datasets
+                      Contributed Datasets
                     </v-tab>
   
                   </v-tabs>
@@ -199,9 +199,42 @@
                       <v-divider />
                     </v-list>
                   </v-tab-item>
-                  <v-tab-item v-if="owned_artifacts.length > 0">
+                  <v-tab-item v-if="contributed_artifacts.length > 0">
                     <!-- artifacts -->
-                    <v-timeline align-top dense v-if="dashboard.owned_artifacts">
+                    <v-card class="mb-4">
+                      <v-card-title>Released Artifacts Overview</v-card-title>
+                      <v-card-text>
+                        <div>Total Number of Released Artifacts: <strong>{{ dashboard.released_artifacts_overview.total_number_released }}</strong></div>
+                        <div>Total Number of Users Released To: <strong>{{ dashboard.released_artifacts_overview.total_number_users_released_to }}</strong></div>
+                        
+                        <div class="mt-4">
+                          <v-data-table
+                            :headers="headers"
+                            :items="formattedUsers"
+                            item-value="name"
+                            class="elevation-1"
+                          >
+                            <template v-slot:top>
+                              <v-toolbar flat>
+                                <v-toolbar-title>Users Released To</v-toolbar-title>
+                              </v-toolbar>
+                            </template>
+                            <template v-slot:item.organizations="{ item }">
+                              <v-chip
+                                v-for="(org, index) in item.organizations"
+                                :key="index"
+                                class="mr-1"
+                                color="primary"
+                              >
+                                {{ org }}
+                              </v-chip>
+                            </template>
+                          </v-data-table>
+                        </div>
+                      </v-card-text>
+                    </v-card>
+
+                    <v-timeline align-top dense v-if="dashboard.contributed_artifacts">
                       <div class="d-flex justify-end mb-2">
                         <v-btn class="v-btn--simple mr-4" color="primary" :href="embedLink" target="_blank">
                           <v-icon left>mdi-open-in-new</v-icon> Visit Embed Link
@@ -246,6 +279,23 @@
                               </v-icon>
                             </v-btn>
                           </div>
+                           <!-- Dropdown for revealing artifact.users -->
+                          <v-expansion-panels focusable>
+                            <v-expansion-panel>
+                              <v-expansion-panel-header>
+                                Show Users Released To
+                              </v-expansion-panel-header>
+                              <v-expansion-panel-content>
+                                <v-list dense>
+                                  <v-list-item v-for="(user, index) in item.users" :key="index">
+                                    <v-list-item-content>
+                                      <v-list-item-title>{{ user }}</v-list-item-title>
+                                    </v-list-item-content>
+                                  </v-list-item>
+                                </v-list>
+                              </v-expansion-panel-content>
+                            </v-expansion-panel>
+                          </v-expansion-panels>
                         </div>
                       </v-timeline-item>
                     </v-timeline>
@@ -296,10 +346,16 @@
         schemaLoaded: false,
         requested_artifacts: [],
         released_artifacts: [],
-        owned_artifacts:[],
+        contributed_artifacts:[],
         isModal: false,
         duaHTML: "",
         embedLink: "",
+        headers: [
+        { text: 'Name', value: 'name' },
+        { text: 'Email', value: 'email' },
+        { text: 'Position', value: 'position' },
+        { text: 'Organizations', value: 'organizations' }
+        ],
       }
     },
     computed: {
@@ -314,15 +370,23 @@
         } else return []
       },
       sortedArtifacts: function() {
-        if (typeof this.dashboard.owned_artifacts !== 'undefined') {
-          return this.dashboard.owned_artifacts.sort(function(a, b) {
+        if (typeof this.dashboard.contributed_artifacts !== 'undefined') {
+          return this.dashboard.contributed_artifacts.sort(function(a, b) {
             // reverse sort order
             if (a.ctime < b.ctime) return 1
             if (a.ctime > b.ctime) return -1
             return 0
           })
         } else return []
-      }
+      },
+      formattedUsers() {
+        return Object.entries(this.dashboard.released_artifacts_overview.users_released_to).map(([name, details]) => ({
+          name,
+          email: details.requester_email,
+          position: details.requester_position,
+          organizations: details.requester_organizations,
+        }));
+      },
     },
     async mounted() {
       this.$store.dispatch('user/fetchUser')
@@ -330,7 +394,7 @@
       let response = await this.$dashboardEndpoint.index()
       this.dashboard = response
       this.embedLink = `${window.location.origin}/search?contributor_id=${this.dashboard.contributor_id}`;
-      this.owned_artifacts = this.dashboard.owned_artifacts
+      this.contributed_artifacts = this.dashboard.contributed_artifacts
       for (let index in this.dashboard.requested_artifacts) {
         let requested_artifact = this.dashboard.requested_artifacts[index]
   
