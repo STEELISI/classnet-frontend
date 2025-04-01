@@ -210,7 +210,7 @@
                         <div class="mt-4">
                           <v-data-table
                             :headers="headers"
-                            :items="formattedUsers"
+                            :items="formattedUsersReleasedTo"
                             item-value="name"
                             class="elevation-1"
                           >
@@ -279,7 +279,6 @@
                               </v-icon>
                             </v-btn>
                           </div>
-                           <!-- Dropdown for revealing artifact.users -->
                           <v-expansion-panels focusable>
                             <v-expansion-panel>
                               <v-expansion-panel-header>
@@ -379,7 +378,7 @@
           })
         } else return []
       },
-      formattedUsers() {
+      formattedUsersReleasedTo() {
         return Object.entries(this.dashboard.released_artifacts_overview.users_released_to).map(([name, details]) => ({
           name,
           email: details.requester_email,
