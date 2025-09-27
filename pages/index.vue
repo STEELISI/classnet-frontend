@@ -455,7 +455,7 @@ export default {
           'Fifth',
         ],
         countryCodePattern: /\d+/g,
-        mobileNumberPattern: /\(?\d{1,3}\)?[- ]?\d{3}[- ]?\d{4}$/g,
+        mobileNumberPattern: /\(?\d{1,3}\)?[- ]?\d{3,4}[- ]?\d{3,7}$/g,
         menuProps: {
         value: false, // Initially hide the menu
         }
@@ -550,7 +550,7 @@ export default {
         this.localuser.position = this.userPosition
         let isValidNumber = this.validateNumber()
         if (!isValidNumber) {
-          this.dialogMessage = 'Please enter valid charaters for Mobile Number'
+          this.dialogMessage = 'Please enter valid charaters for phone number'
         }
         else{
           this.localuser.countryCode = this.userCountryCode
