@@ -2,7 +2,7 @@
     <div>
       <a @click="$router.go(-1)">Back</a>
   
-      <div v-if="!(collection.toLowerCase().includes('frgp-continuous') || collection.toLowerCase().includes('frgp-download') || collection.toLowerCase().includes('dua-lasic') || collection.toLowerCase().includes('dua-lasic'))">
+      <div v-if="!(collection.toLowerCase().includes('frgp-continuous') || collection.toLowerCase().includes('frgp-download') || collection.toLowerCase().includes('dua-lasic'))">
           <RequestCart></RequestCart>
       </div>
       <div v-else-if="(collection.toLowerCase().includes('frgp-continuous') || collection.toLowerCase().includes('frgp-download') ) ">
